@@ -25,6 +25,21 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
     });
   }
 
+  Future<void> _handleSocialLogin(String provider) async {
+    final success = await ref.read(authProvider.notifier).socialLogin({
+      'provider': provider,
+      'email': '${provider}_user@example.com',
+      'firstName': provider,
+      'lastName': 'User'
+    });
+    if (success && mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$provider login successful')));
+    } else if (mounted) {
+      final err = ref.read(authProvider).error ?? '$provider login failed';
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final authState = ref.watch(authProvider);
@@ -59,7 +74,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               const SizedBox(height: 73),
               CustomTextField(
                 label: 'Name',
-                hintText: 'Mr. Muffin',
                 controller: _nameController,
                 showGreenTick: _isNameValid,
                 onChanged: _validateName,
@@ -67,13 +81,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               const SizedBox(height: 8),
               CustomTextField(
                 label: 'Email',
-                hintText: 'mrmuff',
                 controller: _emailController,
               ),
               const SizedBox(height: 8),
               CustomTextField(
                 label: 'Password',
-                hintText: 'Password',
                 isPassword: true,
                 controller: _passwordController,
               ),
@@ -140,25 +152,9 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _socialButton('assets/images/button/google icon.png', () async {
-                    // Logic xử lý Google Sign In (qua Supabase)
-                    await ref.read(authProvider.notifier).socialLogin({
-                      'provider': 'google',
-                      'email': 'google_user@example.com', // get from Supabase/Google Auth
-                      'firstName': 'Google',
-                      'lastName': 'User'
-                    });
-                  }),
+                  _socialButton('assets/images/button/google-icon.png', () => _handleSocialLogin('google')),
                   const SizedBox(width: 16),
-                  _socialButton('assets/images/button/facebook icon.png', () async {
-                    // Logic xử lý Facebook Sign In (qua Supabase)
-                    await ref.read(authProvider.notifier).socialLogin({
-                      'provider': 'facebook',
-                      'email': 'facebook_user@example.com', // get from Supabase/Facebook Auth
-                      'firstName': 'Facebook',
-                      'lastName': 'User'
-                    });
-                  }),
+                  _socialButton('assets/images/button/facebook-icon.png', () => _handleSocialLogin('facebook')),
                 ],
               ),
             ],

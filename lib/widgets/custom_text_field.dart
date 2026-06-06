@@ -40,44 +40,50 @@ class CustomTextField extends StatelessWidget {
               )
             ],
           ),
-          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 4),
+          alignment: Alignment.center,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
-                label,
-                style: TextStyle(
-                  color: errorText != null ? Colors.red : Colors.grey,
-                  fontSize: 11,
-                  fontFamily: 'Metropolis',
+              Expanded(
+                child: TextField(
+                  controller: controller,
+                  obscureText: isPassword,
+                  onChanged: onChanged,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Metropolis',
+                    color: Colors.black,
+                  ),
+                  decoration: InputDecoration(
+                    labelText: label,
+                    labelStyle: TextStyle(
+                      color: errorText != null ? Colors.red : Colors.grey,
+                      fontSize: 14,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: 'Metropolis',
+                    ),
+                    floatingLabelStyle: TextStyle(
+                      color: errorText != null ? Colors.red : Colors.grey,
+                      fontSize: 11,
+                      fontWeight: FontWeight.normal,
+                      fontFamily: 'Metropolis',
+                    ),
+                    border: InputBorder.none,
+                  ),
                 ),
               ),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: controller,
-                      obscureText: isPassword,
-                      onChanged: onChanged,
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontFamily: 'Metropolis',
-                        color: Colors.black,
-                      ),
-                      decoration: InputDecoration(
-                        hintText: hintText,
-                        border: InputBorder.none,
-                        isDense: true,
-                        contentPadding: EdgeInsets.zero,
-                      ),
-                    ),
-                  ),
-                  if (showGreenTick)
-                    Image.asset('assets/images/icon/green-tick.png', width: 24, height: 24),
-                  if (showRedTick || errorText != null)
-                    Image.asset('assets/images/icon/red-tick.png', width: 24, height: 24, color: Colors.red),
-                ],
-              ),
+              if (showGreenTick)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Image.asset('assets/images/icon/green-tick.png', width: 24, height: 24),
+                ),
+              if (showRedTick || errorText != null)
+                Padding(
+                  padding: const EdgeInsets.only(left: 8.0),
+                  child: Image.asset('assets/images/icon/red-tick.png', width: 24, height: 24, color: Colors.red),
+                ),
             ],
           ),
         ),
