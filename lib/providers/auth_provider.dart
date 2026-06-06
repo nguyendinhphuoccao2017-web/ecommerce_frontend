@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'package:flutter/widgets.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase;
 import '../services/api_service.dart';
@@ -176,24 +178,56 @@ class AuthNotifier extends StateNotifier<AuthState> with WidgetsBindingObserver 
     state = state.copyWith(isLoading: true, error: null, isSocialAuth: true, isAuthSuccess: false);
     try {
       final client = supabase.Supabase.instance.client;
-      final provider = providerStr == 'google'
-          ? supabase.OAuthProvider.google
-          : supabase.OAuthProvider.facebook;
-
-      final redirectTo = providerStr == 'google'
-          ? 'com.googleusercontent.apps.790202574296-7fi2obusn34e5us92tpjhvif6bgfd3ea://login-callback'
-          : 'fb1532023365175219://login-callback';
-
-      final result = await client.auth.signInWithOAuth(
-        provider,
-        redirectTo: redirectTo,
-      );
-
-      if (!mounted) return result;
-      if (!result) {
-        state = state.copyWith(isLoading: false);
+      
+      if (providerStr == 'google') {
+        const webClientId = '790202574296-9qsllsor2jv2n4qmg7d38fi1p3p6netv.apps.googleusercontent.com';
+        const iosClientId = '790202574296-7fi2obusn34e5us92tpjhvif6bgfd3ea.apps.googleusercontent.com';
+        
+        final GoogleSignIn googleSignIn = GoogleSignIn(
+          clientId: iosClientId,
+          serverClientId: webClientId,
+        );
+        final googleUser = await googleSignIn.signIn();
+        if (googleUser == null) {
+           if (!mounted) return false;
+           state = state.copyWith(isLoading: false);
+           return false;
+        }
+        final googleAuth = await googleUser.authentication;
+        final idToken = googleAuth.idToken;
+        final accessToken = googleAuth.accessToken;
+        
+        if (idToken == null) {
+           throw Exception('Google Sign In failed: Missing ID Token.');
+        }
+        
+        await client.auth.signInWithIdToken(
+          provider: supabase.OAuthProvider.google,
+          idToken: idToken,
+          accessToken: accessToken,
+        );
+      } else if (providerStr == 'facebook') {
+        final result = await FacebookAuth.instance.login(
+          permissions: ['public_profile', 'email'],
+        );
+        if (result.status != LoginStatus.success) {
+           if (!mounted) return false;
+           state = state.copyWith(isLoading: false);
+           return false;
+        }
+        
+        final accessToken = result.accessToken!.tokenString;
+        
+        await client.auth.signInWithIdToken(
+          provider: supabase.OAuthProvider.facebook,
+          idToken: accessToken,
+        );
+      } else {
+        throw Exception('Unsupported social provider');
       }
-      return result;
+
+      if (!mounted) return true;
+      return true;
     } catch (e) {
       if (!mounted) return false;
       state = state.copyWith(

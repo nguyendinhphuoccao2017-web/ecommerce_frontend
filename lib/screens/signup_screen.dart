@@ -5,6 +5,7 @@ import '../widgets/custom_text_field.dart';
 import '../widgets/primary_button.dart';
 import '../widgets/loading_overlay.dart';
 import 'login_screen.dart';
+import 'home_screen.dart';
 
 class SignupScreen extends ConsumerStatefulWidget {
   const SignupScreen({super.key});
@@ -58,7 +59,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             context,
           ).showSnackBar(const SnackBar(content: Text('Sign up successful!')));
         }
-        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
       }
     });
 
