@@ -19,6 +19,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   bool _isEmailValid = false;
   String? _emailError;
 
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   void _validateEmail(String value) {
     setState(() {
       _emailError = null;
@@ -34,17 +41,39 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _handleSocialLogin(String provider) async {
-    final success = await ref.read(authProvider.notifier).socialLogin(provider);
-    if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$provider login successful')));
-    } else if (mounted) {
-      final err = ref.read(authProvider).error ?? '$provider login failed';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
-    }
+    if (ref.read(authProvider).isLoading) return;
+    await ref.read(authProvider.notifier).socialLogin(provider);
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (!ModalRoute.of(context)!.isCurrent) return;
+
+      if (next.error != null && next.error != previous?.error) {
+        showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text('Login Failed'),
+            content: Text(next.error!),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Close'),
+              )
+            ],
+          )
+        );
+      } else if (next.isAuthSuccess && next.isAuthSuccess != previous?.isAuthSuccess) {
+        if (next.isSocialAuth) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Social Login successful!')));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login successful!')));
+        }
+        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+      }
+    });
+
     final authState = ref.watch(authProvider);
 
     return LoadingOverlay(
@@ -121,29 +150,11 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               PrimaryButton(
                 title: 'LOGIN',
                 isLoading: authState.isLoading,
-                onPressed: () async {
-                  final success = await ref.read(authProvider.notifier).login(
+                onPressed: () {
+                  ref.read(authProvider.notifier).login(
                     _emailController.text,
                     _passwordController.text,
                   );
-                  if (success && mounted) {
-                    // Navigate to home
-                  } else if (mounted) {
-                    final err = ref.read(authProvider).error ?? 'Doesn’t exist this email. Please Register!';
-                    showDialog(
-                      context: context,
-                      builder: (_) => AlertDialog(
-                        title: const Text('Login Failed'),
-                        content: Text(err),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context),
-                            child: const Text('Close'),
-                          )
-                        ],
-                      )
-                    );
-                  }
                 },
               ),
               const SizedBox(height: 126),

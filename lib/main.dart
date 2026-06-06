@@ -10,6 +10,9 @@ void main() async {
   await Supabase.initialize(
     url: 'https://nddvgywmwxlmkmextxre.supabase.co',
     anonKey: 'sb_publishable_7iWFF4sn0ABzncq2Er-DFw_SZ1lSzYA',
+    authOptions: const FlutterAuthClientOptions(
+      authFlowType: AuthFlowType.pkce,
+    ),
   );
 
   runApp(const ProviderScope(child: MyApp()));

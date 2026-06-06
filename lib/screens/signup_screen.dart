@@ -19,6 +19,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool _isNameValid = false;
 
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   void _validateName(String value) {
     setState(() {
       _isNameValid = value.trim().contains(' ');
@@ -26,19 +34,34 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   }
 
   Future<void> _handleSocialLogin(String provider) async {
-    final success = await ref.read(authProvider.notifier).socialLogin(provider);
-    if (success && mounted) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('$provider login successful')));
-    } else if (mounted) {
-      final err = ref.read(authProvider).error ?? '$provider login failed';
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
-    }
+    if (ref.read(authProvider).isLoading) return;
+    await ref.read(authProvider.notifier).socialLogin(provider);
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<AuthState>(authProvider, (previous, next) {
+      if (!ModalRoute.of(context)!.isCurrent) return;
+
+      if (next.error != null && next.error != previous?.error) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(next.error!)));
+      } else if (next.isAuthSuccess &&
+          next.isAuthSuccess != previous?.isAuthSuccess) {
+        if (next.isSocialAuth) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Social Login successful!')),
+          );
+        } else {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Sign up successful!')));
+        }
+        // Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+      }
+    });
+
     final authState = ref.watch(authProvider);
 
     return LoadingOverlay(
@@ -115,14 +138,14 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               PrimaryButton(
                 title: 'SIGN UP',
                 isLoading: authState.isLoading,
-                onPressed: () async {
+                onPressed: () {
                   final nameParts = _nameController.text.trim().split(' ');
                   final firstName = nameParts.isNotEmpty ? nameParts.first : '';
                   final lastName = nameParts.length > 1
                       ? nameParts.sublist(1).join(' ')
                       : '';
 
-                  final success = await ref
+                  ref
                       .read(authProvider.notifier)
                       .register(
                         firstName,
@@ -130,13 +153,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         _emailController.text,
                         _passwordController.text,
                       );
-                  if (success && mounted) {
-                    // Navigate to success or home
-                  } else if (authState.error != null && mounted) {
-                    ScaffoldMessenger.of(
-                      context,
-                    ).showSnackBar(SnackBar(content: Text(authState.error!)));
-                  }
                 },
               ),
               const SizedBox(height: 126),
