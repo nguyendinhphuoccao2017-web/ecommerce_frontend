@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/api_service.dart';
 
 final apiServiceProvider = Provider((ref) => ApiService());
@@ -50,12 +51,25 @@ class AuthNotifier extends StateNotifier<AuthState> {
     }
   }
 
-  Future<bool> socialLogin(Map<String, dynamic> data) async {
+  Future<bool> socialLogin(String providerStr) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      await _apiService.socialLogin(data);
+      final supabase = Supabase.instance.client;
+      final provider = providerStr == 'google' 
+          ? OAuthProvider.google 
+          : OAuthProvider.facebook;
+          
+      final redirectTo = providerStr == 'google' 
+          ? 'com.googleusercontent.apps.790202574296-7fi2obusn34e5us92tpjhvif6bgfd3ea://login-callback'
+          : 'fb1532023365175219://login-callback';
+
+      final result = await supabase.auth.signInWithOAuth(
+        provider,
+        redirectTo: redirectTo,
+      );
+      
       state = state.copyWith(isLoading: false);
-      return true;
+      return result;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString().replaceAll('Exception: ', ''));
       return false;

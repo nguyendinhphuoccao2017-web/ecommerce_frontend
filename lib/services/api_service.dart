@@ -2,18 +2,26 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dio/dio.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://localhost:8080/api/auth';
+  static const String baseUrl = 'http://192.168.1.7:8080/api/auth';
   final Dio _dio = Dio();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
-  Future<void> register(String firstName, String lastName, String email, String password) async {
+  Future<void> register(
+    String firstName,
+    String lastName,
+    String email,
+    String password,
+  ) async {
     try {
-      final response = await _dio.post('$baseUrl/register', data: {
-        'firstName': firstName,
-        'lastName': lastName,
-        'email': email,
-        'password': password,
-      });
+      final response = await _dio.post(
+        '$baseUrl/register',
+        data: {
+          'firstName': firstName,
+          'lastName': lastName,
+          'email': email,
+          'password': password,
+        },
+      );
       if (response.data['token'] != null) {
         await _storage.write(key: 'jwt_token', value: response.data['token']);
       } else if (response.data['error'] != null) {
@@ -29,10 +37,10 @@ class ApiService {
 
   Future<void> login(String email, String password) async {
     try {
-      final response = await _dio.post('$baseUrl/login', data: {
-        'email': email,
-        'password': password,
-      });
+      final response = await _dio.post(
+        '$baseUrl/login',
+        data: {'email': email, 'password': password},
+      );
       if (response.data['token'] != null) {
         await _storage.write(key: 'jwt_token', value: response.data['token']);
       } else if (response.data['error'] != null) {

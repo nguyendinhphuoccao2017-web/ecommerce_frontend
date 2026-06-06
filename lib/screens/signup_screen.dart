@@ -26,14 +26,11 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
   }
 
   Future<void> _handleSocialLogin(String provider) async {
-    final success = await ref.read(authProvider.notifier).socialLogin({
-      'provider': provider,
-      'email': '${provider}_user@example.com',
-      'firstName': provider,
-      'lastName': 'User'
-    });
+    final success = await ref.read(authProvider.notifier).socialLogin(provider);
     if (success && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$provider login successful')));
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('$provider login successful')));
     } else if (mounted) {
       final err = ref.read(authProvider).error ?? '$provider login failed';
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(err)));
@@ -79,10 +76,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 onChanged: _validateName,
               ),
               const SizedBox(height: 8),
-              CustomTextField(
-                label: 'Email',
-                controller: _emailController,
-              ),
+              CustomTextField(label: 'Email', controller: _emailController),
               const SizedBox(height: 8),
               CustomTextField(
                 label: 'Password',
@@ -93,6 +87,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: () {
                     Navigator.pushReplacement(
                       context,
@@ -106,6 +101,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                         'Already have an account?',
                         style: TextStyle(
                           fontSize: 14,
+                          fontWeight: FontWeight.bold,
                           fontFamily: 'Metropolis',
                           color: Colors.black,
                         ),
@@ -122,18 +118,24 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
                 onPressed: () async {
                   final nameParts = _nameController.text.trim().split(' ');
                   final firstName = nameParts.isNotEmpty ? nameParts.first : '';
-                  final lastName = nameParts.length > 1 ? nameParts.sublist(1).join(' ') : '';
-                  
-                  final success = await ref.read(authProvider.notifier).register(
-                    firstName,
-                    lastName,
-                    _emailController.text,
-                    _passwordController.text,
-                  );
+                  final lastName = nameParts.length > 1
+                      ? nameParts.sublist(1).join(' ')
+                      : '';
+
+                  final success = await ref
+                      .read(authProvider.notifier)
+                      .register(
+                        firstName,
+                        lastName,
+                        _emailController.text,
+                        _passwordController.text,
+                      );
                   if (success && mounted) {
                     // Navigate to success or home
                   } else if (authState.error != null && mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(authState.error!)));
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text(authState.error!)));
                   }
                 },
               ),
@@ -152,9 +154,15 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  _socialButton('assets/images/button/google-icon.png', () => _handleSocialLogin('google')),
+                  _socialButton(
+                    'assets/images/button/google-icon.png',
+                    () => _handleSocialLogin('google'),
+                  ),
                   const SizedBox(width: 16),
-                  _socialButton('assets/images/button/facebook-icon.png', () => _handleSocialLogin('facebook')),
+                  _socialButton(
+                    'assets/images/button/facebook-icon.png',
+                    () => _handleSocialLogin('facebook'),
+                  ),
                 ],
               ),
             ],
@@ -178,12 +186,10 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
               color: Colors.black.withOpacity(0.05),
               blurRadius: 8,
               offset: const Offset(0, 4),
-            )
+            ),
           ],
         ),
-        child: Center(
-          child: Image.asset(iconPath, width: 24, height: 24),
-        ),
+        child: Center(child: Image.asset(iconPath, width: 24, height: 24)),
       ),
     );
   }

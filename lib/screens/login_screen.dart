@@ -34,12 +34,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   Future<void> _handleSocialLogin(String provider) async {
-    final success = await ref.read(authProvider.notifier).socialLogin({
-      'provider': provider,
-      'email': '${provider}_user@example.com',
-      'firstName': provider,
-      'lastName': 'User'
-    });
+    final success = await ref.read(authProvider.notifier).socialLogin(provider);
     if (success && mounted) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('$provider login successful')));
     } else if (mounted) {
@@ -98,6 +93,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
               Align(
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
+                  behavior: HitTestBehavior.opaque,
                   onTap: () {
                     Navigator.push(
                       context,
@@ -111,6 +107,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                         'Forgot your password?',
                         style: TextStyle(
                           fontSize: 14,
+                          fontWeight: FontWeight.bold,
                           fontFamily: 'Metropolis',
                           color: Colors.black,
                         ),
