@@ -2,7 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dio/dio.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.1.7:8080/api/auth';
+  static const String baseUrl = 'https://ecommerce-backend-24ii.onrender.com/api/auth';
   final Dio _dio = Dio();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
