@@ -59,7 +59,7 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
             context,
           ).showSnackBar(const SnackBar(content: Text('Sign up successful!')));
         }
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
       }
     });
 
