@@ -45,15 +45,19 @@ class ProductCard extends StatelessWidget {
                   top: 8,
                   left: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFFFFFFF),
-                      borderRadius: BorderRadius.circular(12),
+                    width: 40,
+                    height: 24,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/button/new_tag.png'),
+                        fit: BoxFit.contain,
+                      ),
                     ),
+                    alignment: Alignment.center,
                     child: const Text(
                       'NEW',
                       style: TextStyle(
-                        color: Colors.black,
+                        color: Colors.white, // background: #FFFFFF as described in CSS typically means text color when overlaid on dark button
                         fontFamily: 'Metropolis',
                         fontWeight: FontWeight.w400,
                         fontSize: 11,
@@ -69,14 +73,26 @@ class ProductCard extends StatelessWidget {
                   top: 8,
                   left: 8,
                   child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: const Color(0xFFDB3022),
-                      borderRadius: BorderRadius.circular(12),
+                    width: 40,
+                    height: 24,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/button/sale_tag.png'),
+                        fit: BoxFit.contain,
+                      ),
                     ),
+                    alignment: Alignment.center,
                     child: Text(
                       '-$discountPercent%',
-                      style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Metropolis',
+                        fontWeight: FontWeight.w400,
+                        fontSize: 11,
+                        height: 1.0,
+                        letterSpacing: 0,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),

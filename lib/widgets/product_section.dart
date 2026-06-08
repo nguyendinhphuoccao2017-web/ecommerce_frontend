@@ -29,7 +29,7 @@ class ProductSection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,8 +70,10 @@ class ProductSection extends StatelessWidget {
         SizedBox(
           height: 300,
           child: ListView.builder(
+            physics: const ClampingScrollPhysics(),
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.only(left: 16),
+            itemCount: products.length,
             itemBuilder: (context, index) {
               return ProductCard(product: products[index], isNewSection: isNewSection);
             },
