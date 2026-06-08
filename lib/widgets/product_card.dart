@@ -3,12 +3,14 @@ import '../models/product_home.dart';
 
 class ProductCard extends StatelessWidget {
   final ProductHome product;
+  final bool isNewSection;
 
-  const ProductCard({super.key, required this.product});
+  const ProductCard({super.key, required this.product, this.isNewSection = false});
 
   @override
   Widget build(BuildContext context) {
-    bool hasDiscount = product.comparePrice > product.salePrice && product.comparePrice > 0;
+    // If it's a new section, we don't show the discount logic
+    bool hasDiscount = !isNewSection && product.comparePrice > product.salePrice && product.comparePrice > 0;
     int discountPercent = 0;
     if (hasDiscount) {
       discountPercent = ((product.comparePrice - product.salePrice) / product.comparePrice * 100).round();
@@ -38,7 +40,31 @@ class ProductCard extends StatelessWidget {
                   ),
                 ),
               ),
-              if (hasDiscount)
+              if (isNewSection)
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFFFFFFF),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: const Text(
+                      'NEW',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontFamily: 'Metropolis',
+                        fontWeight: FontWeight.w400,
+                        fontSize: 11,
+                        height: 1.0,
+                        letterSpacing: 0,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )
+              else if (hasDiscount)
                 Positioned(
                   top: 8,
                   left: 8,
@@ -51,22 +77,6 @@ class ProductCard extends StatelessWidget {
                     child: Text(
                       '-$discountPercent%',
                       style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ),
-              if (!hasDiscount) // Optional tag for New items
-                Positioned(
-                  top: 8,
-                  left: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: const Text(
-                      'NEW',
-                      style: TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
                     ),
                   ),
                 ),
@@ -120,24 +130,35 @@ class ProductCard extends StatelessWidget {
           ),
           Row(
             children: [
-              if (hasDiscount)
+              if (isNewSection)
                 Text(
-                  '${product.comparePrice.toStringAsFixed(0)}\$',
+                  '${(product.comparePrice > 0 ? product.comparePrice : product.salePrice).toStringAsFixed(0)}\$',
                   style: const TextStyle(
-                    color: Colors.grey,
+                    color: Color(0xFF222222),
                     fontSize: 14,
-                    decoration: TextDecoration.lineThrough,
+                    fontWeight: FontWeight.bold,
+                  ),
+                )
+              else ...[
+                if (hasDiscount)
+                  Text(
+                    '${product.comparePrice.toStringAsFixed(0)}\$',
+                    style: const TextStyle(
+                      color: Colors.grey,
+                      fontSize: 14,
+                      decoration: TextDecoration.lineThrough,
+                    ),
+                  ),
+                if (hasDiscount) const SizedBox(width: 4),
+                Text(
+                  '${product.salePrice.toStringAsFixed(0)}\$',
+                  style: const TextStyle(
+                    color: Color(0xFFDB3022),
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
-              if (hasDiscount) const SizedBox(width: 4),
-              Text(
-                '${product.salePrice.toStringAsFixed(0)}\$',
-                style: const TextStyle(
-                  color: Color(0xFFDB3022),
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
+              ],
             ],
           ),
         ],

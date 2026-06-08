@@ -6,12 +6,14 @@ class ProductSection extends StatelessWidget {
   final String title;
   final String subtitle;
   final List<ProductHome> products;
+  final bool isNewSection;
 
   const ProductSection({
     super.key,
     required this.title,
     required this.subtitle,
     required this.products,
+    this.isNewSection = false,
   });
 
   @override
@@ -70,9 +72,8 @@ class ProductSection extends StatelessWidget {
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.only(left: 16),
-            itemCount: products.length,
             itemBuilder: (context, index) {
-              return ProductCard(product: products[index]);
+              return ProductCard(product: products[index], isNewSection: isNewSection);
             },
           ),
         ),

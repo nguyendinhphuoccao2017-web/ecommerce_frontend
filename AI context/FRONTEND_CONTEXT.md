@@ -21,6 +21,7 @@
 - **[MỚI] Triển khai màn hình Home (Home Screen):**
   - Đã hoàn thiện giao diện trang chủ theo bản thiết kế `Basement.pdf` (Trang 44 - 56).
   - Tích hợp thành công API lấy Slideshow Banner (`GET /api/slideshows`) và Sản phẩm theo Tag (`GET /api/products/home/tags/New`, `GET /api/products/home/tags/Sale`).
+  - **Pull-to-Refresh**: Đã tích hợp tính năng vuốt xuống để tải lại bằng `RefreshIndicator` kết hợp với hàm `ref.invalidate()` của Riverpod để xóa cache và tự động fetch lại toàn bộ dữ liệu mới nhất từ Backend (rất hữu ích khi cần test cập nhật Tag tức thời).
 
 ## 3. Cấu trúc các File/Thành phần mới tạo
 - **Models (`lib/models/`)**:
@@ -32,11 +33,13 @@
   - `home_provider.dart`: Chứa các `FutureProvider` (`slideshowsProvider`, `newProductsProvider`, `saleProductsProvider`) để lấy dữ liệu bất đồng bộ.
 - **Widgets (`lib/widgets/`)**:
   - `slideshow_banner.dart`: Khối Banner to trên cùng (có nút Check đỏ, hiệu ứng gradient đen).
-  - `product_section.dart`: Khối cuộn ngang chứa danh sách sản phẩm ("New", "Sale").
-  - `product_card.dart`: Thẻ sản phẩm (hiển thị ảnh lỗi dự phòng, badge `-20%`, tag `NEW`, rating sao vàng).
+  - `product_section.dart`: Khối cuộn ngang chứa danh sách sản phẩm ("New", "Sale"). Nhận thêm tham số `isNewSection` để phân biệt logic hiển thị.
+  - `product_card.dart`: Thẻ sản phẩm dùng chung.
+    - **Logic phần "Sale"**: Hiển thị badge đỏ `-20%`, giá gốc bị gạch ngang và giá Sale màu đỏ.
+    - **Logic phần "New"**: Hiển thị chữ `NEW` trên nền trắng chuẩn typography (Metropolis, size 11px), chỉ hiển thị duy nhất 1 mức giá gốc (không gạch ngang).
   - `custom_bottom_nav.dart`: Thanh điều hướng dưới cùng, dùng asset ảnh tĩnh (`assets/images/nav_bar/...`) và đổi màu khi được chọn.
 - **Screens (`lib/screens/`)**:
-  - `home_screen.dart`: Màn hình chính lắp ráp toàn bộ các Widgets trên với `SingleChildScrollView`, xử lý trạng thái Loading/Error/Data bằng Riverpod `.when()`.
+  - `home_screen.dart`: Màn hình chính lắp ráp toàn bộ các Widgets trên với `SingleChildScrollView`, xử lý trạng thái Loading/Error/Data bằng Riverpod `.when()`. Đã được bọc ngoài bằng `RefreshIndicator` để hỗ trợ thao tác kéo thả làm mới trang.
 
 ## 4. Các bước tiếp theo (Next Steps)
 1. **Hoàn thiện UI/UX**: Phát triển tiếp các luồng chi tiết sản phẩm (Product Detail), giỏ hàng (Cart) và danh mục (Shop/Catalog).
