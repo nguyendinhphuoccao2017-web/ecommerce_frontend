@@ -1,5 +1,7 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dio/dio.dart';
+import '../models/slideshow.dart';
+import '../models/product_home.dart';
 
 class ApiService {
   static const String baseUrl = 'https://ecommerce-backend-24ii.onrender.com/api/auth';
@@ -70,6 +72,26 @@ class ApiService {
       await _dio.post('$baseUrl/forgot-password', data: {'email': email});
     } catch (e) {
       throw Exception(e.toString());
+    }
+  }
+
+  Future<List<Slideshow>> getSlideshows() async {
+    try {
+      final response = await _dio.get('https://ecommerce-backend-24ii.onrender.com/api/slideshows');
+      List data = response.data;
+      return data.map((e) => Slideshow.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception('Failed to load slideshows: $e');
+    }
+  }
+
+  Future<List<ProductHome>> getProductsByTag(String tagName) async {
+    try {
+      final response = await _dio.get('https://ecommerce-backend-24ii.onrender.com/api/products/home/tags/$tagName');
+      List data = response.data;
+      return data.map((e) => ProductHome.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception('Failed to load products for tag $tagName: $e');
     }
   }
 }
