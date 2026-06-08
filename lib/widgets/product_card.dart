@@ -119,7 +119,7 @@ class ProductCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 24), // Margin for the overlapping heart
+          const SizedBox(height: 8), // Margin for the stars to sit directly below the image
           Row(
             children: [
               ...List.generate(5, (index) {
@@ -137,7 +137,7 @@ class ProductCard extends StatelessWidget {
             ],
           ),
           const SizedBox(height: 4),
-          const Text('Brand Name', style: TextStyle(color: Colors.grey, fontSize: 11)),
+          Text(product.sku ?? 'Unknown Brand', style: const TextStyle(color: Colors.grey, fontSize: 11)),
           Text(
             product.productName,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),

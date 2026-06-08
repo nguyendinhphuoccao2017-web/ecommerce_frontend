@@ -6,6 +6,8 @@ class ProductHome {
   final String? thumbnailUrl;
   final double averageRating;
   final int totalReviews;
+  final String? placeholder;
+  final String? sku;
 
   ProductHome({
     required this.id,
@@ -15,6 +17,8 @@ class ProductHome {
     this.thumbnailUrl,
     required this.averageRating,
     required this.totalReviews,
+    this.placeholder,
+    this.sku,
   });
 
   factory ProductHome.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,8 @@ class ProductHome {
       thumbnailUrl: json['thumbnailUrl'],
       averageRating: (json['averageRating'] as num?)?.toDouble() ?? 0.0,
       totalReviews: json['totalReviews'] ?? 0,
+      placeholder: json['placeholder'],
+      sku: json['sku'],
     );
   }
 }
