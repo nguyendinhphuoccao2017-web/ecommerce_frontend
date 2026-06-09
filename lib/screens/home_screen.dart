@@ -47,7 +47,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   if (slideshows.isEmpty) return const SizedBox.shrink();
                   final sortedSlideshows = List.of(slideshows)..sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
                   return SizedBox(
-                    height: 400,
+                    height: 500,
                     child: PageView.builder(
                       itemCount: sortedSlideshows.length,
                       itemBuilder: (context, index) {
@@ -56,8 +56,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     ),
                   );
                 },
-                loading: () => const SizedBox(height: 400, child: Center(child: CircularProgressIndicator())),
-                error: (err, stack) => SizedBox(height: 400, child: Center(child: Text('Error: $err'))),
+                loading: () => const SizedBox(height: 500, child: Center(child: CircularProgressIndicator())),
+                error: (err, stack) => SizedBox(height: 500, child: Center(child: Text('Error: $err'))),
               ),
               
               const SizedBox(height: 32),
