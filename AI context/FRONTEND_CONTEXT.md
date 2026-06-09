@@ -20,7 +20,7 @@
   - Đã chốt luồng: Đăng ký thành công -> Chuyển hướng sang Login -> Chuyển hướng sang Home.
 - **[MỚI] Triển khai màn hình Home (Home Screen):**
   - Đã hoàn thiện giao diện trang chủ theo bản thiết kế `Basement.pdf` (Trang 44 - 56).
-  - Tích hợp thành công API lấy Slideshow Banner (`GET /api/slideshows`) và Sản phẩm theo Tag (`GET /api/products/home/tags/New`, `GET /api/products/home/tags/Sale`).
+  - Tích hợp thành công API lấy Slideshow Banner (`GET /api/slideshows/home` - giới hạn 2 ảnh) và Sản phẩm theo Tag (`GET /api/products/home/tags/New`, `GET /api/products/home/tags/Sale`).
   - **Pull-to-Refresh**: Đã tích hợp tính năng vuốt xuống để tải lại bằng `RefreshIndicator` kết hợp với hàm `ref.invalidate()` của Riverpod để xóa cache và tự động fetch lại toàn bộ dữ liệu mới nhất từ Backend (rất hữu ích khi cần test cập nhật Tag tức thời).
 
 ## 3. Cấu trúc các File/Thành phần mới tạo
@@ -41,7 +41,16 @@
 - **Screens (`lib/screens/`)**:
   - `home_screen.dart`: Màn hình chính lắp ráp toàn bộ các Widgets trên với `SingleChildScrollView`, xử lý trạng thái Loading/Error/Data bằng Riverpod `.when()`. Đã được bọc ngoài bằng `RefreshIndicator` để hỗ trợ thao tác kéo thả làm mới trang.
 
-## 4. Các bước tiếp theo (Next Steps)
+## 4. Các chỉnh sửa & Bug Fixes mới nhất
+- **UI Tweaks**:
+  - Đã xóa bỏ hiệu ứng cuộn kéo giãn (Overscroll Glow) khi lướt tới cuối danh sách bằng `ClampingScrollPhysics()`.
+  - Căn chỉnh lại `CrossAxisAlignment.center` để chữ "View all" nằm cân bằng hoàn hảo với tiêu đề khối.
+  - Sửa lỗi khoảng trống thừa thãi giữa ảnh sản phẩm và đánh giá 5 sao (`SizedBox(height: 8)`).
+- **Ánh xạ SKU**: Thay thế chữ "Brand Name" tĩnh bằng dữ liệu mã `sku` từ Database (Đã đồng bộ bổ sung trường `sku` vào `ProductHomeResponseDTO.java` ở Backend).
+- **Phân quyền API**: Đã cấu hình `SecurityConfig.java` (Backend) cho phép truy cập public đối với API `GET /api/slideshows` để khắc phục lỗi 403 Forbidden trên màn hình Home.
+- **Slideshow API**: Đã cập nhật `api_service.dart` gọi đến API `/api/slideshows/home` (thay vì `/api/slideshows`) để lấy chính xác 2 banner đang được publish cho trang chủ. Đã tái cấu trúc biến `apiBaseUrl` giúp dễ dàng switch qua lại giữa test Local (localhost/10.0.2.2) và Production (Render).
+- **Slideshow Swipe Gesture**: Cập nhật `home_screen.dart` sử dụng `PageView.builder` thay vì widget đơn lẻ để hỗ trợ thao tác vuốt ngang (swipe) xem toàn bộ ảnh Slideshow Banner. Dữ liệu luôn được tự động sắp xếp theo `displayOrder`.
+## 5. Các bước tiếp theo (Next Steps)
 1. **Hoàn thiện UI/UX**: Phát triển tiếp các luồng chi tiết sản phẩm (Product Detail), giỏ hàng (Cart) và danh mục (Shop/Catalog).
 2. **Quản lý Token**: Xử lý logic refresh token và tự động đăng nhập khi mở lại app nếu JWT token vẫn còn hạn.
 3. **Favorites (Yêu thích)**: Lập trình chức năng click vào icon trái tim trên `ProductCard` để thêm/xóa sản phẩm yêu thích (cần tích hợp API BE tương ứng).

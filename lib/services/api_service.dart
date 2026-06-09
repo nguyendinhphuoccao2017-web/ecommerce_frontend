@@ -4,7 +4,13 @@ import '../models/slideshow.dart';
 import '../models/product_home.dart';
 
 class ApiService {
-  static const String baseUrl = 'https://ecommerce-backend-24ii.onrender.com/api/auth';
+  // Uncomment dòng dưới đây nếu muốn test backend trên máy local (dành cho iOS Simulator)
+  // static const String apiBaseUrl = 'http://127.0.0.1:8080/api';
+  // Uncomment dòng dưới đây nếu muốn test backend trên máy local (dành cho Android Emulator)
+  // static const String apiBaseUrl = 'http://10.0.2.2:8080/api';
+  
+  static const String apiBaseUrl = 'https://ecommerce-backend-24ii.onrender.com/api';
+  static const String baseUrl = '$apiBaseUrl/auth';
   final Dio _dio = Dio();
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
@@ -77,7 +83,14 @@ class ApiService {
 
   Future<List<Slideshow>> getSlideshows() async {
     try {
-      final response = await _dio.get('https://ecommerce-backend-24ii.onrender.com/api/slideshows');
+      String? token = await _storage.read(key: 'jwt_token');
+      // Gửi kèm Token để truy cập API yêu cầu xác thực
+      final response = await _dio.get(
+        '$apiBaseUrl/slideshows/home',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
       List data = response.data;
       return data.map((e) => Slideshow.fromJson(e)).toList();
     } catch (e) {
@@ -87,7 +100,7 @@ class ApiService {
 
   Future<List<ProductHome>> getProductsByTag(String tagName) async {
     try {
-      final response = await _dio.get('https://ecommerce-backend-24ii.onrender.com/api/products/home/tags/$tagName');
+      final response = await _dio.get('$apiBaseUrl/products/home/tags/$tagName');
       List data = response.data;
       return data.map((e) => ProductHome.fromJson(e)).toList();
     } catch (e) {

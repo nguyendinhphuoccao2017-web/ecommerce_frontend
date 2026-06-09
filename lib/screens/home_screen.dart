@@ -45,8 +45,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               slideshowsAsync.when(
                 data: (slideshows) {
                   if (slideshows.isEmpty) return const SizedBox.shrink();
-                  final mainSlideshow = slideshows.firstWhere((s) => s.displayOrder == 1, orElse: () => slideshows.first);
-                  return SlideshowBanner(slideshow: mainSlideshow);
+                  final sortedSlideshows = List.of(slideshows)..sort((a, b) => a.displayOrder.compareTo(b.displayOrder));
+                  return SizedBox(
+                    height: 400,
+                    child: PageView.builder(
+                      itemCount: sortedSlideshows.length,
+                      itemBuilder: (context, index) {
+                        return SlideshowBanner(slideshow: sortedSlideshows[index]);
+                      },
+                    ),
+                  );
                 },
                 loading: () => const SizedBox(height: 400, child: Center(child: CircularProgressIndicator())),
                 error: (err, stack) => SizedBox(height: 400, child: Center(child: Text('Error: $err'))),
