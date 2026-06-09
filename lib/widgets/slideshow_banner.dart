@@ -17,7 +17,7 @@ class SlideshowBanner extends StatelessWidget {
       decoration: BoxDecoration(
         image: DecorationImage(
           image: NetworkImage(slideshow.image),
-          fit: BoxFit.cover,
+          fit: BoxFit.contain,
         ),
       ),
       child: isFirstBanner
@@ -37,9 +37,9 @@ class SlideshowBanner extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    slideshow.title?.replaceAll(' ', '\n') ?? '',
-                    style: const TextStyle(
+                  const Text(
+                    'Fashion\nsale',
+                    style: TextStyle(
                       color: Colors.white,
                       fontSize: 48,
                       fontWeight: FontWeight.w900,

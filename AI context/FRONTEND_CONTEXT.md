@@ -49,7 +49,8 @@
 - **Ánh xạ SKU**: Thay thế chữ "Brand Name" tĩnh bằng dữ liệu mã `sku` từ Database (Đã đồng bộ bổ sung trường `sku` vào `ProductHomeResponseDTO.java` ở Backend).
 - **Phân quyền API**: Đã cấu hình `SecurityConfig.java` (Backend) cho phép truy cập public đối với API `GET /api/slideshows` để khắc phục lỗi 403 Forbidden trên màn hình Home.
 - **Slideshow API**: Đã cập nhật `api_service.dart` gọi đến API `/api/slideshows/home` (thay vì `/api/slideshows`) để lấy chính xác 2 banner đang được publish cho trang chủ. Đã tái cấu trúc biến `apiBaseUrl` giúp dễ dàng switch qua lại giữa test Local (localhost/10.0.2.2) và Production (Render).
-- **Slideshow Swipe Gesture**: Cập nhật `home_screen.dart` sử dụng `PageView.builder` thay vì widget đơn lẻ để hỗ trợ thao tác vuốt ngang (swipe) xem toàn bộ ảnh Slideshow Banner. Dữ liệu luôn được tự động sắp xếp theo `displayOrder`.
+- **Slideshow Swipe Gesture**: Cập nhật `home_screen.dart` sử dụng `PageView.builder` thay vì widget đơn lẻ để hỗ trợ thao tác vuốt ngang (swipe) xem toàn bộ ảnh Slideshow Banner. Dữ liệu luôn được tự động sắp xếp theo `displayOrder`. Tăng chiều cao (height) của khu vực Banner lên `500` để hình ảnh rộng rãi hơn.
+- **Slideshow Banner Overlay**: Cập nhật `slideshow_banner.dart` chỉ hiển thị lớp phủ (Title và Nút Check) cho Banner đầu tiên (`displayOrder == 1`), các banner sau chỉ hiện hình ảnh. Tiêu đề hiển thị chuẩn font Metropolis 48px, trắng. Nút Check sử dụng hình nền `check_button.png` kết hợp màu nền đỏ `#DB3022`.
 ## 5. Các bước tiếp theo (Next Steps)
 1. **Hoàn thiện UI/UX**: Phát triển tiếp các luồng chi tiết sản phẩm (Product Detail), giỏ hàng (Cart) và danh mục (Shop/Catalog).
 2. **Quản lý Token**: Xử lý logic refresh token và tự động đăng nhập khi mở lại app nếu JWT token vẫn còn hạn.
