@@ -52,10 +52,12 @@
 - **Slideshow Swipe Gesture**: Cập nhật `home_screen.dart` sử dụng `PageView.builder` thay vì widget đơn lẻ để hỗ trợ thao tác vuốt ngang (swipe) xem toàn bộ ảnh Slideshow Banner. Dữ liệu luôn được tự động sắp xếp theo `displayOrder`. Tăng chiều cao (height) của khu vực Banner lên `500` để hình ảnh rộng rãi hơn.
 - **Slideshow Banner Overlay**: Cập nhật `slideshow_banner.dart` chỉ hiển thị lớp phủ (Title và Nút Check) cho Banner đầu tiên (`displayOrder == 1`), các banner sau chỉ hiện hình ảnh. Tiêu đề hiển thị chuẩn font Metropolis 48px, trắng. Nút Check sử dụng hình nền `check_button.png` kết hợp màu nền đỏ `#DB3022`.
 ## 5. Các bước tiếp theo (Next Steps)
-1. **Hoàn thiện UI/UX**: Phát triển tiếp các luồng chi tiết sản phẩm (Product Detail), giỏ hàng (Cart) và danh mục (Shop/Catalog).
-2. **Quản lý Token**: Xử lý logic refresh token và tự động đăng nhập khi mở lại app nếu JWT token vẫn còn hạn.
-3. **Favorites (Yêu thích)**: Lập trình chức năng click vào icon trái tim trên `ProductCard` để thêm/xóa sản phẩm yêu thích (cần tích hợp API BE tương ứng).
-4. **Bottom Navigation Logic**: Xây dựng cơ chế `IndexedStack` hoặc go_router để chuyển đổi qua lại mượt mà giữa 5 tab (Home, Shop, Bag, Favorites, Profile).
+1. **Hoàn thiện UI/UX Danh mục (Shop/Catalog)**: Tiến hành phát triển UI/UX cho trang Danh mục. Backend API `GET /api/categories/{id}/products` đã hoàn thiện 100%, sẵn sàng fetch data với cơ chế gửi Token bảo mật (Hoặc trả về fallback nếu là Staff).
+2. **Triển khai Tính năng Yêu thích (Favorites)**: 
+   - **Tương tác**: Gắn hành động bấm vào icon trái tim trên `ProductCard` để gọi API `POST /api/favorites/{productId}/toggle`.
+   - **Màn hình Favorites**: Xây dựng UI danh sách yêu thích và sử dụng API `GET /api/favorites` để tải danh sách các sản phẩm đã Like (Tất cả sản phẩm trả về sẽ tự động có `isFavorite: true`).
+3. **Quản lý Token**: Xử lý logic lưu trữ và gửi kèm JWT token vào request Header (dùng interceptor của Dio) để các API bảo mật (như Favorites, Categories) hoạt động trơn tru.
+4. **Bottom Navigation Logic**: Xây dựng cơ chế `IndexedStack` hoặc `go_router` để chuyển đổi qua lại mượt mà giữa 5 tab (Home, Shop, Bag, Favorites, Profile).
 
 ---
 *Lưu ý đối với AI Gemini: Hãy tự động cập nhật lại file này bất cứ khi nào có thay đổi lớn ở Frontend (như thêm màn hình mới, thay đổi thư viện cốt lõi, hay kết nối xong các API quan trọng) để đồng bộ khi commit code lên Github.*

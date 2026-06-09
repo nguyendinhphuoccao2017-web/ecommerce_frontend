@@ -8,6 +8,7 @@ class ProductHome {
   final int totalReviews;
   final String? placeholder;
   final String? sku;
+  final bool isFavorite;
 
   ProductHome({
     required this.id,
@@ -19,6 +20,7 @@ class ProductHome {
     required this.totalReviews,
     this.placeholder,
     this.sku,
+    this.isFavorite = false,
   });
 
   factory ProductHome.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,24 @@ class ProductHome {
       totalReviews: json['totalReviews'] ?? 0,
       placeholder: json['placeholder'],
       sku: json['sku'],
+      isFavorite: json['isFavorite'] ?? false,
+    );
+  }
+
+  ProductHome copyWith({
+    bool? isFavorite,
+  }) {
+    return ProductHome(
+      id: id,
+      productName: productName,
+      salePrice: salePrice,
+      comparePrice: comparePrice,
+      thumbnailUrl: thumbnailUrl,
+      averageRating: averageRating,
+      totalReviews: totalReviews,
+      placeholder: placeholder,
+      sku: sku,
+      isFavorite: isFavorite ?? this.isFavorite,
     );
   }
 }

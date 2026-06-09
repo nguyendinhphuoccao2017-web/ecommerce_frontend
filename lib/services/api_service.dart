@@ -2,6 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dio/dio.dart';
 import '../models/slideshow.dart';
 import '../models/product_home.dart';
+import '../models/category.dart';
 
 class ApiService {
   // Uncomment dòng dưới đây nếu muốn test backend trên máy local (dành cho iOS Simulator)
@@ -105,6 +106,64 @@ class ApiService {
       return data.map((e) => ProductHome.fromJson(e)).toList();
     } catch (e) {
       throw Exception('Failed to load products for tag $tagName: $e');
+    }
+  }
+
+  Future<List<Category>> getCategories() async {
+    try {
+      final response = await _dio.get('$apiBaseUrl/categories');
+      List data = response.data;
+      return data.map((e) => Category.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception('Failed to load categories: $e');
+    }
+  }
+
+  Future<List<ProductHome>> getProductsByCategory(String categoryId) async {
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      final response = await _dio.get(
+        '$apiBaseUrl/categories/$categoryId/products',
+        options: Options(
+          headers: token != null ? {'Authorization': 'Bearer $token'} : null,
+        ),
+      );
+      List data = response.data;
+      return data.map((e) => ProductHome.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception('Failed to load products for category $categoryId: $e');
+    }
+  }
+
+  Future<void> toggleFavorite(String productId) async {
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      if (token == null) throw Exception('No token found');
+      await _dio.post(
+        '$apiBaseUrl/favorites/$productId/toggle',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+    } catch (e) {
+      throw Exception('Failed to toggle favorite: $e');
+    }
+  }
+
+  Future<List<ProductHome>> getFavoriteProducts() async {
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      if (token == null) return [];
+      final response = await _dio.get(
+        '$apiBaseUrl/favorites',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+      List data = response.data;
+      return data.map((e) => ProductHome.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception('Failed to load favorite products: $e');
     }
   }
 }

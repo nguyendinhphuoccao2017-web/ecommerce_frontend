@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/product_home.dart';
+import '../providers/favorite_provider.dart';
 
-class ProductCard extends StatelessWidget {
+class ProductCard extends ConsumerWidget {
   final ProductHome product;
   final bool isNewSection;
 
   const ProductCard({super.key, required this.product, this.isNewSection = false});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     // If it's a new section, we don't show the discount logic
     bool hasDiscount = !isNewSection && product.comparePrice > product.salePrice && product.comparePrice > 0;
     int discountPercent = 0;
@@ -112,8 +114,14 @@ class ProductCard extends StatelessWidget {
                     ],
                   ),
                   child: IconButton(
-                    icon: const Icon(Icons.favorite_border, color: Colors.grey, size: 20),
-                    onPressed: () {},
+                    icon: Icon(
+                      product.isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: product.isFavorite ? const Color(0xFFDB3022) : Colors.grey,
+                      size: 20,
+                    ),
+                    onPressed: () {
+                      ref.read(favoriteNotifierProvider.notifier).toggle(product.id);
+                    },
                   ),
                 ),
               ),
