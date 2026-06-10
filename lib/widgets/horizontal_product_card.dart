@@ -17,21 +17,25 @@ class HorizontalProductCard extends ConsumerWidget {
     }
 
     return Container(
-      width: double.infinity,
-      height: 104,
       margin: const EdgeInsets.only(bottom: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          Container(
+            width: double.infinity,
+            height: 104,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(8),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+            ),
+            child: Row(
         children: [
           // Left Side: Image
           Stack(
@@ -191,16 +195,6 @@ class HorizontalProductCard extends ConsumerWidget {
                           ),
                         ],
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          ref.read(favoriteNotifierProvider.notifier).toggle(product.id);
-                        },
-                        child: Icon(
-                          product.isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: product.isFavorite ? const Color(0xFFDB3022) : Colors.grey,
-                          size: 20,
-                        ),
-                      ),
                     ],
                   ),
                 ],
@@ -209,6 +203,38 @@ class HorizontalProductCard extends ConsumerWidget {
           ),
         ],
       ),
-    );
+      Positioned(
+        bottom: -16,
+        right: 0,
+        child: Container(
+          width: 36,
+          height: 36,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            shape: BoxShape.circle,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.1),
+                blurRadius: 4,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: IconButton(
+            padding: EdgeInsets.zero,
+            icon: Icon(
+              product.isFavorite ? Icons.favorite : Icons.favorite_border,
+              color: product.isFavorite ? const Color(0xFFDB3022) : Colors.grey,
+              size: 20,
+            ),
+            onPressed: () {
+              ref.read(favoriteNotifierProvider.notifier).toggle(product.id);
+            },
+          ),
+        ),
+      ),
+    ],
+  ),
+);
   }
 }
