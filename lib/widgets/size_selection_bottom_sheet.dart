@@ -29,9 +29,11 @@ class _SizeSelectionBottomSheetState extends ConsumerState<SizeSelectionBottomSh
     try {
       final api = ref.read(apiServiceProvider);
       final variants = await api.getVariants(widget.productId);
+      // Chỉ lấy các variant không phải là Color (để ẩn màu sắc khỏi bảng chọn size)
+      final sizeVariants = variants.where((v) => !v.title.startsWith('Color:')).toList();
       if (mounted) {
         setState(() {
-          _variants = variants;
+          _variants = sizeVariants;
           _isLoading = false;
         });
       }
@@ -69,6 +71,7 @@ class _SizeSelectionBottomSheetState extends ConsumerState<SizeSelectionBottomSh
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 368,
       decoration: const BoxDecoration(
         color: Color(0xFFF9F9F9),
         borderRadius: BorderRadius.only(
@@ -95,7 +98,7 @@ class _SizeSelectionBottomSheetState extends ConsumerState<SizeSelectionBottomSh
             style: TextStyle(
               fontFamily: 'Metropolis',
               fontSize: 18,
-              fontWeight: FontWeight.w600,
+              fontWeight: FontWeight.w400,
               color: Color(0xFF222222),
             ),
           ),
@@ -120,7 +123,7 @@ class _SizeSelectionBottomSheetState extends ConsumerState<SizeSelectionBottomSh
                     decoration: BoxDecoration(
                       color: isSelected ? const Color(0xFFDB3022) : Colors.white,
                       borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: isSelected ? const Color(0xFFDB3022) : Colors.grey[300]!),
+                      border: Border.all(color: isSelected ? const Color(0xFFDB3022) : Colors.grey[300]!, width: 0.4),
                     ),
                     alignment: Alignment.center,
                     child: Text(
@@ -154,6 +157,7 @@ class _SizeSelectionBottomSheetState extends ConsumerState<SizeSelectionBottomSh
                   style: TextStyle(
                     fontFamily: 'Metropolis',
                     fontSize: 16,
+                    fontWeight: FontWeight.w400,
                     color: Color(0xFF222222),
                   ),
                 ),
@@ -163,7 +167,7 @@ class _SizeSelectionBottomSheetState extends ConsumerState<SizeSelectionBottomSh
           ),
           const SizedBox(height: 24),
           SizedBox(
-            width: double.infinity,
+            width: 343,
             height: 48,
             child: ElevatedButton(
               onPressed: _selectedVariantId == null ? null : _addToFavorites,
@@ -171,7 +175,7 @@ class _SizeSelectionBottomSheetState extends ConsumerState<SizeSelectionBottomSh
                 backgroundColor: const Color(0xFFDB3022),
                 disabledBackgroundColor: Colors.grey[400],
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(24),
+                  borderRadius: BorderRadius.circular(25),
                 ),
                 elevation: _selectedVariantId == null ? 0 : 4,
                 shadowColor: const Color(0xFFDB3022).withOpacity(0.5),
