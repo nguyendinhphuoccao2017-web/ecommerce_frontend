@@ -160,7 +160,7 @@ class HorizontalFavoriteProductCard extends ConsumerWidget {
                             style: const TextStyle(fontFamily: 'Metropolis', fontSize: 11, color: Color(0xFF9B9B9B)),
                           ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Row(
                               children: [
@@ -197,6 +197,7 @@ class HorizontalFavoriteProductCard extends ConsumerWidget {
                                   ),
                               ],
                             ),
+                            const SizedBox(width: 16),
                             Row(
                               children: [
                                 ...List.generate(5, (index) {
