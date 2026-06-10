@@ -10,14 +10,15 @@ class HorizontalProductCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    bool hasDiscount = product.comparePrice > product.salePrice && product.comparePrice > 0;
+    bool isNew = product.tags.contains('New') || product.tags.contains('new');
+    bool hasDiscount = !isNew && product.comparePrice > product.salePrice && product.comparePrice > 0;
     int discountPercent = 0;
     if (hasDiscount) {
       discountPercent = ((product.comparePrice - product.salePrice) / product.comparePrice * 100).round();
     }
 
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
+      margin: const EdgeInsets.only(bottom: 32),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
@@ -182,7 +183,7 @@ class HorizontalProductCard extends ConsumerWidget {
                             const SizedBox(width: 4),
                           ],
                           Text(
-                            '${product.salePrice.toStringAsFixed(0)}\$',
+                            '${(isNew && product.comparePrice > 0 ? product.comparePrice : product.salePrice).toStringAsFixed(0)}\$',
                             style: const TextStyle(
                               color: Color(0xFFDB3022),
                               fontSize: 14,

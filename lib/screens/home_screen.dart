@@ -4,25 +4,21 @@ import '../providers/home_provider.dart';
 import '../widgets/slideshow_banner.dart';
 import '../widgets/product_section.dart';
 import '../widgets/custom_bottom_nav.dart';
+import '../providers/nav_provider.dart';
 import 'shop_screen.dart';
 
-class HomeScreen extends ConsumerStatefulWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  ConsumerState<HomeScreen> createState() => _HomeScreenState();
-}
+  Widget build(BuildContext context, WidgetRef ref) {
+    int currentIndex = ref.watch(navIndexProvider);
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
-  int _currentIndex = 0;
-
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
-        index: _currentIndex,
+        index: currentIndex,
         children: [
-          _buildHomeTab(),
+          _buildHomeTab(ref),
           const ShopScreen(),
           const Center(child: Text('Bag')),
           const Center(child: Text('Favorites')),
@@ -30,17 +26,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
       bottomNavigationBar: CustomBottomNav(
-        currentIndex: _currentIndex,
+        currentIndex: currentIndex,
         onTap: (index) {
-          setState(() {
-            _currentIndex = index;
-          });
+          ref.read(navIndexProvider.notifier).state = index;
         },
       ),
     );
   }
 
-  Widget _buildHomeTab() {
+  Widget _buildHomeTab(WidgetRef ref) {
     final slideshowsAsync = ref.watch(slideshowsProvider);
     final newProductsAsync = ref.watch(newProductsProvider);
     final saleProductsAsync = ref.watch(saleProductsProvider);

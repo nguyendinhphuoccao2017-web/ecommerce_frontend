@@ -4,6 +4,8 @@ import '../providers/category_provider.dart';
 import '../widgets/product_card.dart';
 import '../widgets/horizontal_product_card.dart';
 import '../models/category.dart';
+import '../providers/nav_provider.dart';
+import '../widgets/custom_bottom_nav.dart';
 
 final viewModeProvider = StateProvider<bool>((ref) => false); // false for list (default), true for grid
 
@@ -184,6 +186,13 @@ class CategoryProductsScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: CustomBottomNav(
+        currentIndex: ref.watch(navIndexProvider),
+        onTap: (index) {
+          ref.read(navIndexProvider.notifier).state = index;
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        },
       ),
     );
   }

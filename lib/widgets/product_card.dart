@@ -11,8 +11,9 @@ class ProductCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isNew = product.tags.contains('New') || product.tags.contains('new');
     // If it's a new section, we don't show the discount logic
-    bool hasDiscount = !isNewSection && product.comparePrice > product.salePrice && product.comparePrice > 0;
+    bool hasDiscount = !isNewSection && !isNew && product.comparePrice > product.salePrice && product.comparePrice > 0;
     int discountPercent = 0;
     if (hasDiscount) {
       discountPercent = ((product.comparePrice - product.salePrice) / product.comparePrice * 100).round();
@@ -154,7 +155,7 @@ class ProductCard extends ConsumerWidget {
           ),
           Row(
             children: [
-              if (isNewSection)
+              if (isNewSection || isNew)
                 Text(
                   '${(product.comparePrice > 0 ? product.comparePrice : product.salePrice).toStringAsFixed(0)}\$',
                   style: const TextStyle(
