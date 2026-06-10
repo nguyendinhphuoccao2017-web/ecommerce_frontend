@@ -11,6 +11,10 @@ class HorizontalProductCard extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     bool hasDiscount = product.comparePrice > product.salePrice && product.comparePrice > 0;
+    int discountPercent = 0;
+    if (hasDiscount) {
+      discountPercent = ((product.comparePrice - product.salePrice) / product.comparePrice * 100).round();
+    }
 
     return Container(
       width: double.infinity,
@@ -30,23 +34,85 @@ class HorizontalProductCard extends ConsumerWidget {
       child: Row(
         children: [
           // Left Side: Image
-          ClipRRect(
-            borderRadius: const BorderRadius.only(
-              topLeft: Radius.circular(8),
-              bottomLeft: Radius.circular(8),
-            ),
-            child: Image.network(
-              product.thumbnailUrl ?? 'https://via.placeholder.com/150',
-              width: 104,
-              height: 104,
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                width: 104,
-                height: 104,
-                color: Colors.grey[200],
-                child: const Icon(Icons.broken_image),
+          Stack(
+            children: [
+              ClipRRect(
+                borderRadius: const BorderRadius.only(
+                  topLeft: Radius.circular(8),
+                  bottomLeft: Radius.circular(8),
+                ),
+                child: Image.network(
+                  product.thumbnailUrl ?? 'https://via.placeholder.com/150',
+                  width: 104,
+                  height: 104,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    width: 104,
+                    height: 104,
+                    color: Colors.grey[200],
+                    child: const Icon(Icons.broken_image),
+                  ),
+                ),
               ),
-            ),
+              Positioned(
+                top: 8,
+                left: 8,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    if (product.tags.contains('New') || product.tags.contains('new'))
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 4),
+                        child: Container(
+                          width: 40,
+                          height: 24,
+                          decoration: const BoxDecoration(
+                            image: DecorationImage(
+                              image: AssetImage('assets/images/button/new_tag.png'),
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                          alignment: Alignment.center,
+                          child: const Text(
+                            'NEW',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontFamily: 'Metropolis',
+                              fontWeight: FontWeight.w400,
+                              fontSize: 11,
+                              height: 1.0,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ),
+                    if (product.tags.contains('Sale') || product.tags.contains('sale') || hasDiscount)
+                      Container(
+                        width: 40,
+                        height: 24,
+                        decoration: const BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage('assets/images/button/sale_tag.png'),
+                            fit: BoxFit.contain,
+                          ),
+                        ),
+                        alignment: Alignment.center,
+                        child: Text(
+                          '-$discountPercent%',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontFamily: 'Metropolis',
+                            fontWeight: FontWeight.w400,
+                            fontSize: 11,
+                            height: 1.0,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ],
           ),
           // Right Side: Details
           Expanded(

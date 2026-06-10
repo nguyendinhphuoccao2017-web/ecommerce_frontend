@@ -51,6 +51,11 @@
 - **Slideshow API**: Đã cập nhật `api_service.dart` gọi đến API `/api/slideshows/home` (thay vì `/api/slideshows`) để lấy chính xác 2 banner đang được publish cho trang chủ. Đã tái cấu trúc biến `apiBaseUrl` giúp dễ dàng switch qua lại giữa test Local (localhost/10.0.2.2) và Production (Render).
 - **Slideshow Swipe Gesture**: Cập nhật `home_screen.dart` sử dụng `PageView.builder` thay vì widget đơn lẻ để hỗ trợ thao tác vuốt ngang (swipe) xem toàn bộ ảnh Slideshow Banner. Dữ liệu luôn được tự động sắp xếp theo `displayOrder`. Tăng chiều cao (height) của khu vực Banner lên `500` để hình ảnh rộng rãi hơn.
 - **Slideshow Banner Overlay**: Cập nhật `slideshow_banner.dart` chỉ hiển thị lớp phủ (Title và Nút Check) cho Banner đầu tiên (`displayOrder == 1`), các banner sau chỉ hiện hình ảnh. Tiêu đề hiển thị chuẩn font Metropolis 48px, trắng. Nút Check sử dụng hình nền `check_button.png` kết hợp màu nền đỏ `#DB3022`.
+- **Refactor Màn Hình Danh Mục (Shop & Categories)**:
+  - Tách `TabBar` (Women, Men, Kids) ra khỏi `AppBar` trên `ShopScreen`. Bổ sung thanh chỉ đỏ (indicator) trải rộng toàn bộ tab (`TabBarIndicatorSize.tab`).
+  - Xóa title khỏi `AppBar` trong `CategoryProductsScreen`, thay bằng khối Heading cực lớn với định dạng `Women's {tên_danh_mục}` (tự động loại bỏ các từ dư thừa như & / bằng Regex).
+  - Tích hợp thanh cuộn ngang "Viên thuốc" (Pills) cho phép chuyển đổi danh mục nhanh chóng.
+  - Khởi tạo Widget mới `HorizontalProductCard` phục vụ chế độ xem danh sách (List View). Cho phép linh hoạt chuyển đổi giữa List View và Grid View qua nút bấm.
 ## 5. Các bước tiếp theo (Next Steps)
 1. **Hoàn thiện UI/UX Danh mục (Shop/Catalog)**: Tiến hành phát triển UI/UX cho trang Danh mục. Backend API `GET /api/categories/{id}/products` đã hoàn thiện 100%, sẵn sàng fetch data với cơ chế gửi Token bảo mật (Hoặc trả về fallback nếu là Staff).
 2. **Triển khai Tính năng Yêu thích (Favorites)**: 
