@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/nav_provider.dart';
 import 'categories_screen.dart';
 
-class ShopScreen extends StatefulWidget {
+class ShopScreen extends ConsumerStatefulWidget {
   const ShopScreen({super.key});
 
   @override
-  State<ShopScreen> createState() => _ShopScreenState();
+  ConsumerState<ShopScreen> createState() => _ShopScreenState();
 }
 
-class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateMixin {
+class _ShopScreenState extends ConsumerState<ShopScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override
@@ -34,9 +36,8 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF222222)),
           onPressed: () {
-            if (Navigator.of(context).canPop()) {
-              Navigator.of(context).pop();
-            }
+            // Trở về trang Home (tab 0) thay vì pop Navigation stack ra ngoài màn hình Đăng nhập
+            ref.read(navIndexProvider.notifier).state = 0;
           },
         ),
         title: const Text(

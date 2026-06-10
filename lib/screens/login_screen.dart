@@ -71,7 +71,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
         } else {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login successful!')));
         }
-        Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+        Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const HomeScreen()), (route) => false);
       }
     });
 
