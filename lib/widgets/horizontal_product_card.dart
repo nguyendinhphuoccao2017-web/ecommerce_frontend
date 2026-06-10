@@ -203,38 +203,39 @@ class HorizontalProductCard extends ConsumerWidget {
           ),
         ],
       ),
-      Positioned(
-        bottom: -16,
-        right: 0,
-        child: Container(
-          width: 36,
-          height: 36,
-          decoration: BoxDecoration(
-            color: Colors.white,
-            shape: BoxShape.circle,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.1),
-                blurRadius: 4,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: IconButton(
-            padding: EdgeInsets.zero,
-            icon: Icon(
-              product.isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: product.isFavorite ? const Color(0xFFDB3022) : Colors.grey,
-              size: 20,
+    ),
+    Positioned(
+      bottom: -16,
+      right: 0,
+      child: Container(
+        width: 36,
+        height: 36,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 4,
+              offset: const Offset(0, 2),
             ),
-            onPressed: () {
-              ref.read(favoriteNotifierProvider.notifier).toggle(product.id);
-            },
+          ],
+        ),
+        child: IconButton(
+          padding: EdgeInsets.zero,
+          icon: Icon(
+            product.isFavorite ? Icons.favorite : Icons.favorite_border,
+            color: product.isFavorite ? const Color(0xFFDB3022) : Colors.grey,
+            size: 20,
           ),
+          onPressed: () {
+            ref.read(favoriteNotifierProvider.notifier).toggle(product.id);
+          },
         ),
       ),
-    ],
-  ),
-);
+    ),
+  ],
+      ),
+    );
   }
 }
