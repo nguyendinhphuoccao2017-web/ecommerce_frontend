@@ -46,6 +46,7 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
             fontFamily: 'Metropolis',
             fontWeight: FontWeight.w400,
             fontSize: 18,
+            height: 22 / 18,
           ),
         ),
         actions: [
@@ -54,30 +55,49 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
             onPressed: () {},
           )
         ],
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor: const Color(0xFF222222),
-          unselectedLabelColor: const Color(0xFF222222),
-          indicatorColor: const Color(0xFFDB3022),
-          indicatorWeight: 3,
-          labelStyle: const TextStyle(
-            fontFamily: 'Metropolis',
-            fontWeight: FontWeight.w400,
-            fontSize: 16,
-          ),
-          tabs: const [
-            Tab(text: 'Women'),
-            Tab(text: 'Men'),
-            Tab(text: 'Kids'),
-          ],
-        ),
       ),
-      body: TabBarView(
-        controller: _tabController,
+      body: Column(
         children: [
-          _buildWomenTab(context),
-          const Center(child: Text('Men Categories (Static)')),
-          const Center(child: Text('Kids Categories (Static)')),
+          Container(
+            width: double.infinity,
+            height: 44,
+            color: Colors.white,
+            child: TabBar(
+              controller: _tabController,
+              labelColor: const Color(0xFF222222),
+              unselectedLabelColor: const Color(0xFF222222),
+              indicatorColor: const Color(0xFFDB3022),
+              indicatorWeight: 3,
+              indicatorSize: TabBarIndicatorSize.tab,
+              labelStyle: const TextStyle(
+                fontFamily: 'Metropolis',
+                fontWeight: FontWeight.w400,
+                fontSize: 16,
+                height: 1.0,
+              ),
+              unselectedLabelStyle: const TextStyle(
+                fontFamily: 'Metropolis',
+                fontWeight: FontWeight.w400,
+                fontSize: 16,
+                height: 1.0,
+              ),
+              tabs: const [
+                Tab(text: 'Women'),
+                Tab(text: 'Men'),
+                Tab(text: 'Kids'),
+              ],
+            ),
+          ),
+          Expanded(
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                _buildWomenTab(context),
+                const Center(child: Text('Men Categories (Static)')),
+                const Center(child: Text('Kids Categories (Static)')),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -92,13 +112,13 @@ class _ShopScreenState extends State<ShopScreen> with SingleTickerProviderStateM
             onTap: () {
               Navigator.push(context, MaterialPageRoute(builder: (_) => const CategoriesScreen()));
             },
-            child: Container(
-              width: 343,
-              height: 100,
-              decoration: BoxDecoration(
-                color: const Color(0xFFDB3022),
-                borderRadius: BorderRadius.circular(8),
-              ),
+              child: Container(
+                width: 343,
+                height: 100,
+                decoration: BoxDecoration(
+                  color: const Color(0xFFDB3022),
+                  borderRadius: BorderRadius.circular(8),
+                ),
               child: const Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [

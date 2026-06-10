@@ -27,6 +27,7 @@ class CategoriesScreen extends ConsumerWidget {
             fontFamily: 'Metropolis',
             fontWeight: FontWeight.w400,
             fontSize: 18,
+            height: 22 / 18,
           ),
         ),
         actions: [
@@ -108,6 +109,7 @@ class CategoriesScreen extends ConsumerWidget {
                             builder: (_) => CategoryProductsScreen(
                               categoryId: category.id,
                               categoryName: category.categoryName,
+                              allCategories: categories,
                             ),
                           ),
                         );
