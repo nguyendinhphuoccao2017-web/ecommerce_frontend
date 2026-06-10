@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/category_provider.dart';
+import '../providers/nav_provider.dart';
+import '../widgets/custom_bottom_nav.dart';
 import 'category_products_screen.dart';
 
 class CategoriesScreen extends ConsumerWidget {
@@ -27,6 +29,7 @@ class CategoriesScreen extends ConsumerWidget {
             fontFamily: 'Metropolis',
             fontWeight: FontWeight.w400,
             fontSize: 18,
+            height: 22 / 18,
           ),
         ),
         actions: [
@@ -108,6 +111,7 @@ class CategoriesScreen extends ConsumerWidget {
                             builder: (_) => CategoryProductsScreen(
                               categoryId: category.id,
                               categoryName: category.categoryName,
+                              allCategories: categories,
                             ),
                           ),
                         );
@@ -121,6 +125,13 @@ class CategoriesScreen extends ConsumerWidget {
             ),
           ),
         ],
+      ),
+      bottomNavigationBar: CustomBottomNav(
+        currentIndex: ref.watch(navIndexProvider),
+        onTap: (index) {
+          ref.read(navIndexProvider.notifier).state = index;
+          Navigator.of(context).popUntil((route) => route.isFirst);
+        },
       ),
     );
   }

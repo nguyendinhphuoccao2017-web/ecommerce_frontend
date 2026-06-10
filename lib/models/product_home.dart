@@ -8,7 +8,9 @@ class ProductHome {
   final int totalReviews;
   final String? placeholder;
   final String? sku;
+  final String? slug;
   final bool isFavorite;
+  final List<String> tags;
 
   ProductHome({
     required this.id,
@@ -20,7 +22,9 @@ class ProductHome {
     required this.totalReviews,
     this.placeholder,
     this.sku,
+    this.slug,
     this.isFavorite = false,
+    this.tags = const [],
   });
 
   factory ProductHome.fromJson(Map<String, dynamic> json) {
@@ -34,7 +38,9 @@ class ProductHome {
       totalReviews: json['totalReviews'] ?? 0,
       placeholder: json['placeholder'],
       sku: json['sku'],
+      slug: json['slug'],
       isFavorite: json['isFavorite'] ?? false,
+      tags: json['tags'] != null ? List<String>.from(json['tags']) : [],
     );
   }
 
@@ -51,7 +57,9 @@ class ProductHome {
       totalReviews: totalReviews,
       placeholder: placeholder,
       sku: sku,
+      slug: slug,
       isFavorite: isFavorite ?? this.isFavorite,
+      tags: tags,
     );
   }
 }

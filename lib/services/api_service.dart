@@ -3,6 +3,8 @@ import 'package:dio/dio.dart';
 import '../models/slideshow.dart';
 import '../models/product_home.dart';
 import '../models/category.dart';
+import '../models/variant_option.dart';
+import '../models/favorite_product.dart';
 
 class ApiService {
   // Uncomment dòng dưới đây nếu muốn test backend trên máy local (dành cho iOS Simulator)
@@ -135,12 +137,23 @@ class ApiService {
     }
   }
 
-  Future<void> toggleFavorite(String productId) async {
+  Future<List<VariantOption>> getVariants(String productId) async {
+    try {
+      final response = await _dio.get('$apiBaseUrl/products/$productId/variants');
+      List data = response.data;
+      return data.map((e) => VariantOption.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception('Failed to load variants for product $productId: $e');
+    }
+  }
+
+  Future<void> toggleFavorite(String productId, {String? variantOptionId}) async {
     try {
       String? token = await _storage.read(key: 'jwt_token');
       if (token == null) throw Exception('No token found');
       await _dio.post(
         '$apiBaseUrl/favorites/$productId/toggle',
+        data: variantOptionId != null ? {'variantOptionId': variantOptionId} : null,
         options: Options(
           headers: {'Authorization': 'Bearer $token'},
         ),
@@ -150,7 +163,7 @@ class ApiService {
     }
   }
 
-  Future<List<ProductHome>> getFavoriteProducts() async {
+  Future<List<FavoriteProduct>> getFavoriteProducts() async {
     try {
       String? token = await _storage.read(key: 'jwt_token');
       if (token == null) return [];
@@ -161,7 +174,7 @@ class ApiService {
         ),
       );
       List data = response.data;
-      return data.map((e) => ProductHome.fromJson(e)).toList();
+      return data.map((e) => FavoriteProduct.fromJson(e)).toList();
     } catch (e) {
       throw Exception('Failed to load favorite products: $e');
     }

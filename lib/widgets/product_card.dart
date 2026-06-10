@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/product_home.dart';
 import '../providers/favorite_provider.dart';
+import '../providers/nav_provider.dart';
+import 'size_selection_bottom_sheet.dart';
 
 class ProductCard extends ConsumerWidget {
   final ProductHome product;
@@ -11,8 +13,9 @@ class ProductCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    bool isNew = product.tags.contains('New') || product.tags.contains('new');
     // If it's a new section, we don't show the discount logic
-    bool hasDiscount = !isNewSection && product.comparePrice > product.salePrice && product.comparePrice > 0;
+    bool hasDiscount = !isNewSection && !isNew && product.comparePrice > product.salePrice && product.comparePrice > 0;
     int discountPercent = 0;
     if (hasDiscount) {
       discountPercent = ((product.comparePrice - product.salePrice) / product.comparePrice * 100).round();
@@ -42,7 +45,7 @@ class ProductCard extends ConsumerWidget {
                   ),
                 ),
               ),
-              if (isNewSection)
+              if (product.tags.contains('New') || product.tags.contains('new'))
                 Positioned(
                   top: 8,
                   left: 8,
@@ -59,7 +62,7 @@ class ProductCard extends ConsumerWidget {
                     child: const Text(
                       'NEW',
                       style: TextStyle(
-                        color: Colors.white, // background: #FFFFFF as described in CSS typically means text color when overlaid on dark button
+                        color: Colors.white,
                         fontFamily: 'Metropolis',
                         fontWeight: FontWeight.w400,
                         fontSize: 11,
@@ -70,7 +73,7 @@ class ProductCard extends ConsumerWidget {
                     ),
                   ),
                 )
-              else if (hasDiscount)
+              else if (product.tags.contains('Sale') || product.tags.contains('sale'))
                 Positioned(
                   top: 8,
                   left: 8,
@@ -119,8 +122,21 @@ class ProductCard extends ConsumerWidget {
                       color: product.isFavorite ? const Color(0xFFDB3022) : Colors.grey,
                       size: 20,
                     ),
-                    onPressed: () {
-                      ref.read(favoriteNotifierProvider.notifier).toggle(product.id);
+                    onPressed: () async {
+                      if (product.isFavorite) {
+                        ref.read(favoriteNotifierProvider.notifier).toggle(product.id);
+                      } else {
+                        final result = await showModalBottomSheet<bool>(
+                          context: context,
+                          isScrollControlled: true,
+                          backgroundColor: Colors.transparent,
+                          builder: (context) => SizeSelectionBottomSheet(productId: product.id),
+                        );
+                        if (result == true) {
+                          // Navigate to favorites tab
+                          ref.read(navIndexProvider.notifier).state = 3;
+                        }
+                      }
                     },
                   ),
                 ),
@@ -154,13 +170,16 @@ class ProductCard extends ConsumerWidget {
           ),
           Row(
             children: [
-              if (isNewSection)
+              if (isNewSection || isNew)
                 Text(
                   '${(product.comparePrice > 0 ? product.comparePrice : product.salePrice).toStringAsFixed(0)}\$',
                   style: const TextStyle(
-                    color: Color(0xFF222222),
+                    fontFamily: 'Metropolis',
+                    fontWeight: FontWeight.w500,
                     fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                    height: 20 / 14,
+                    letterSpacing: 0,
+                    color: Color(0xFF222222),
                   ),
                 )
               else ...[
