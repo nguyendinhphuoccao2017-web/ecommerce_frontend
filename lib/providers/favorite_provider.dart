@@ -25,6 +25,7 @@ class FavoriteNotifier extends StateNotifier<bool> {
       ref.invalidate(favoriteProductsProvider);
     } catch (e) {
       print('Error toggling favorite: $e');
+      rethrow;
     }
   }
 }

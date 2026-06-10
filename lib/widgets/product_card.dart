@@ -132,10 +132,7 @@ class ProductCard extends ConsumerWidget {
                           backgroundColor: Colors.transparent,
                           builder: (context) => SizeSelectionBottomSheet(productId: product.id),
                         );
-                        if (result == true) {
-                          // Navigate to favorites tab
-                          ref.read(navIndexProvider.notifier).state = 3;
-                        }
+                        // No automatic redirection anymore
                       }
                     },
                   ),

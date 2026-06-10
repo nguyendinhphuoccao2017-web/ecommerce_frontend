@@ -103,7 +103,13 @@ class ApiService {
 
   Future<List<ProductHome>> getProductsByTag(String tagName) async {
     try {
-      final response = await _dio.get('$apiBaseUrl/products/home/tags/$tagName');
+      String? token = await _storage.read(key: 'jwt_token');
+      final response = await _dio.get(
+        '$apiBaseUrl/products/home/tags/$tagName',
+        options: Options(
+          headers: token != null ? {'Authorization': 'Bearer $token'} : null,
+        ),
+      );
       List data = response.data;
       return data.map((e) => ProductHome.fromJson(e)).toList();
     } catch (e) {
