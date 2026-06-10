@@ -106,7 +106,7 @@ class ProductCard extends ConsumerWidget {
                 right: 0,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: product.isFavorite ? const Color(0xFFDB3022) : Colors.white,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
@@ -119,7 +119,7 @@ class ProductCard extends ConsumerWidget {
                   child: IconButton(
                     icon: Icon(
                       product.isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: product.isFavorite ? const Color(0xFFDB3022) : Colors.grey,
+                      color: product.isFavorite ? Colors.white : Colors.grey,
                       size: 20,
                     ),
                     onPressed: () async {
