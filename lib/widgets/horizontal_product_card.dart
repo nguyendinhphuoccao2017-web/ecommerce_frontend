@@ -58,64 +58,60 @@ class HorizontalProductCard extends ConsumerWidget {
                   ),
                 ),
               ),
-              Positioned(
-                top: 8,
-                left: 8,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (product.tags.contains('New') || product.tags.contains('new'))
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 4),
-                        child: Container(
-                          width: 40,
-                          height: 24,
-                          decoration: const BoxDecoration(
-                            image: DecorationImage(
-                              image: AssetImage('assets/images/button/new_tag.png'),
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                          alignment: Alignment.center,
-                          child: const Text(
-                            'NEW',
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontFamily: 'Metropolis',
-                              fontWeight: FontWeight.w400,
-                              fontSize: 11,
-                              height: 1.0,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
+              if (product.tags.contains('New') || product.tags.contains('new'))
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    width: 40,
+                    height: 24,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/button/new_tag.png'),
+                        fit: BoxFit.contain,
                       ),
-                    if (product.tags.contains('Sale') || product.tags.contains('sale') || hasDiscount)
-                      Container(
-                        width: 40,
-                        height: 24,
-                        decoration: const BoxDecoration(
-                          image: DecorationImage(
-                            image: AssetImage('assets/images/button/sale_tag.png'),
-                            fit: BoxFit.contain,
-                          ),
-                        ),
-                        alignment: Alignment.center,
-                        child: Text(
-                          '-$discountPercent%',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontFamily: 'Metropolis',
-                            fontWeight: FontWeight.w400,
-                            fontSize: 11,
-                            height: 1.0,
-                          ),
-                          textAlign: TextAlign.center,
-                        ),
+                    ),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      'NEW',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Metropolis',
+                        fontWeight: FontWeight.w400,
+                        fontSize: 11,
+                        height: 1.0,
                       ),
-                  ],
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )
+              else if (product.tags.contains('Sale') || product.tags.contains('sale'))
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    width: 40,
+                    height: 24,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/button/sale_tag.png'),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      '-$discountPercent%',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Metropolis',
+                        fontWeight: FontWeight.w400,
+                        fontSize: 11,
+                        height: 1.0,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
                 ),
-              ),
             ],
           ),
           // Right Side: Details

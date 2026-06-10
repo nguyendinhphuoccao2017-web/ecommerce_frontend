@@ -42,7 +42,7 @@ class ProductCard extends ConsumerWidget {
                   ),
                 ),
               ),
-              if (isNewSection)
+              if (product.tags.contains('New') || product.tags.contains('new'))
                 Positioned(
                   top: 8,
                   left: 8,
@@ -59,7 +59,7 @@ class ProductCard extends ConsumerWidget {
                     child: const Text(
                       'NEW',
                       style: TextStyle(
-                        color: Colors.white, // background: #FFFFFF as described in CSS typically means text color when overlaid on dark button
+                        color: Colors.white,
                         fontFamily: 'Metropolis',
                         fontWeight: FontWeight.w400,
                         fontSize: 11,
@@ -70,7 +70,7 @@ class ProductCard extends ConsumerWidget {
                     ),
                   ),
                 )
-              else if (hasDiscount)
+              else if (product.tags.contains('Sale') || product.tags.contains('sale'))
                 Positioned(
                   top: 8,
                   left: 8,
