@@ -6,6 +6,7 @@ import '../widgets/product_section.dart';
 import '../widgets/custom_bottom_nav.dart';
 import '../providers/nav_provider.dart';
 import 'shop_screen.dart';
+import 'favorites_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -21,7 +22,7 @@ class HomeScreen extends ConsumerWidget {
           _buildHomeTab(ref),
           const ShopScreen(),
           const Center(child: Text('Bag')),
-          const Center(child: Text('Favorites')),
+          const FavoritesScreen(),
           const Center(child: Text('Profile')),
         ],
       ),

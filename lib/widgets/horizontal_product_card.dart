@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/product_home.dart';
 import '../providers/favorite_provider.dart';
+import '../providers/nav_provider.dart';
+import 'size_selection_bottom_sheet.dart';
 
 class HorizontalProductCard extends ConsumerWidget {
   final ProductHome product;
@@ -238,8 +240,21 @@ class HorizontalProductCard extends ConsumerWidget {
             color: product.isFavorite ? const Color(0xFFDB3022) : Colors.grey,
             size: 20,
           ),
-          onPressed: () {
-            ref.read(favoriteNotifierProvider.notifier).toggle(product.id);
+          onPressed: () async {
+            if (product.isFavorite) {
+              ref.read(favoriteNotifierProvider.notifier).toggle(product.id);
+            } else {
+              final result = await showModalBottomSheet<bool>(
+                context: context,
+                isScrollControlled: true,
+                backgroundColor: Colors.transparent,
+                builder: (context) => SizeSelectionBottomSheet(productId: product.id),
+              );
+              if (result == true) {
+                // Navigate to favorites tab
+                ref.read(navIndexProvider.notifier).state = 3;
+              }
+            }
           },
         ),
       ),
