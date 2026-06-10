@@ -141,6 +141,7 @@ class ProductCard extends ConsumerWidget {
               const SizedBox(width: 4),
               Text(
                 '(${product.totalReviews})',
+
                 style: const TextStyle(color: Colors.grey, fontSize: 10),
               ),
             ],
@@ -159,9 +160,12 @@ class ProductCard extends ConsumerWidget {
                 Text(
                   '${(product.comparePrice > 0 ? product.comparePrice : product.salePrice).toStringAsFixed(0)}\$',
                   style: const TextStyle(
-                    color: Color(0xFF222222),
+                    fontFamily: 'Metropolis',
+                    fontWeight: FontWeight.w500,
                     fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                    height: 20 / 14,
+                    letterSpacing: 0,
+                    color: Color(0xFF222222),
                   ),
                 )
               else ...[

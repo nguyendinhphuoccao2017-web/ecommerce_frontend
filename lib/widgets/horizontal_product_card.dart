@@ -182,14 +182,27 @@ class HorizontalProductCard extends ConsumerWidget {
                             ),
                             const SizedBox(width: 4),
                           ],
-                          Text(
-                            '${(isNew && product.comparePrice > 0 ? product.comparePrice : product.salePrice).toStringAsFixed(0)}\$',
-                            style: const TextStyle(
-                              color: Color(0xFFDB3022),
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
+                          if (isNew)
+                            Text(
+                              '${(product.comparePrice > 0 ? product.comparePrice : product.salePrice).toStringAsFixed(0)}\$',
+                              style: const TextStyle(
+                                fontFamily: 'Metropolis',
+                                fontWeight: FontWeight.w500,
+                                fontSize: 14,
+                                height: 20 / 14,
+                                letterSpacing: 0,
+                                color: Color(0xFF222222),
+                              ),
+                            )
+                          else
+                            Text(
+                              '${product.salePrice.toStringAsFixed(0)}\$',
+                              style: const TextStyle(
+                                color: Color(0xFFDB3022),
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          ),
                         ],
                       ),
                     ],
