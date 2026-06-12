@@ -91,6 +91,10 @@
   - Cấu hình quản lý State toàn cục cho Bottom Navigation Bar bằng Riverpod (`navIndexProvider`).
   - Tích hợp thanh điều hướng vào các trang con sâu hơn như `CategoriesScreen` và `CategoryProductsScreen`.
   - Hỗ trợ thao tác vuốt pop-back: Khi ấn vào tab trên thanh điều hướng từ một trang con, hệ thống sẽ sử dụng `Navigator.popUntil` lùi thẳng về thư mục gốc để chuyển tab, giúp giữ vững thanh điều hướng ở mọi nơi mà không bị che mất.
+- **[MỚI] Tối ưu UX UI & Sửa lỗi Favorite**:
+  - **Tối ưu hiển thị Size**: Ẩn các tiền tố màu sắc khỏi thẻ chọn Size trên Bottom Sheet, chỉ hiển thị tên Size gọn gàng (XS, S, M, L, XL) đúng ý đồ UX của thiết kế.
+  - **Khắc phục lỗi Double-Tap**: Đã bổ sung cờ trạng thái `_isSubmitting` khóa cứng nút "ADD TO FAVORITES" ngay trong chu kỳ xử lý đầu tiên, triệt tiêu hoàn toàn lỗi người dùng bấm đúp nhanh tay khiến API `/toggle` chạy kép (Thêm xong bị Xóa).
+  - **Hiệu ứng Global Loading Blur**: Tái cấu trúc Widget `LoadingOverlay` thành `ConsumerWidget` kết nối với `loadingProvider`. Giờ đây, khi xử lý tính năng Yêu thích, App sẽ kích hoạt màn sương đen mờ toàn màn hình kết hợp với vòng quay chờ `CircularProgressIndicator` đỏ thẫm nhằm ngăn chặn tuyệt đối các tương tác sai lệch của người dùng khi đang chờ Backend lưu trữ.
 ## 5. Các bước tiếp theo (Next Steps)
 1. **Hoàn thiện UI/UX Danh mục (Shop/Catalog)**: Backend API `GET /api/categories/{id}/products` đã hoàn thiện 100%, sẵn sàng fetch data với cơ chế gửi Token bảo mật.
 2. **Triển khai Tính năng Giỏ Hàng (Bag/Cart)**: 

@@ -112,8 +112,8 @@ class FavoriteProductCard extends ConsumerWidget {
               bottom: -16,
               right: 0,
               child: Container(
-                width: 36,
-                height: 36,
+                width: 44,
+                height: 44,
                 decoration: BoxDecoration(
                   color: const Color(0xFFDB3022),
                   shape: BoxShape.circle,
@@ -130,7 +130,7 @@ class FavoriteProductCard extends ConsumerWidget {
                   icon: const Icon(
                     Icons.shopping_bag_outlined,
                     color: Colors.white,
-                    size: 20,
+                    size: 22,
                   ),
                   onPressed: () {
                     // Add to cart logic
@@ -166,9 +166,27 @@ class FavoriteProductCard extends ConsumerWidget {
           overflow: TextOverflow.ellipsis,
         ),
         if (product.variantTitle != null)
-          Text(
-            product.variantTitle!,
-            style: const TextStyle(fontFamily: 'Metropolis', fontSize: 11, color: Color(0xFF9B9B9B)),
+          Builder(
+            builder: (context) {
+              final parts = product.variantTitle!.split(', ');
+              String color = parts.isNotEmpty ? parts[0] : '';
+              String size = parts.length > 1 ? parts[1] : '';
+              return RichText(
+                text: TextSpan(
+                  style: const TextStyle(fontFamily: 'Metropolis', fontSize: 11, color: Color(0xFF9B9B9B)),
+                  children: [
+                    if (color.isNotEmpty) ...[
+                      const TextSpan(text: 'Color: '),
+                      TextSpan(text: color, style: const TextStyle(color: Color(0xFF222222))),
+                    ],
+                    if (size.isNotEmpty) ...[
+                      const TextSpan(text: '  Size: '),
+                      TextSpan(text: size, style: const TextStyle(color: Color(0xFF222222))),
+                    ],
+                  ],
+                ),
+              );
+            },
           ),
         const SizedBox(height: 4),
         Row(
