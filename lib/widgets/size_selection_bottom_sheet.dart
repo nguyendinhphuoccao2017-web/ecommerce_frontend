@@ -15,6 +15,7 @@ class SizeSelectionBottomSheet extends ConsumerStatefulWidget {
 
 class _SizeSelectionBottomSheetState extends ConsumerState<SizeSelectionBottomSheet> {
   bool _isLoading = true;
+  bool _isSubmitting = false;
   List<VariantOption> _variants = [];
   String? _errorMessage;
   String? _selectedVariantId;
@@ -54,7 +55,10 @@ class _SizeSelectionBottomSheetState extends ConsumerState<SizeSelectionBottomSh
   }
 
   void _addToFavorites() async {
-    if (_selectedVariantId == null) return;
+    if (_selectedVariantId == null || _isSubmitting) return;
+    setState(() {
+      _isSubmitting = true;
+    });
     try {
       await ref.read(favoriteNotifierProvider.notifier).toggle(widget.productId, variantOptionId: _selectedVariantId);
       if (mounted) {
@@ -62,6 +66,9 @@ class _SizeSelectionBottomSheetState extends ConsumerState<SizeSelectionBottomSh
       }
     } catch (e) {
       if (mounted) {
+        setState(() {
+          _isSubmitting = false;
+        });
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to add favorite: $e')));
         Navigator.pop(context, false);
       }
@@ -127,7 +134,7 @@ class _SizeSelectionBottomSheetState extends ConsumerState<SizeSelectionBottomSh
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      variant.title,
+                      variant.title.contains(', ') ? variant.title.split(', ').last : variant.title,
                       style: TextStyle(
                         fontFamily: 'Metropolis',
                         fontSize: 14,
