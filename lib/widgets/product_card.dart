@@ -150,9 +150,10 @@ class ProductCard extends ConsumerWidget {
           Row(
             children: [
               ...List.generate(5, (index) {
+                bool isFilled = index < product.averageRating.round();
                 return Icon(
-                  index < product.averageRating.round() ? Icons.star : Icons.star_border,
-                  color: const Color(0xFFFFBA49),
+                  isFilled ? Icons.star : Icons.star_border,
+                  color: isFilled ? const Color(0xFFFFBA49) : const Color(0xFF9B9B9B),
                   size: 14,
                 );
               }),

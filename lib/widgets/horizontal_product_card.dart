@@ -152,13 +152,14 @@ class HorizontalProductCard extends ConsumerWidget {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          ...List.generate(5, (index) {
-                            return Icon(
-                              index < product.averageRating.round() ? Icons.star : Icons.star_border,
-                              color: const Color(0xFFFFBA49),
-                              size: 14,
-                            );
-                          }),
+                            ...List.generate(5, (index) {
+                              bool isFilled = index < product.averageRating.round();
+                              return Icon(
+                                isFilled ? Icons.star : Icons.star_border,
+                                color: isFilled ? const Color(0xFFFFBA49) : const Color(0xFF9B9B9B),
+                                size: 14,
+                              );
+                            }),
                           const SizedBox(width: 4),
                           Text(
                             '(${product.totalReviews})',
