@@ -96,8 +96,14 @@ class FavoriteProductCard extends ConsumerWidget {
               top: 8,
               right: 8,
               child: InkWell(
-                onTap: () {
-                  ref.read(favoriteNotifierProvider.notifier).toggle(product.productId, variantOptionId: product.variantOptionId);
+                onTap: () async {
+                  try {
+                    await ref.read(favoriteNotifierProvider.notifier).toggle(product.productId, variantOptionId: product.variantOptionId);
+                  } catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                    }
+                  }
                 },
                 child: const Icon(Icons.close, color: Colors.grey, size: 20),
               ),

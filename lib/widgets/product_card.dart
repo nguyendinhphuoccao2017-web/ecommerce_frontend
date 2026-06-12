@@ -119,12 +119,18 @@ class ProductCard extends ConsumerWidget {
                   child: IconButton(
                     icon: Icon(
                       product.isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: product.isFavorite ? Colors.white : Colors.grey,
+                      color: product.isFavorite ? Colors.white : const Color(0xFF9B9B9B),
                       size: 20,
                     ),
                     onPressed: () async {
                       if (product.isFavorite) {
-                        ref.read(favoriteNotifierProvider.notifier).toggle(product.id);
+                        try {
+                          await ref.read(favoriteNotifierProvider.notifier).toggle(product.id);
+                        } catch (e) {
+                          if (context.mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                          }
+                        }
                       } else {
                         final result = await showModalBottomSheet<bool>(
                           context: context,

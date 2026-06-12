@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../providers/loading_provider.dart';
 
 import '../models/favorite_product.dart';
 import 'home_provider.dart';
@@ -15,6 +16,7 @@ class FavoriteNotifier extends StateNotifier<bool> {
 
   Future<void> toggle(String productId, {String? variantOptionId}) async {
     try {
+      ref.read(loadingProvider.notifier).state = true;
       final api = ref.read(apiServiceProvider);
       await api.toggleFavorite(productId, variantOptionId: variantOptionId);
       
@@ -26,6 +28,8 @@ class FavoriteNotifier extends StateNotifier<bool> {
     } catch (e) {
       print('Error toggling favorite: $e');
       rethrow;
+    } finally {
+      ref.read(loadingProvider.notifier).state = false;
     }
   }
 }

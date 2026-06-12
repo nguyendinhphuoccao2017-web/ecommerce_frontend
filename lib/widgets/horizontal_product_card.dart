@@ -237,12 +237,18 @@ class HorizontalProductCard extends ConsumerWidget {
           padding: EdgeInsets.zero,
           icon: Icon(
             product.isFavorite ? Icons.favorite : Icons.favorite_border,
-            color: product.isFavorite ? const Color(0xFFDB3022) : Colors.grey,
+            color: product.isFavorite ? const Color(0xFFDB3022) : const Color(0xFF9B9B9B),
             size: 20,
           ),
           onPressed: () async {
             if (product.isFavorite) {
-              ref.read(favoriteNotifierProvider.notifier).toggle(product.id);
+              try {
+                await ref.read(favoriteNotifierProvider.notifier).toggle(product.id);
+              } catch (e) {
+                if (context.mounted) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                }
+              }
             } else {
               final result = await showModalBottomSheet<bool>(
                 context: context,

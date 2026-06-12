@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'screens/signup_screen.dart';
+import 'widgets/loading_overlay.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -30,6 +31,9 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFFDB3022)),
         useMaterial3: true,
       ),
+      builder: (context, child) {
+        return LoadingOverlay(child: child!);
+      },
       home: const SignupScreen(),
     );
   }
