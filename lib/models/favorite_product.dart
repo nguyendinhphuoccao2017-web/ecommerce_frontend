@@ -11,6 +11,7 @@ class FavoriteProduct {
   final List<String> tags;
   final String? variantTitle;
   final String? variantOptionId;
+  final String? sku;
 
   FavoriteProduct({
     required this.productId,
@@ -25,6 +26,7 @@ class FavoriteProduct {
     required this.tags,
     this.variantTitle,
     this.variantOptionId,
+    this.sku,
   });
 
   factory FavoriteProduct.fromJson(Map<String, dynamic> json) {
@@ -41,6 +43,7 @@ class FavoriteProduct {
       tags: List<String>.from(json['tags'] ?? []),
       variantTitle: json['variantTitle'],
       variantOptionId: json['variantOptionId'],
+      sku: json['sku'],
     );
   }
 }

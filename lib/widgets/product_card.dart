@@ -165,7 +165,7 @@ class ProductCard extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 4),
-          Text(product.sku ?? 'Unknown Brand', style: const TextStyle(color: Colors.grey, fontSize: 11)),
+          Text(product.sku ?? 'Mango', style: const TextStyle(fontFamily: 'Metropolis', color: Color(0xFF9B9B9B), fontSize: 11)),
           Text(
             product.productName,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),

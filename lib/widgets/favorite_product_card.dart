@@ -159,7 +159,7 @@ class FavoriteProductCard extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 4),
-        Text('Brand', style: const TextStyle(fontFamily: 'Metropolis', color: Color(0xFF9B9B9B), fontSize: 11)), // SKU not in DTO? Hardcode or ignore for now
+        Text(product.sku ?? 'Mango', style: const TextStyle(fontFamily: 'Metropolis', color: Color(0xFF9B9B9B), fontSize: 11)),
         Text(
           product.productName,
           style: const TextStyle(fontFamily: 'Metropolis', fontSize: 16, fontWeight: FontWeight.w500, color: Color(0xFF222222)),

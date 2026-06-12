@@ -127,7 +127,7 @@ class HorizontalFavoriteProductCard extends ConsumerWidget {
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Text(
-                              'Brand',
+                              product.sku ?? 'Mango',
                               style: const TextStyle(
                                 fontFamily: 'Metropolis',
                                 fontWeight: FontWeight.w400,
