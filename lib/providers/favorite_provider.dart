@@ -27,10 +27,13 @@ class FavoriteNotifier extends StateNotifier<bool> {
       ref.invalidate(favoriteProductsProvider);
     } catch (e) {
       print('Error toggling favorite: $e');
-      rethrow;
-    } finally {
       ref.read(loadingProvider.notifier).state = false;
+      rethrow;
     }
+
+    // Prolong loading overlay for 3 seconds to prevent double taps while UI updates
+    await Future.delayed(const Duration(seconds: 3));
+    ref.read(loadingProvider.notifier).state = false;
   }
 }
 
