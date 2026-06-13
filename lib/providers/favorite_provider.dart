@@ -27,6 +27,7 @@ class FavoriteNotifier extends StateNotifier<bool> {
         ref.refresh(favoriteProductsProvider.future).catchError((_) => []),
       ]);
       
+      await Future.delayed(const Duration(seconds: 3));
       ref.read(loadingProvider.notifier).state = false;
     } catch (e) {
       print('Error toggling favorite: $e');

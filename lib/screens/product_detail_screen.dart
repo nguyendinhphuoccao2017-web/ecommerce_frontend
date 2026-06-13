@@ -8,6 +8,7 @@ import '../widgets/product_card.dart';
 import 'login_screen.dart';
 
 import '../widgets/size_selection_bottom_sheet.dart';
+import '../providers/loading_provider.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;
@@ -34,6 +35,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   }
 
   void _openSizeSelectionBottomSheet(BuildContext context, {required String buttonText, required List<VariantOption> variants}) async {
+    ref.read(loadingProvider.notifier).state = true;
+    await Future.delayed(const Duration(seconds: 3));
+    ref.read(loadingProvider.notifier).state = false;
+
+    if (!mounted) return;
+
     final variantId = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
@@ -99,7 +106,13 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         ),
         title: Text(
           detailAsync.value?.productName ?? '',
-          style: const TextStyle(color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
+          style: const TextStyle(
+            color: Color(0xFF222222), 
+            fontFamily: 'Metropolis', 
+            fontSize: 18, 
+            fontWeight: FontWeight.w400,
+            height: 22 / 18,
+          ),
         ),
         centerTitle: true,
         actions: [
@@ -121,7 +134,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
               children: [
                 // Gallery
                 SizedBox(
-                  height: 400,
+                  height: 450,
                   child: product.galleries.isNotEmpty
                       ? PageView.builder(
                           controller: _pageController,
@@ -142,39 +155,95 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      GestureDetector(
-                        onTap: () {
-                          if (safeVariants.isNotEmpty) {
-                            _openSizeSelectionBottomSheet(context, buttonText: 'SELECT', variants: safeVariants);
-                          }
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            border: Border.all(color: Colors.grey[300]!),
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.white,
-                          ),
-                          child: Row(
-                            children: [
-                              Text(
-                                selectedVariant != null 
-                                  ? (selectedVariant.title.contains(', ') ? selectedVariant.title.split(', ').last : selectedVariant.title) 
-                                  : 'Size',
-                                style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                      Expanded(
+                        child: Row(
+                          children: [
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (safeVariants.isNotEmpty) {
+                                    _openSizeSelectionBottomSheet(context, buttonText: 'SELECT', variants: safeVariants);
+                                  }
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey[300]!),
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: Colors.white,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        selectedVariant != null 
+                                          ? (selectedVariant.title.contains(', ') ? selectedVariant.title.split(', ').last : selectedVariant.title) 
+                                          : 'Size',
+                                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                      ),
+                                      const Icon(Icons.keyboard_arrow_down, size: 20, color: Colors.black54),
+                                    ],
+                                  ),
+                                ),
                               ),
-                              const SizedBox(width: 32),
-                              const Icon(Icons.keyboard_arrow_down, size: 20),
-                            ],
-                          ),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: GestureDetector(
+                                onTap: () {
+                                  if (safeVariants.isNotEmpty) {
+                                    _openSizeSelectionBottomSheet(context, buttonText: 'SELECT', variants: safeVariants);
+                                  }
+                                },
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                  decoration: BoxDecoration(
+                                    border: Border.all(color: Colors.grey[300]!),
+                                    borderRadius: BorderRadius.circular(8),
+                                    color: Colors.white,
+                                  ),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(
+                                        selectedVariant != null 
+                                          ? (selectedVariant.title.contains(', ') ? selectedVariant.title.split(', ').first : 'Color') 
+                                          : 'Color',
+                                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                      ),
+                                      const Icon(Icons.keyboard_arrow_down, size: 20, color: Colors.black54),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      IconButton(
-                        icon: Icon(
-                          product.isFavorite ? Icons.favorite : Icons.favorite_border,
-                          color: product.isFavorite ? Colors.red : Colors.grey,
+                      const SizedBox(width: 16),
+                      Container(
+                        width: 40,
+                        height: 40,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.1),
+                              blurRadius: 8,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
                         ),
-                        onPressed: () => _handleFavorite(product),
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: Icon(
+                            product.isFavorite ? Icons.favorite : Icons.favorite_border,
+                            color: product.isFavorite ? Colors.red : Colors.grey,
+                            size: 20,
+                          ),
+                          onPressed: () => _handleFavorite(product),
+                        ),
                       ),
                     ],
                   ),
@@ -185,11 +254,22 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Expanded(
-                        child: Text(
-                          product.productName,
-                          style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              product.sku != null && product.sku.isNotEmpty ? product.sku : product.productName,
+                              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              product.sku != null && product.sku.isNotEmpty ? product.productName : product.shortDescription,
+                              style: const TextStyle(fontSize: 12, color: Colors.grey),
+                            ),
+                          ],
                         ),
                       ),
                       Text(
@@ -217,7 +297,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                       const SizedBox(width: 4),
                       Text(
                         '(${product.totalReviews})',
-                        style: const TextStyle(color: Colors.grey),
+                        style: const TextStyle(color: Colors.grey, fontSize: 12),
                       ),
                     ],
                   ),
@@ -227,41 +307,92 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Text(
-                    product.shortDescription,
-                    style: const TextStyle(fontSize: 14, color: Colors.black87),
+                    product.productDescription != null && product.productDescription.isNotEmpty 
+                        ? product.productDescription 
+                        : product.shortDescription,
+                    style: const TextStyle(fontSize: 14, color: Colors.black87, height: 1.5),
                   ),
                 ),
 
-                // Add to Cart Button
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFDB3022),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
+                // Add to Cart Box
+                Container(
+                  width: double.infinity,
+                  height: 112,
+                  color: Colors.white,
+                  child: Column(
+                    children: [
+                      Container(
+                        margin: const EdgeInsets.only(top: 20),
+                        width: 134,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(100),
                         ),
                       ),
-                      onPressed: () => _handleAddToCart(product, safeVariants),
-                      child: const Text(
-                        'ADD TO CART',
-                        style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                      const Spacer(),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
+                        child: SizedBox(
+                          width: double.infinity,
+                          height: 48,
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFDB3022),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(25),
+                              ),
+                              elevation: 0,
+                            ),
+                            onPressed: () => _handleAddToCart(product, safeVariants),
+                            child: const Text(
+                              'ADD TO CART',
+                              style: TextStyle(
+                                fontFamily: 'Metropolis',
+                                color: Colors.white, 
+                                fontSize: 14, 
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
 
-                const Divider(),
+                const Divider(height: 1),
+
+                // Shipping info
+                const ListTile(
+                  title: Text('Shipping info', style: TextStyle(fontFamily: 'Metropolis', fontSize: 16)),
+                  trailing: Icon(Icons.chevron_right),
+                ),
+                const Divider(height: 1),
+
+                // Support
+                const ListTile(
+                  title: Text('Support', style: TextStyle(fontFamily: 'Metropolis', fontSize: 16)),
+                  trailing: Icon(Icons.chevron_right),
+                ),
+                const Divider(height: 1),
 
                 // Related Products
-                const Padding(
-                  padding: EdgeInsets.all(16.0),
-                  child: Text(
-                    'You can also like this',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'You can also like this',
+                        style: TextStyle(fontFamily: 'Metropolis', fontSize: 18, color: Color(0xFF222222)),
+                      ),
+                      relatedAsync.when(
+                        data: (list) => Text('${list.length} items', style: const TextStyle(fontFamily: 'Metropolis', fontSize: 11, color: Color(0xFF9B9B9B))),
+                        loading: () => const SizedBox.shrink(),
+                        error: (_, __) => const SizedBox.shrink(),
+                      ),
+                    ],
                   ),
                 ),
                 SizedBox(

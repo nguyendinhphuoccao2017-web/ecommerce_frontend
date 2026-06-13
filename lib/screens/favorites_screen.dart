@@ -72,6 +72,9 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                       tags.addAll(p.categories);
                     }
                   }
+                  if (products.isEmpty) {
+                    return const SizedBox.shrink();
+                  }
                   if (tags.isEmpty) {
                     tags.addAll(['Summer', 'T-Shirts', 'Shirts', 'Dresses', 'Kids']);
                   }
@@ -197,20 +200,6 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
             ],
           ),
         ),
-        if (favoritesAsync.isLoading)
-          Positioned.fill(
-            child: BackdropFilter(
-              filter: ImageFilter.blur(sigmaX: 3.0, sigmaY: 3.0),
-              child: Container(
-                color: Colors.black.withOpacity(0.3),
-                child: const Center(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.red),
-                  ),
-                ),
-              ),
-            ),
-          ),
       ],
     );
   }
