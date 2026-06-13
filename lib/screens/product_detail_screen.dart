@@ -96,9 +96,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     final selectedVariant = ref.watch(selectedVariantNotifierProvider(widget.productId));
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
-        backgroundColor: Colors.transparent,
+        backgroundColor: Colors.white,
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
@@ -122,7 +122,6 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
           ),
         ],
       ),
-      extendBodyBehindAppBar: true,
       body: detailAsync.when(
         data: (product) {
           double displayPrice = selectedVariant?.salePrice ?? product.salePrice;
@@ -162,7 +161,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               child: GestureDetector(
                                 onTap: () {
                                   if (safeVariants.isNotEmpty) {
-                                    _openSizeSelectionBottomSheet(context, buttonText: 'SELECT', variants: safeVariants);
+                                    _openSizeSelectionBottomSheet(context, buttonText: 'ADD TO CART', variants: safeVariants);
                                   }
                                 },
                                 child: Container(
@@ -189,31 +188,24 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             ),
                             const SizedBox(width: 12),
                             Expanded(
-                              child: GestureDetector(
-                                onTap: () {
-                                  if (safeVariants.isNotEmpty) {
-                                    _openSizeSelectionBottomSheet(context, buttonText: 'SELECT', variants: safeVariants);
-                                  }
-                                },
-                                child: Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-                                  decoration: BoxDecoration(
-                                    border: Border.all(color: Colors.grey[300]!),
-                                    borderRadius: BorderRadius.circular(8),
-                                    color: Colors.white,
-                                  ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Text(
-                                        selectedVariant != null 
-                                          ? (selectedVariant.title.contains(', ') ? selectedVariant.title.split(', ').first : 'Color') 
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                                decoration: BoxDecoration(
+                                  border: Border.all(color: Colors.grey[300]!),
+                                  borderRadius: BorderRadius.circular(8),
+                                  color: Colors.white,
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      safeVariants.isNotEmpty && safeVariants.first.title.contains(', ')
+                                          ? safeVariants.first.title.split(', ').first
                                           : 'Color',
-                                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
-                                      ),
-                                      const Icon(Icons.keyboard_arrow_down, size: 20, color: Colors.black54),
-                                    ],
-                                  ),
+                                      style: const TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
+                                    ),
+                                    const Icon(Icons.keyboard_arrow_down, size: 20, color: Colors.black54),
+                                  ],
                                 ),
                               ),
                             ),
@@ -321,18 +313,9 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                   color: Colors.white,
                   child: Column(
                     children: [
-                      Container(
-                        margin: const EdgeInsets.only(top: 20),
-                        width: 134,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(100),
-                        ),
-                      ),
                       const Spacer(),
                       Padding(
-                        padding: const EdgeInsets.only(bottom: 16.0, left: 16.0, right: 16.0),
+                        padding: const EdgeInsets.only(top: 16.0, left: 16.0, right: 16.0, bottom: 20.0),
                         child: SizedBox(
                           width: double.infinity,
                           height: 48,
@@ -355,6 +338,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                               ),
                             ),
                           ),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 8),
+                        width: 134,
+                        height: 5,
+                        decoration: BoxDecoration(
+                          color: Colors.black,
+                          borderRadius: BorderRadius.circular(100),
                         ),
                       ),
                     ],
