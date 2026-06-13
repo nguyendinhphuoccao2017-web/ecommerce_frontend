@@ -5,6 +5,8 @@ import '../providers/favorite_provider.dart';
 import '../providers/nav_provider.dart';
 import 'size_selection_bottom_sheet.dart';
 
+import '../screens/product_detail_screen.dart';
+
 class ProductCard extends ConsumerWidget {
   final ProductHome product;
   final bool isNewSection;
@@ -21,9 +23,18 @@ class ProductCard extends ConsumerWidget {
       discountPercent = ((product.comparePrice - product.salePrice) / product.comparePrice * 100).round();
     }
 
-    return Container(
-      width: 150,
-      margin: const EdgeInsets.only(right: 16),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ProductDetailScreen(productId: product.id),
+          ),
+        );
+      },
+      child: Container(
+        width: 150,
+        margin: const EdgeInsets.only(right: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -210,6 +221,6 @@ class ProductCard extends ConsumerWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }

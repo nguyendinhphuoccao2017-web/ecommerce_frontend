@@ -5,6 +5,7 @@ import '../models/product_home.dart';
 import '../models/category.dart';
 import '../models/variant_option.dart';
 import '../models/favorite_product.dart';
+import '../models/product_detail.dart';
 
 class ApiService {
   // Uncomment dòng dưới đây nếu muốn test backend trên máy local (dành cho iOS Simulator)
@@ -183,6 +184,37 @@ class ApiService {
       return data.map((e) => FavoriteProduct.fromJson(e)).toList();
     } catch (e) {
       throw Exception('Failed to load favorite products: $e');
+    }
+  }
+
+  Future<ProductDetail> getProductDetails(String productId) async {
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      final response = await _dio.get(
+        '$apiBaseUrl/products/$productId/details',
+        options: Options(
+          headers: token != null ? {'Authorization': 'Bearer $token'} : null,
+        ),
+      );
+      return ProductDetail.fromJson(response.data);
+    } catch (e) {
+      throw Exception('Failed to load product details: $e');
+    }
+  }
+
+  Future<List<ProductHome>> getRelatedProducts(String productId) async {
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      final response = await _dio.get(
+        '$apiBaseUrl/products/$productId/related',
+        options: Options(
+          headers: token != null ? {'Authorization': 'Bearer $token'} : null,
+        ),
+      );
+      List data = response.data;
+      return data.map((e) => ProductHome.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception('Failed to load related products: $e');
     }
   }
 }

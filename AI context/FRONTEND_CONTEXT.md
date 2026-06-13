@@ -99,6 +99,10 @@
     - **Hiển thị Biến Thể**: Cắt chuỗi `variantTitle` gốc từ Backend (vd: "Orange, S") để render thành giao diện chuẩn `Color: Orange   Size: S` qua `RichText`.
     - **Đồng bộ Logic Màu Sao Đánh Giá**: Ngôi sao đã đánh giá (`index < rating`) được tô màu Vàng Cam (`#FFBA49`), ngôi sao trống (hoặc chưa có đánh giá nào) hiển thị màu Xám (`#9B9B9B`).
     - **Ánh xạ SKU**: Đồng bộ hoàn toàn dữ liệu mã SKU (thay thế chữ "Brand Name" tĩnh) cho cả giao diện thẻ lưới, thẻ ngang trên màn hình Home, Shop và Favorites.
+  - **Tối ưu hiển thị trang Favorites**: 
+    - Cập nhật model `FavoriteProduct` thêm danh sách `categories` trả về từ Backend.
+    - Cập nhật danh sách "Viên thuốc" (Pills) phân loại phía dưới AppBar để hiển thị theo **Danh mục** thay vì Nhãn (Tags) như trước đây.
+    - Căn chỉnh UI theo đúng Figma: Trong chế độ xem Grid (lưới), tiêu đề chữ lớn "Favorites" ở dưới được ẩn đi và chuyển lên căn giữa bên trong AppBar. Trong chế độ xem List (danh sách), giữ nguyên tiêu đề lớn ở dưới.
 ## 5. Các bước tiếp theo (Next Steps)
 1. **Hoàn thiện UI/UX Danh mục (Shop/Catalog)**: Backend API `GET /api/categories/{id}/products` đã hoàn thiện 100%, sẵn sàng fetch data với cơ chế gửi Token bảo mật.
 2. **Triển khai Tính năng Giỏ Hàng (Bag/Cart)**: 

@@ -6,8 +6,15 @@ import '../models/variant_option.dart';
 
 class SizeSelectionBottomSheet extends ConsumerStatefulWidget {
   final String productId;
+  final String buttonText;
+  final bool isFavoriteMode;
 
-  const SizeSelectionBottomSheet({super.key, required this.productId});
+  const SizeSelectionBottomSheet({
+    super.key, 
+    required this.productId,
+    this.buttonText = 'ADD TO FAVORITES',
+    this.isFavoriteMode = true,
+  });
 
   @override
   ConsumerState<SizeSelectionBottomSheet> createState() => _SizeSelectionBottomSheetState();
@@ -54,8 +61,14 @@ class _SizeSelectionBottomSheetState extends ConsumerState<SizeSelectionBottomSh
     });
   }
 
-  void _addToFavorites() async {
+  void _onSubmit() async {
     if (_selectedVariantId == null || _isSubmitting) return;
+    
+    if (!widget.isFavoriteMode) {
+      Navigator.pop(context, _selectedVariantId);
+      return;
+    }
+
     setState(() {
       _isSubmitting = true;
     });
@@ -177,7 +190,7 @@ class _SizeSelectionBottomSheetState extends ConsumerState<SizeSelectionBottomSh
             width: 343,
             height: 48,
             child: ElevatedButton(
-              onPressed: _selectedVariantId == null ? null : _addToFavorites,
+              onPressed: _selectedVariantId == null ? null : _onSubmit,
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xFFDB3022),
                 disabledBackgroundColor: Colors.grey[400],
@@ -187,9 +200,9 @@ class _SizeSelectionBottomSheetState extends ConsumerState<SizeSelectionBottomSh
                 elevation: _selectedVariantId == null ? 0 : 4,
                 shadowColor: const Color(0xFFDB3022).withOpacity(0.5),
               ),
-              child: const Text(
-                'ADD TO FAVORITES',
-                style: TextStyle(
+              child: Text(
+                widget.buttonText,
+                style: const TextStyle(
                   fontFamily: 'Metropolis',
                   fontSize: 14,
                   fontWeight: FontWeight.w500,

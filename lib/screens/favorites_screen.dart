@@ -64,40 +64,46 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
             data: (products) {
               final tags = <String>{};
               for (var p in products) {
-                tags.addAll(p.categories);
+                if (p.categories.isNotEmpty) {
+                  tags.addAll(p.categories);
+                }
               }
               final tagList = tags.toList()..sort();
-              if (tagList.isEmpty) return const SizedBox.shrink();
+              final displayTags = tagList.take(5).toList(); // Only take first 5
+              if (displayTags.isEmpty) return const SizedBox.shrink();
               return SizedBox(
                 height: 30,
                 child: ListView.separated(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   scrollDirection: Axis.horizontal,
-                  itemCount: tagList.length,
+                  itemCount: displayTags.length,
                   separatorBuilder: (context, index) => const SizedBox(width: 12),
                   itemBuilder: (context, index) {
                     return Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      width: 100,
+                      height: 30,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: const Color(0xFF222222),
                         borderRadius: BorderRadius.circular(29),
                       ),
                       child: Text(
-                        tagList[index],
+                        displayTags[index],
                         style: const TextStyle(
                           fontFamily: 'Metropolis',
-                          color: Colors.white,
+                          color: Color(0xFFFFFFFF),
                           fontSize: 14,
                           fontWeight: FontWeight.w500,
+                          height: 20 / 14,
                         ),
+                        textAlign: TextAlign.center,
                       ),
                     );
                   },
                 ),
               );
             },
-            loading: () => const SizedBox.shrink(),
+            loading: () => const SizedBox(height: 30, child: Center(child: CircularProgressIndicator())),
             error: (_, __) => const SizedBox.shrink(),
           ),
           const SizedBox(height: 16),
