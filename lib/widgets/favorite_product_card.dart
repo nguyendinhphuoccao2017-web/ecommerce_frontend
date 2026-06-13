@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/favorite_product.dart';
 import '../providers/favorite_provider.dart';
+import '../providers/loading_provider.dart';
+import '../screens/product_detail_screen.dart';
 
 class FavoriteProductCard extends ConsumerWidget {
   final FavoriteProduct product;
@@ -17,19 +19,33 @@ class FavoriteProductCard extends ConsumerWidget {
       discountPercent = ((product.comparePrice! - product.salePrice) / product.comparePrice! * 100).round();
     }
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Stack(
-          clipBehavior: Clip.none,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                product.thumbnailUrl ?? 'https://via.placeholder.com/150',
-                height: 184,
-                width: double.infinity,
-                fit: BoxFit.cover,
+    return GestureDetector(
+      onTap: () async {
+        ref.read(loadingProvider.notifier).state = true;
+        await Future.delayed(const Duration(seconds: 3));
+        ref.read(loadingProvider.notifier).state = false;
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetailScreen(productId: product.productId),
+            ),
+          );
+        }
+      },
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Stack(
+            clipBehavior: Clip.none,
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  product.thumbnailUrl ?? 'https://via.placeholder.com/150',
+                  height: 184,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
                 errorBuilder: (context, error, stackTrace) => Container(
                   height: 184,
                   width: double.infinity,

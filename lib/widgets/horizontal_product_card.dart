@@ -2,43 +2,60 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/product_home.dart';
 import '../providers/favorite_provider.dart';
+import '../providers/loading_provider.dart';
 import '../providers/nav_provider.dart';
 import 'size_selection_bottom_sheet.dart';
+import '../screens/product_detail_screen.dart';
 
 class HorizontalProductCard extends ConsumerWidget {
   final ProductHome product;
+  final bool isNewSection;
 
-  const HorizontalProductCard({super.key, required this.product});
+  const HorizontalProductCard({super.key, required this.product, this.isNewSection = false});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     bool isNew = product.tags.contains('New') || product.tags.contains('new');
-    bool hasDiscount = !isNew && product.comparePrice > product.salePrice && product.comparePrice > 0;
+    bool hasDiscount = !isNewSection && !isNew && product.comparePrice > product.salePrice && product.comparePrice > 0;
     int discountPercent = 0;
     if (hasDiscount) {
       discountPercent = ((product.comparePrice - product.salePrice) / product.comparePrice * 100).round();
     }
 
-    return Container(
-      margin: const EdgeInsets.only(bottom: 32),
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
-          Container(
-            width: double.infinity,
-            height: 104,
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(8),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+    return GestureDetector(
+      onTap: () async {
+        ref.read(loadingProvider.notifier).state = true;
+        await Future.delayed(const Duration(seconds: 3));
+        ref.read(loadingProvider.notifier).state = false;
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetailScreen(productId: product.id),
             ),
-            child: Row(
+          );
+        }
+      },
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 32),
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
+            Container(
+              width: double.infinity,
+              height: 104,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.05),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Row(
         children: [
           // Left Side: Image
           Stack(

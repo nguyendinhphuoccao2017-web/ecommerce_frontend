@@ -20,20 +20,19 @@ class FavoriteNotifier extends StateNotifier<bool> {
       final api = ref.read(apiServiceProvider);
       await api.toggleFavorite(productId, variantOptionId: variantOptionId);
       
-      // Invalidate all product lists so they refetch the updated isFavorite status
-      ref.invalidate(newProductsProvider);
-      ref.invalidate(saleProductsProvider);
-      ref.invalidate(categoryProductsProvider);
-      ref.invalidate(favoriteProductsProvider);
+      // Await refresh so loading overlay stays until new data is fetched and UI is ready
+      await Future.wait([
+        ref.refresh(newProductsProvider.future).catchError((_) => []),
+        ref.refresh(saleProductsProvider.future).catchError((_) => []),
+        ref.refresh(favoriteProductsProvider.future).catchError((_) => []),
+      ]);
+      
+      ref.read(loadingProvider.notifier).state = false;
     } catch (e) {
       print('Error toggling favorite: $e');
       ref.read(loadingProvider.notifier).state = false;
       rethrow;
     }
-
-    // Prolong loading overlay for 3 seconds to prevent double taps while UI updates
-    await Future.delayed(const Duration(seconds: 3));
-    ref.read(loadingProvider.notifier).state = false;
   }
 }
 

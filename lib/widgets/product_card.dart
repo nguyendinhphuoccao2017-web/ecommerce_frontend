@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/product_home.dart';
 import '../providers/favorite_provider.dart';
+import '../providers/loading_provider.dart';
 import '../providers/nav_provider.dart';
 import 'size_selection_bottom_sheet.dart';
 
@@ -24,13 +25,18 @@ class ProductCard extends ConsumerWidget {
     }
 
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ProductDetailScreen(productId: product.id),
-          ),
-        );
+      onTap: () async {
+        ref.read(loadingProvider.notifier).state = true;
+        await Future.delayed(const Duration(seconds: 3));
+        ref.read(loadingProvider.notifier).state = false;
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetailScreen(productId: product.id),
+            ),
+          );
+        }
       },
       child: Container(
         width: 150,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/favorite_product.dart';
 import '../providers/favorite_provider.dart';
+import '../providers/loading_provider.dart';
+import '../screens/product_detail_screen.dart';
 
 class HorizontalFavoriteProductCard extends ConsumerWidget {
   final FavoriteProduct product;
@@ -17,7 +19,21 @@ class HorizontalFavoriteProductCard extends ConsumerWidget {
       discountPercent = ((product.comparePrice! - product.salePrice) / product.comparePrice! * 100).round();
     }
 
-    return Container(
+    return GestureDetector(
+      onTap: () async {
+        ref.read(loadingProvider.notifier).state = true;
+        await Future.delayed(const Duration(seconds: 3));
+        ref.read(loadingProvider.notifier).state = false;
+        if (context.mounted) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ProductDetailScreen(productId: product.productId),
+            ),
+          );
+        }
+      },
+      child: Container(
       margin: const EdgeInsets.only(bottom: 32),
       child: Stack(
         clipBehavior: Clip.none,
