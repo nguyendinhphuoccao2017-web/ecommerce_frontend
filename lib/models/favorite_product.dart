@@ -9,6 +9,7 @@ class FavoriteProduct {
   final int totalReviews;
   final bool isFavorite;
   final List<String> tags;
+  final List<String> categories;
   final String? variantTitle;
   final String? variantOptionId;
   final String? sku;
@@ -24,6 +25,7 @@ class FavoriteProduct {
     required this.totalReviews,
     required this.isFavorite,
     required this.tags,
+    required this.categories,
     this.variantTitle,
     this.variantOptionId,
     this.sku,
@@ -41,6 +43,7 @@ class FavoriteProduct {
       totalReviews: json['totalReviews'] ?? 0,
       isFavorite: json['isFavorite'] ?? true,
       tags: List<String>.from(json['tags'] ?? []),
+      categories: List<String>.from(json['categories'] ?? []),
       variantTitle: json['variantTitle'],
       variantOptionId: json['variantOptionId'],
       sku: json['sku'],

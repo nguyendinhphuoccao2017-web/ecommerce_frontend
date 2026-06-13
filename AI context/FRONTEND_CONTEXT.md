@@ -93,8 +93,12 @@
   - Hỗ trợ thao tác vuốt pop-back: Khi ấn vào tab trên thanh điều hướng từ một trang con, hệ thống sẽ sử dụng `Navigator.popUntil` lùi thẳng về thư mục gốc để chuyển tab, giúp giữ vững thanh điều hướng ở mọi nơi mà không bị che mất.
 - **[MỚI] Tối ưu UX UI & Sửa lỗi Favorite**:
   - **Tối ưu hiển thị Size**: Ẩn các tiền tố màu sắc khỏi thẻ chọn Size trên Bottom Sheet, chỉ hiển thị tên Size gọn gàng (XS, S, M, L, XL) đúng ý đồ UX của thiết kế.
-  - **Khắc phục lỗi Double-Tap**: Đã bổ sung cờ trạng thái `_isSubmitting` khóa cứng nút "ADD TO FAVORITES" ngay trong chu kỳ xử lý đầu tiên, triệt tiêu hoàn toàn lỗi người dùng bấm đúp nhanh tay khiến API `/toggle` chạy kép (Thêm xong bị Xóa).
-  - **Hiệu ứng Global Loading Blur**: Tái cấu trúc Widget `LoadingOverlay` thành `ConsumerWidget` kết nối với `loadingProvider`. Giờ đây, khi xử lý tính năng Yêu thích, App sẽ kích hoạt màn sương đen mờ toàn màn hình kết hợp với vòng quay chờ `CircularProgressIndicator` đỏ thẫm nhằm ngăn chặn tuyệt đối các tương tác sai lệch của người dùng khi đang chờ Backend lưu trữ.
+  - **Khắc phục lỗi Double-Tap**: Triệt tiêu hoàn toàn lỗi người dùng bấm đúp nhanh tay khiến API `/toggle` chạy kép (Thêm xong bị Xóa) bằng cách sử dụng `LoadingOverlay`. Đã nâng cấp hàm `toggle` trong `favorite_provider.dart` kéo dài thời gian duy trì hiệu ứng làm mờ và loading (delay thêm 3 giây) sau khi API phản hồi thành công/thất bại, nhằm chặn mọi hành động bấm đúp liên tục trong thời gian hệ thống render trạng thái thay đổi.
+  - **Tối ưu Giao diện Thẻ Sản phẩm (Product Card)**:
+    - **Nút Giỏ Hàng**: Phóng to kích thước nút thêm vào giỏ màu đỏ (từ `36x36` lên `44x44`, icon `size: 22`) ở toàn bộ thẻ sản phẩm để người dùng dễ chạm hơn.
+    - **Hiển thị Biến Thể**: Cắt chuỗi `variantTitle` gốc từ Backend (vd: "Orange, S") để render thành giao diện chuẩn `Color: Orange   Size: S` qua `RichText`.
+    - **Đồng bộ Logic Màu Sao Đánh Giá**: Ngôi sao đã đánh giá (`index < rating`) được tô màu Vàng Cam (`#FFBA49`), ngôi sao trống (hoặc chưa có đánh giá nào) hiển thị màu Xám (`#9B9B9B`).
+    - **Ánh xạ SKU**: Đồng bộ hoàn toàn dữ liệu mã SKU (thay thế chữ "Brand Name" tĩnh) cho cả giao diện thẻ lưới, thẻ ngang trên màn hình Home, Shop và Favorites.
 ## 5. Các bước tiếp theo (Next Steps)
 1. **Hoàn thiện UI/UX Danh mục (Shop/Catalog)**: Backend API `GET /api/categories/{id}/products` đã hoàn thiện 100%, sẵn sàng fetch data với cơ chế gửi Token bảo mật.
 2. **Triển khai Tính năng Giỏ Hàng (Bag/Cart)**: 

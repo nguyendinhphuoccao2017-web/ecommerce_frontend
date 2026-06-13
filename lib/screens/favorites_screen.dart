@@ -23,6 +23,18 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
       appBar: AppBar(
         backgroundColor: const Color(0xFFF9F9F9),
         elevation: 0,
+        centerTitle: _isGridMode,
+        title: _isGridMode
+            ? const Text(
+                'Favorites',
+                style: TextStyle(
+                  fontFamily: 'Metropolis',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                  color: Color(0xFF222222),
+                ),
+              )
+            : null,
         actions: [
           IconButton(
             icon: const Icon(Icons.search, color: Color(0xFF222222)),
@@ -33,25 +45,26 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.0),
-            child: Text(
-              'Favorites',
-              style: TextStyle(
-                fontFamily: 'Metropolis',
-                fontWeight: FontWeight.bold,
-                fontSize: 34,
-                color: Color(0xFF222222),
+          if (!_isGridMode)
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 16.0),
+              child: Text(
+                'Favorites',
+                style: TextStyle(
+                  fontFamily: 'Metropolis',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 34,
+                  color: Color(0xFF222222),
+                ),
               ),
             ),
-          ),
-          const SizedBox(height: 16),
-          // Category Pills Row (Dynamic based on product tags)
+          if (!_isGridMode) const SizedBox(height: 16),
+          // Category Pills Row (Dynamic based on product categories)
           favoritesAsync.when(
             data: (products) {
               final tags = <String>{};
               for (var p in products) {
-                tags.addAll(p.tags);
+                tags.addAll(p.categories);
               }
               final tagList = tags.toList()..sort();
               if (tagList.isEmpty) return const SizedBox.shrink();
