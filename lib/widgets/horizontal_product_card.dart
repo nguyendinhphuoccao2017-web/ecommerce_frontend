@@ -285,6 +285,7 @@ class HorizontalProductCard extends ConsumerWidget {
     ),
   ],
       ),
+    ),
     );
   }
 }

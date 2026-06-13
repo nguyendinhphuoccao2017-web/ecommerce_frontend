@@ -299,6 +299,7 @@ class HorizontalFavoriteProductCard extends ConsumerWidget {
           ),
         ],
       ),
+      ),
     );
   }
 }

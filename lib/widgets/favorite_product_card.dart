@@ -242,6 +242,7 @@ class FavoriteProductCard extends ConsumerWidget {
           ],
         ),
       ],
+      ),
     );
   }
 }
