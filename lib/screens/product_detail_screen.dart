@@ -23,6 +23,7 @@ class ProductDetailScreen extends ConsumerStatefulWidget {
 class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
   final PageController _pageController = PageController();
   final _storage = const FlutterSecureStorage();
+  bool _isDescriptionExpanded = false;
 
   @override
   void dispose() {
@@ -35,25 +36,25 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     return token != null;
   }
 
-  void _openSizeSelectionBottomSheet(BuildContext context, {required String buttonText, required List<VariantOption> variants}) async {
+  void _openSizeSelectionBottomSheet(BuildContext context, {required String buttonText, required List<VariantOption> variants, bool isFavoriteMode = false}) async {
     ref.read(loadingProvider.notifier).state = true;
     await Future.delayed(const Duration(seconds: 3));
     ref.read(loadingProvider.notifier).state = false;
 
     if (!mounted) return;
 
-    final variantId = await showModalBottomSheet<String>(
+    final variantId = await showModalBottomSheet<dynamic>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) => SizeSelectionBottomSheet(
         productId: widget.productId,
         buttonText: buttonText,
-        isFavoriteMode: false,
+        isFavoriteMode: isFavoriteMode,
       ),
     );
 
-    if (variantId != null && mounted) {
+    if (variantId != null && variantId is String && mounted) {
       final selectedVariant = variants.firstWhere((v) => v.id == variantId);
       ref.read(selectedVariantNotifierProvider(widget.productId).notifier).selectVariant(selectedVariant);
       if (buttonText == 'ADD TO CART') {
@@ -79,18 +80,23 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Added to cart')));
   }
 
-  void _handleFavorite(ProductDetail product) async {
+  void _handleFavorite(ProductDetail product, List<VariantOption> variants) async {
     bool loggedIn = await _isLoggedIn();
     if (!loggedIn && mounted) {
       Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
       return;
     }
     
+    final selectedVariant = ref.read(selectedVariantNotifierProvider(widget.productId));
+    if (selectedVariant == null) {
+      _openSizeSelectionBottomSheet(context, buttonText: 'ADD TO FAVORITES', variants: variants, isFavoriteMode: true);
+      return;
+    }
+
     try {
-      final selectedVariant = ref.read(selectedVariantNotifierProvider(widget.productId));
       await ref.read(favoriteNotifierProvider.notifier).toggle(
         product.id,
-        variantOptionId: selectedVariant?.id,
+        variantOptionId: selectedVariant.id,
       );
     } catch (e) {
       if (mounted) {
@@ -245,7 +251,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                             color: product.isFavorite ? Colors.red : Colors.grey,
                             size: 20,
                           ),
-                          onPressed: () => _handleFavorite(product),
+                          onPressed: () => _handleFavorite(product, safeVariants),
                         ),
                       ),
                     ],
@@ -309,22 +315,15 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 // Description
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      if (product.shortDescription.isNotEmpty) ...[
-                        Text(
-                          product.shortDescription,
-                          style: const TextStyle(fontSize: 14, color: Colors.black87, height: 1.5, fontWeight: FontWeight.w500),
-                        ),
-                        const SizedBox(height: 12),
-                      ],
-                      if (product.productDescription.isNotEmpty)
-                        Text(
-                          product.productDescription,
-                          style: const TextStyle(fontSize: 14, color: Colors.black54, height: 1.5),
-                        ),
-                    ],
+                  child: AnimatedSize(
+                    duration: const Duration(milliseconds: 300),
+                    alignment: Alignment.topCenter,
+                    child: Text(
+                      product.shortDescription,
+                      style: const TextStyle(fontSize: 14, color: Colors.black87, height: 1.5, fontWeight: FontWeight.w500),
+                      maxLines: _isDescriptionExpanded ? null : 3,
+                      overflow: _isDescriptionExpanded ? TextOverflow.visible : TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
 
@@ -362,13 +361,26 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           ),
                         ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        width: 134,
-                        height: 5,
-                        decoration: BoxDecoration(
-                          color: Colors.black,
-                          borderRadius: BorderRadius.circular(100),
+                      GestureDetector(
+                        onVerticalDragUpdate: (details) {
+                          if (details.delta.dy < 0 && !_isDescriptionExpanded) {
+                            setState(() => _isDescriptionExpanded = true);
+                          } else if (details.delta.dy > 0 && _isDescriptionExpanded) {
+                            setState(() => _isDescriptionExpanded = false);
+                          }
+                        },
+                        behavior: HitTestBehavior.opaque,
+                        child: Container(
+                          margin: const EdgeInsets.only(bottom: 8),
+                          padding: const EdgeInsets.all(8), // Add invisible padding for easier grabbing
+                          child: Container(
+                            width: 134,
+                            height: 5,
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              borderRadius: BorderRadius.circular(100),
+                            ),
+                          ),
                         ),
                       ),
                     ],
