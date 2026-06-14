@@ -9,6 +9,7 @@ import 'login_screen.dart';
 
 import '../widgets/size_selection_bottom_sheet.dart';
 import '../providers/loading_provider.dart';
+import '../providers/favorite_provider.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;
@@ -84,8 +85,18 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       Navigator.push(context, MaterialPageRoute(builder: (context) => const LoginScreen()));
       return;
     }
-    // TODO: Call Toggle Favorite API and invalidate provider to refresh
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Favorite toggled')));
+    
+    try {
+      final selectedVariant = ref.read(selectedVariantNotifierProvider(widget.productId));
+      await ref.read(favoriteNotifierProvider.notifier).toggle(
+        product.id,
+        variantOptionId: selectedVariant?.id,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to toggle favorite: $e')));
+      }
+    }
   }
 
   @override
@@ -253,12 +264,12 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              product.sku != null && product.sku.isNotEmpty ? product.sku : product.productName,
+                              product.sku.isNotEmpty ? product.sku : product.productName,
                               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              product.sku != null && product.sku.isNotEmpty ? product.productName : product.shortDescription,
+                              product.sku.isNotEmpty ? product.productName : product.shortDescription,
                               style: const TextStyle(fontSize: 12, color: Colors.grey),
                             ),
                           ],
@@ -298,11 +309,22 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 // Description
                 Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    product.productDescription != null && product.productDescription.isNotEmpty 
-                        ? product.productDescription 
-                        : product.shortDescription,
-                    style: const TextStyle(fontSize: 14, color: Colors.black87, height: 1.5),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (product.shortDescription.isNotEmpty) ...[
+                        Text(
+                          product.shortDescription,
+                          style: const TextStyle(fontSize: 14, color: Colors.black87, height: 1.5, fontWeight: FontWeight.w500),
+                        ),
+                        const SizedBox(height: 12),
+                      ],
+                      if (product.productDescription.isNotEmpty)
+                        Text(
+                          product.productDescription,
+                          style: const TextStyle(fontSize: 14, color: Colors.black54, height: 1.5),
+                        ),
+                    ],
                   ),
                 ),
 

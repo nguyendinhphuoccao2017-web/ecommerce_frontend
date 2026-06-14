@@ -101,14 +101,20 @@
     - **Ánh xạ SKU**: Đồng bộ hoàn toàn dữ liệu mã SKU (thay thế chữ "Brand Name" tĩnh) cho cả giao diện thẻ lưới, thẻ ngang trên màn hình Home, Shop và Favorites.
   - **Tối ưu hiển thị trang Favorites**: 
     - Cập nhật model `FavoriteProduct` thêm danh sách `categories` trả về từ Backend.
-    - Cập nhật danh sách "Viên thuốc" (Pills) phân loại phía dưới AppBar để hiển thị theo **Danh mục** thay vì Nhãn (Tags) như trước đây.
+    - Cập nhật danh sách "Viên thuốc" (Pills) phân loại phía dưới AppBar để hiển thị theo **Danh mục** thay vì Nhãn (Tags) như trước đây. Logic ẩn Pills đi khi danh sách Yêu thích trống rỗng cũng đã được áp dụng.
     - Căn chỉnh UI theo đúng Figma: Trong chế độ xem Grid (lưới), tiêu đề chữ lớn "Favorites" ở dưới được ẩn đi và chuyển lên căn giữa bên trong AppBar. Trong chế độ xem List (danh sách), giữ nguyên tiêu đề lớn ở dưới.
-## 5. Các bước tiếp theo (Next Steps)
-1. **Hoàn thiện UI/UX Danh mục (Shop/Catalog)**: Backend API `GET /api/categories/{id}/products` đã hoàn thiện 100%, sẵn sàng fetch data với cơ chế gửi Token bảo mật.
-2. **Triển khai Tính năng Giỏ Hàng (Bag/Cart)**: 
+  - **Tái Cấu Trúc Toàn Diện Product Detail Screen (Chi Tiết Sản Phẩm)**:
+    - **AppBar & Image**: Thay thế trạng thái trong suốt thành nền trắng (`Colors.white`), hình ảnh sản phẩm được đẩy xuống phía dưới AppBar, tăng chiều cao ảnh lên để đảm bảo full khung đẹp mắt, không bị che khuất.
+    - **Variants (Color & Size)**: Sắp xếp nút Size, ô hiển thị Color và nút Favorite vào cùng một dòng nằm ngang (`Row`). Ô Color được đọc tự động (read-only) từ Backend (dữ liệu biến thể) và ẩn tính năng click. Nút Size khi click sẽ gọi Bottom Sheet `SizeSelectionBottomSheet` (đã được cấu hình đổi chữ 'SELECT' thành 'ADD TO CART').
+    - **Header & Layout**: Sắp xếp tên Thương Hiệu (SKU) in đậm đối xứng giá bán. Tên sản phẩm, số sao đánh giá và phần mô tả (Description) được sắp xếp lần lượt bên dưới trên phông nền `#F9F9F9`.
+    - **Add To Cart Container**: Tách biệt khu vực nút "ADD TO CART" thành một khối neo bên dưới có nền trắng `#FFFFFF`, bổ sung dải ngang màu đen giả lập Home Indicator của iOS nằm bên dưới nút nhấn.
+    - **Global Loading (Thêm vào giỏ/Yêu thích)**: Cấu hình `loadingProvider` để tạo vòng xoay Blur loading delay 3 giây khi thao tác thêm sản phẩm hoặc bật/tắt yêu thích nhằm chặn click đúp.
+
+## 6. Các bước tiếp theo (Next Steps)
+1. **Triển khai Tính năng Giỏ Hàng (Bag/Cart)**: 
    - Tích hợp sự kiện vào nút "Giỏ Xách" tại các Product Card.
-   - Hiển thị danh sách sản phẩm trong giỏ ở Tab Bag.
-3. **Quản lý Token & Dio Interceptor**: Xử lý triệt để logic Interceptor của Dio để tự động đính kèm Token hoặc làm mới Token khi hết hạn (Refresh Token).
+   - Quản lý danh sách, số lượng sản phẩm và giá tiền trong giỏ ở Tab Bag.
+2. **Quản lý Token & Dio Interceptor**: Xử lý triệt để logic Interceptor của Dio để tự động đính kèm Token hoặc làm mới Token khi hết hạn (Refresh Token).
 
 ---
 *Lưu ý đối với AI Gemini: Hãy tự động cập nhật lại file này bất cứ khi nào có thay đổi lớn ở Frontend (như thêm màn hình mới, thay đổi thư viện cốt lõi, hay kết nối xong các API quan trọng) để đồng bộ khi commit code lên Github.*
