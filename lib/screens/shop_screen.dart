@@ -62,7 +62,12 @@ class _ShopScreenState extends ConsumerState<ShopScreen> with SingleTickerProvid
           Container(
             width: double.infinity,
             height: 44,
-            color: Colors.white,
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              border: Border(
+                bottom: BorderSide(color: Color(0xFF9B9B9B), width: 0.4),
+              ),
+            ),
             child: TabBar(
               controller: _tabController,
               labelColor: const Color(0xFF222222),
