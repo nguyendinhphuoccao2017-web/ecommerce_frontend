@@ -30,7 +30,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> with SingleTickerProvid
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
-        backgroundColor: const Color(0xFFF9F9F9),
+        backgroundColor: Colors.white,
         elevation: 0,
         centerTitle: true,
         leading: IconButton(

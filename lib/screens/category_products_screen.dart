@@ -37,6 +37,18 @@ class CategoryProductsScreen extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF222222)),
           onPressed: () => Navigator.pop(context),
         ),
+        title: isGridMode
+            ? Text(
+                "Women's $shortName",
+                style: const TextStyle(
+                  fontFamily: 'Metropolis',
+                  fontWeight: FontWeight.w400,
+                  fontSize: 18,
+                  color: Color(0xFF222222),
+                ),
+              )
+            : null,
+        centerTitle: true,
         actions: [
           IconButton(
             icon: const Icon(Icons.search, color: Color(0xFF222222)),
@@ -48,20 +60,22 @@ class CategoryProductsScreen extends ConsumerWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Custom Heading
-          Padding(
-            padding: const EdgeInsets.only(left: 14, top: 16, bottom: 12),
-            child: Text(
-              "Women's $shortName",
-              style: const TextStyle(
-                fontFamily: 'Metropolis',
-                fontWeight: FontWeight.w700,
-                fontSize: 34,
-                color: Color(0xFF222222),
-                height: 1.0,
+          if (!isGridMode)
+            Padding(
+              padding: const EdgeInsets.only(left: 14, top: 16, bottom: 12),
+              child: Text(
+                "Women's $shortName",
+                style: const TextStyle(
+                  fontFamily: 'Metropolis',
+                  fontWeight: FontWeight.w700,
+                  fontSize: 34,
+                  color: Color(0xFF222222),
+                  height: 1.0,
+                ),
               ),
             ),
-          ),
           
+          if (isGridMode) const SizedBox(height: 16),
           // Sub-category Pills
           if (allCategories != null)
             SizedBox(
@@ -137,7 +151,7 @@ class CategoryProductsScreen extends ConsumerWidget {
                   ],
                 ),
                 IconButton(
-                  icon: Icon(isGridMode ? Icons.view_list : Icons.grid_view, color: const Color(0xFF222222)),
+                  icon: Icon(isGridMode ? Icons.view_list : Icons.view_module, color: const Color(0xFF222222)),
                   onPressed: () {
                     ref.read(viewModeProvider.notifier).state = !isGridMode;
                   },

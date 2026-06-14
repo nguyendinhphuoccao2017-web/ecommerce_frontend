@@ -84,15 +84,28 @@ class CategoriesScreen extends ConsumerWidget {
           Expanded(
             child: categoriesAsync.when(
               data: (categories) {
+                final sortedCategories = List.of(categories);
+                
+                int topsIndex = sortedCategories.indexWhere((c) => c.categoryName.toLowerCase() == 'tops');
+                if (topsIndex != -1) {
+                  final tops = sortedCategories.removeAt(topsIndex);
+                  int shirtsIndex = sortedCategories.indexWhere((c) => c.categoryName.toLowerCase() == 'shirts & blouses');
+                  if (shirtsIndex != -1) {
+                    sortedCategories.insert(shirtsIndex, tops);
+                  } else {
+                    sortedCategories.insert(0, tops);
+                  }
+                }
+
                 return ListView.separated(
-                  itemCount: categories.length,
+                  itemCount: sortedCategories.length,
                   separatorBuilder: (context, index) => const Divider(
                     height: 1,
                     thickness: 0.4,
                     color: Color(0xFF9B9B9B),
                   ),
                   itemBuilder: (context, index) {
-                    final category = categories[index];
+                    final category = sortedCategories[index];
                     return ListTile(
                       contentPadding: const EdgeInsets.symmetric(horizontal: 40, vertical: 8),
                       title: Text(
@@ -111,7 +124,7 @@ class CategoriesScreen extends ConsumerWidget {
                             builder: (_) => CategoryProductsScreen(
                               categoryId: category.id,
                               categoryName: category.categoryName,
-                              allCategories: categories,
+                              allCategories: sortedCategories,
                             ),
                           ),
                         );
