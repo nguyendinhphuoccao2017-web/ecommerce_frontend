@@ -4,7 +4,7 @@ import '../providers/loading_provider.dart';
 import '../models/favorite_product.dart';
 import 'home_provider.dart';
 import 'category_provider.dart';
-import 'product_detail_provider.dart';
+import 'product_detail_provider.dart' hide apiServiceProvider;
 
 final favoriteProductsProvider = FutureProvider<List<FavoriteProduct>>((
   ref,
