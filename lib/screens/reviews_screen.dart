@@ -51,7 +51,7 @@ class _ReviewsScreenState extends ConsumerState<ReviewsScreen> {
           _isRefreshing = true;
         });
         ref.invalidate(reviewSummaryProvider(widget.productId));
-        ref.read(reviewNotifierProvider(widget.productId).notifier).refreshReviews();
+        ref.read(reviewNotifierProvider(widget.productId).notifier).refresh();
         
         Future.delayed(const Duration(seconds: 3), () {
           if (mounted) {
@@ -195,7 +195,7 @@ class _ReviewsScreenState extends ConsumerState<ReviewsScreen> {
           borderRadius: BorderRadius.circular(24),
         ),
       ),
-    );
+    ),
         if (_isRefreshing)
           Positioned.fill(
             child: Container(
