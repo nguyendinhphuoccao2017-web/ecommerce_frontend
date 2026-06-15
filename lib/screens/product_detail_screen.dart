@@ -6,6 +6,7 @@ import '../models/product_detail.dart';
 import '../models/variant_option.dart';
 import '../widgets/product_card.dart';
 import 'login_screen.dart';
+import 'reviews_screen.dart';
 
 import '../widgets/size_selection_bottom_sheet.dart';
 import '../providers/loading_provider.dart';
@@ -292,23 +293,35 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                 // Ratings
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-                  child: Row(
-                    children: [
-                      Row(
-                        children: List.generate(5, (index) {
-                          return Icon(
-                            index < product.averageRating.round() ? Icons.star : Icons.star_border,
-                            color: Colors.amber,
-                            size: 16,
-                          );
-                        }),
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        '(${product.totalReviews})',
-                        style: const TextStyle(color: Colors.grey, fontSize: 12),
-                      ),
-                    ],
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => ReviewsScreen(productId: widget.productId),
+                        ),
+                      );
+                    },
+                    child: Row(
+                      children: [
+                        Row(
+                          children: List.generate(5, (index) {
+                            return Icon(
+                              index < product.averageRating.round() ? Icons.star : Icons.star_border,
+                              color: Colors.amber,
+                              size: 16,
+                            );
+                          }),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          '(${product.totalReviews})',
+                          style: const TextStyle(color: Colors.grey, fontSize: 12),
+                        ),
+                        const Spacer(),
+                        const Icon(Icons.chevron_right, color: Colors.grey, size: 20),
+                      ],
+                    ),
                   ),
                 ),
 

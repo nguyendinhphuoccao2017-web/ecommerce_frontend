@@ -1,6 +1,6 @@
 # Frontend (Flutter) - AI Context
 
-**Ngày cập nhật**: 08/06/2026
+**Ngày cập nhật**: 15/06/2026
 **Dự án**: E-commerce Frontend (Flutter)
 
 ## 1. Công nghệ & Kiến trúc
@@ -69,6 +69,7 @@
 
 ## 4. Các chỉnh sửa & Bug Fixes mới nhất
 - **UI Tweaks**:
+  - Đồng bộ hóa font weight (in đậm) cho tiêu đề "Categories" ở màn hình Shop/Categories và tiêu đề dạng lưới ở Category Products Screen, thống nhất với màn hình Favorites.
   - Đã xóa bỏ hiệu ứng cuộn kéo giãn (Overscroll Glow) khi lướt tới cuối danh sách bằng `ClampingScrollPhysics()`.
   - Căn chỉnh lại `CrossAxisAlignment.center` để chữ "View all" nằm cân bằng hoàn hảo với tiêu đề khối.
   - Sửa lỗi khoảng trống thừa thãi giữa ảnh sản phẩm và đánh giá 5 sao (`SizedBox(height: 8)`).

@@ -217,4 +217,64 @@ class ApiService {
       throw Exception('Failed to load related products: $e');
     }
   }
+
+  Future<Map<String, dynamic>> getReviews(String productId, int page, int size, bool withPhoto) async {
+    try {
+      final response = await _dio.get(
+        '$apiBaseUrl/products/$productId/reviews',
+        queryParameters: {
+          'page': page,
+          'size': size,
+          'withPhoto': withPhoto,
+        },
+      );
+      return response.data; // Expected format: {"content": [...], "totalPages": ...}
+    } catch (e) {
+      throw Exception('Failed to load reviews: $e');
+    }
+  }
+
+  Future<Map<String, dynamic>> getReviewSummary(String productId) async {
+    try {
+      final response = await _dio.get('$apiBaseUrl/products/$productId/reviews/summary');
+      return response.data;
+    } catch (e) {
+      throw Exception('Failed to load review summary: $e');
+    }
+  }
+
+  Future<void> postReview(String productId, int rating, String title, String comment, List<String> images) async {
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      if (token == null) throw Exception('No token found');
+      await _dio.post(
+        '$apiBaseUrl/products/$productId/reviews',
+        data: {
+          'rating': rating,
+          'title': title,
+          'comment': comment,
+          'images': images,
+        },
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+    } catch (e) {
+      throw Exception('Failed to post review: $e');
+    }
+  }
+
+  Future<void> incrementHelpfulCount(String reviewId) async {
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      await _dio.post(
+        '$apiBaseUrl/product-reviews/$reviewId/helpful',
+        options: Options(
+          headers: token != null ? {'Authorization': 'Bearer $token'} : null,
+        ),
+      );
+    } catch (e) {
+      throw Exception('Failed to increment helpful count: $e');
+    }
+  }
 }
