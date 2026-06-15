@@ -5,10 +5,37 @@ import '../widgets/review_card.dart';
 import '../widgets/write_review_bottom_sheet.dart';
 import '../models/review.dart';
 
-class ReviewsScreen extends ConsumerWidget {
+class ReviewsScreen extends ConsumerStatefulWidget {
   final String productId;
 
   const ReviewsScreen({Key? key, required this.productId}) : super(key: key);
+
+  @override
+  ConsumerState<ReviewsScreen> createState() => _ReviewsScreenState();
+}
+
+class _ReviewsScreenState extends ConsumerState<ReviewsScreen> {
+  bool _isRefreshing = false;
+  final ScrollController _scrollController = ScrollController();
+  bool _showTitle = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(() {
+      if (_scrollController.offset > 120 && !_showTitle) {
+        setState(() => _showTitle = true);
+      } else if (_scrollController.offset <= 120 && _showTitle) {
+        setState(() => _showTitle = false);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   void _showWriteReviewBottomSheet(BuildContext context) {
     showModalBottomSheet(
@@ -16,41 +43,61 @@ class ReviewsScreen extends ConsumerWidget {
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
       builder: (context) {
-        return WriteReviewBottomSheet(productId: productId);
+        return WriteReviewBottomSheet(productId: widget.productId);
       },
     ).then((submitted) {
       if (submitted == true) {
-        // Option to refresh if we wanted to
+        setState(() {
+          _isRefreshing = true;
+        });
+        ref.invalidate(reviewSummaryProvider(widget.productId));
+        ref.read(reviewNotifierProvider(widget.productId).notifier).refreshReviews();
+        
+        Future.delayed(const Duration(seconds: 3), () {
+          if (mounted) {
+            setState(() {
+              _isRefreshing = false;
+            });
+          }
+        });
       }
     });
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final summaryAsync = ref.watch(reviewSummaryProvider(productId));
-    final reviewState = ref.watch(reviewNotifierProvider(productId));
-    final reviewNotifier = ref.read(reviewNotifierProvider(productId).notifier);
+  Widget build(BuildContext context) {
+    final summaryAsync = ref.watch(reviewSummaryProvider(widget.productId));
+    final reviewState = ref.watch(reviewNotifierProvider(widget.productId));
+    final reviewNotifier = ref.read(reviewNotifierProvider(widget.productId).notifier);
 
-    return Scaffold(
+    return Stack(
+      children: [
+        Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,
+        centerTitle: true,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios, color: Colors.black, size: 20),
           onPressed: () => Navigator.pop(context),
         ),
-        title: const Text(
-          'Rating&Reviews',
-          style: TextStyle(
-            color: Color(0xFF222222),
-            fontFamily: 'Metropolis',
-            fontWeight: FontWeight.bold,
-            fontSize: 24,
+        title: AnimatedOpacity(
+          opacity: _showTitle ? 1.0 : 0.0,
+          duration: const Duration(milliseconds: 200),
+          child: const Text(
+            'Rating and reviews',
+            style: TextStyle(
+              color: Color(0xFF222222),
+              fontFamily: 'Metropolis',
+              fontWeight: FontWeight.bold,
+              fontSize: 18,
+            ),
           ),
         ),
       ),
       body: CustomScrollView(
+        controller: _scrollController,
         slivers: [
           SliverToBoxAdapter(
             child: Padding(
@@ -113,7 +160,7 @@ class ReviewsScreen extends ConsumerWidget {
                 if (index < reviewState.reviews.length) {
                   return ReviewCard(
                     review: reviewState.reviews[index],
-                    productId: productId,
+                    productId: widget.productId,
                   );
                 } else if (reviewState.hasMore) {
                   WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -148,6 +195,17 @@ class ReviewsScreen extends ConsumerWidget {
           borderRadius: BorderRadius.circular(24),
         ),
       ),
+    );
+        if (_isRefreshing)
+          Positioned.fill(
+            child: Container(
+              color: Colors.white.withOpacity(0.6),
+              child: const Center(
+                child: CircularProgressIndicator(color: Color(0xFFDB3022)),
+              ),
+            ),
+          ),
+      ],
     );
   }
 
@@ -189,14 +247,18 @@ class ReviewsScreen extends ConsumerWidget {
                 padding: const EdgeInsets.only(bottom: 4.0),
                 child: Row(
                   children: [
-                    Row(
-                      children: List.generate(5, (starIndex) {
-                        return Icon(
-                          starIndex < starCount ? Icons.star : Icons.star_border,
-                          size: 14,
-                          color: starIndex < starCount ? const Color(0xFFFFBA49) : Colors.transparent,
-                        );
-                      }),
+                    SizedBox(
+                      width: 70,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: List.generate(starCount, (starIndex) {
+                          return const Icon(
+                            Icons.star,
+                            size: 14,
+                            color: Color(0xFFFFBA49),
+                          );
+                        }),
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(

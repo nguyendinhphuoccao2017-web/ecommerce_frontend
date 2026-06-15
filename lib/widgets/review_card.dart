@@ -104,7 +104,7 @@ class _ReviewCardState extends ConsumerState<ReviewCard> {
                     color: Color(0xFF222222),
                   ),
                 ),
-                if (widget.review.images.isNotEmpty) ...[
+                if (widget.review.images.isNotEmpty && ref.watch(reviewNotifierProvider(widget.productId)).withPhoto) ...[
                   const SizedBox(height: 12),
                   SizedBox(
                     height: 104,

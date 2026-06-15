@@ -305,17 +305,15 @@ class _WriteReviewBottomSheetState extends ConsumerState<WriteReviewBottomSheet>
                         borderRadius: BorderRadius.circular(24),
                       ),
                     ),
-                    child: _isSubmitting
-                        ? const CircularProgressIndicator(color: Colors.white)
-                        : const Text(
-                            'SEND REVIEW',
-                            style: TextStyle(
-                              fontFamily: 'Metropolis',
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14,
-                              color: Colors.white,
-                            ),
-                          ),
+                    child: const Text(
+                      'SEND REVIEW',
+                      style: TextStyle(
+                        fontFamily: 'Metropolis',
+                        fontWeight: FontWeight.w500,
+                        fontSize: 14,
+                        color: Colors.white,
+                      ),
+                    ),
                   ),
                 ),
               ],
