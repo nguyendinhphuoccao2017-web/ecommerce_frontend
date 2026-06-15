@@ -45,7 +45,7 @@ class _ShopScreenState extends ConsumerState<ShopScreen> with SingleTickerProvid
           style: TextStyle(
             color: Color(0xFF222222),
             fontFamily: 'Metropolis',
-            fontWeight: FontWeight.w400,
+            fontWeight: FontWeight.bold,
             fontSize: 18,
             height: 22 / 18,
           ),

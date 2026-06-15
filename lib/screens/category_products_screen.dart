@@ -42,7 +42,7 @@ class CategoryProductsScreen extends ConsumerWidget {
                 "Women's $shortName",
                 style: const TextStyle(
                   fontFamily: 'Metropolis',
-                  fontWeight: FontWeight.w400,
+                  fontWeight: FontWeight.bold,
                   fontSize: 18,
                   color: Color(0xFF222222),
                 ),
