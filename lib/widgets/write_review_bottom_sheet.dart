@@ -79,10 +79,10 @@ class _WriteReviewBottomSheetState extends ConsumerState<WriteReviewBottomSheet>
           final filePath = 'reviews/$fileName';
           
           await supabase.storage
-              .from('PRODUCT-UPLOAD')
+              .from('product-upload')
               .upload(filePath, File(file.path));
               
-          return supabase.storage.from('PRODUCT-UPLOAD').getPublicUrl(filePath);
+          return supabase.storage.from('product-upload').getPublicUrl(filePath);
         }).toList();
 
         imageUrls = await Future.wait(uploadTasks);
@@ -132,7 +132,7 @@ class _WriteReviewBottomSheetState extends ConsumerState<WriteReviewBottomSheet>
         left: 16,
         right: 16,
         top: 14,
-        bottom: MediaQuery.of(context).viewInsets.bottom + 16,
+        bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom + 16,
       ),
       child: Stack(
         children: [
