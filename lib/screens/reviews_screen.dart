@@ -99,6 +99,20 @@ class _ReviewsScreenState extends ConsumerState<ReviewsScreen> {
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
+          const SliverToBoxAdapter(
+            child: Padding(
+              padding: EdgeInsets.only(left: 16.0, right: 16.0, top: 16.0, bottom: 8.0),
+              child: Text(
+                'Rating&Reviews',
+                style: TextStyle(
+                  fontFamily: 'Metropolis',
+                  fontWeight: FontWeight.bold,
+                  fontSize: 34,
+                  color: Color(0xFF222222),
+                ),
+              ),
+            ),
+          ),
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 24.0),
@@ -133,7 +147,9 @@ class _ReviewsScreenState extends ConsumerState<ReviewsScreen> {
                     children: [
                       Checkbox(
                         value: reviewState.withPhoto,
-                        activeColor: const Color(0xFFDB3022),
+                        activeColor: const Color(0xFF222222),
+                        checkColor: const Color(0xFFFFFFFF),
+                        side: const BorderSide(color: Color(0xFF222222), width: 1.5),
                         onChanged: (value) {
                           if (value != null) {
                             reviewNotifier.setWithPhoto(value);

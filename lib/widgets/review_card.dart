@@ -133,20 +133,25 @@ class _ReviewCardState extends ConsumerState<ReviewCard> {
                     onTap: _onHelpfulTapped,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
                           'Helpful',
                           style: TextStyle(
                             fontFamily: 'Metropolis',
                             fontSize: 11,
+                            height: 1.0,
                             color: isHelpfulPressed ? const Color(0xFFDB3022) : const Color(0xFF9B9B9B),
                           ),
                         ),
                         const SizedBox(width: 4),
-                        Icon(
-                          Icons.thumb_up,
-                          size: 14,
-                          color: isHelpfulPressed ? const Color(0xFFDB3022) : const Color(0xFF9B9B9B),
+                        Transform.translate(
+                          offset: const Offset(0, -1), // Shift icon up by 1 pixel
+                          child: Icon(
+                            Icons.thumb_up,
+                            size: 14,
+                            color: isHelpfulPressed ? const Color(0xFFDB3022) : const Color(0xFF9B9B9B),
+                          ),
                         ),
                         if (widget.review.helpfulCount > 0) ...[
                           const SizedBox(width: 4),
