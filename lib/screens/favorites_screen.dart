@@ -17,6 +17,7 @@ class FavoritesScreen extends ConsumerStatefulWidget {
 
 class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
   bool _isGridMode = true;
+  String? _selectedCategory;
 
   @override
   Widget build(BuildContext context) {
@@ -105,29 +106,11 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                       itemBuilder: (context, index) {
                         return GestureDetector(
                           onTap: () {
-                            final allCategoriesAsync = ref.read(categoriesProvider);
-                            allCategoriesAsync.whenData((categories) {
-                              String searchName = displayTags[index];
-                              if (searchName == 'Shirts' || searchName == 'Blouses') {
-                                searchName = 'Shirts & Blouses';
-                              } else if (searchName == 'Cardigans' || searchName == 'Sweaters') {
-                                searchName = 'Cardigans & Sweaters';
-                              }
-                              
-                              try {
-                                final cat = categories.firstWhere((c) => c.categoryName == searchName);
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => CategoryProductsScreen(
-                                      categoryId: cat.id,
-                                      categoryName: cat.categoryName,
-                                      allCategories: categories,
-                                    ),
-                                  ),
-                                );
-                              } catch (e) {
-                                // Category not found
+                            setState(() {
+                              if (_selectedCategory == displayTags[index]) {
+                                _selectedCategory = null;
+                              } else {
+                                _selectedCategory = displayTags[index];
                               }
                             });
                           },
@@ -136,14 +119,15 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                             height: 30,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: const Color(0xFF222222),
+                              color: _selectedCategory == displayTags[index] ? const Color(0xFF222222) : Colors.transparent,
+                              border: Border.all(color: _selectedCategory == displayTags[index] ? const Color(0xFF222222) : const Color(0xFF9B9B9B)),
                               borderRadius: BorderRadius.circular(29),
                             ),
                             child: Text(
                               displayTags[index],
-                              style: const TextStyle(
+                              style: TextStyle(
                                 fontFamily: 'Metropolis',
-                                color: Color(0xFFFFFFFF),
+                                color: _selectedCategory == displayTags[index] ? const Color(0xFFFFFFFF) : const Color(0xFF222222),
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
                                 height: 20 / 14,
@@ -212,6 +196,28 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                         ),
                       );
                     }
+
+                    List<FavoriteProduct> filteredProducts = products;
+                    if (_selectedCategory != null) {
+                      String searchCategory = _selectedCategory!;
+                      if (searchCategory == 'Shirts' || searchCategory == 'Blouses') {
+                         searchCategory = 'Shirts & Blouses';
+                      } else if (searchCategory == 'Cardigans' || searchCategory == 'Sweaters') {
+                         searchCategory = 'Cardigans & Sweaters';
+                      }
+                      
+                      filteredProducts = products.where((p) => p.categories.contains(searchCategory)).toList();
+                    }
+
+                    if (filteredProducts.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'No favorites in this category',
+                          style: TextStyle(fontFamily: 'Metropolis', color: Colors.grey),
+                        ),
+                      );
+                    }
+
                     if (_isGridMode) {
                       return GridView.builder(
                         padding: const EdgeInsets.all(16),
@@ -221,17 +227,17 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                           crossAxisSpacing: 16,
                           mainAxisSpacing: 16,
                         ),
-                        itemCount: products.length,
+                        itemCount: filteredProducts.length,
                         itemBuilder: (context, index) {
-                          return FavoriteProductCard(product: products[index]);
+                          return FavoriteProductCard(product: filteredProducts[index]);
                         },
                       );
                     } else {
                       return ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                        itemCount: products.length,
+                        itemCount: filteredProducts.length,
                         itemBuilder: (context, index) {
-                          return HorizontalFavoriteProductCard(product: products[index]);
+                          return HorizontalFavoriteProductCard(product: filteredProducts[index]);
                         },
                       );
                     }
