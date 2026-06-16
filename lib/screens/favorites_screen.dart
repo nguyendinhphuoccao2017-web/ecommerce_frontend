@@ -197,7 +197,7 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                       );
                     }
 
-                    List<FavoriteProduct> filteredProducts = products;
+                    var filteredProducts = products.toList();
                     if (_selectedCategory != null) {
                       String searchCategory = _selectedCategory!;
                       if (searchCategory == 'Shirts' || searchCategory == 'Blouses') {
