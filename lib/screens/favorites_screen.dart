@@ -119,17 +119,17 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                             height: 30,
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
-                              color: _selectedCategory == displayTags[index] ? const Color(0xFF222222) : Colors.transparent,
-                              border: Border.all(color: _selectedCategory == displayTags[index] ? const Color(0xFF222222) : const Color(0xFF9B9B9B)),
+                              color: _selectedCategory == displayTags[index] ? Colors.white : const Color(0xFF222222),
+                              border: Border.all(color: const Color(0xFF222222)),
                               borderRadius: BorderRadius.circular(29),
                             ),
                             child: Text(
                               displayTags[index],
                               style: TextStyle(
                                 fontFamily: 'Metropolis',
-                                color: _selectedCategory == displayTags[index] ? const Color(0xFFFFFFFF) : const Color(0xFF222222),
+                                color: _selectedCategory == displayTags[index] ? const Color(0xFF222222) : Colors.white,
                                 fontSize: 14,
-                                fontWeight: FontWeight.w500,
+                                fontWeight: _selectedCategory == displayTags[index] ? FontWeight.bold : FontWeight.w500,
                                 height: 20 / 14,
                               ),
                               textAlign: TextAlign.center,

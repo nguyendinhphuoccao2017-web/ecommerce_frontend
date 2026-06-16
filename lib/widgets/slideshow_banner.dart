@@ -17,7 +17,7 @@ class SlideshowBanner extends StatelessWidget {
       decoration: BoxDecoration(
         image: DecorationImage(
           image: NetworkImage(slideshow.image),
-          fit: BoxFit.contain,
+          fit: BoxFit.cover,
         ),
       ),
       child: isFirstBanner
