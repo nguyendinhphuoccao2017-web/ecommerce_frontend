@@ -33,13 +33,18 @@ class FavoriteProductCard extends ConsumerWidget {
           );
         }
       },
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Stack(
+        clipBehavior: Clip.none,
         children: [
-          Stack(
-            clipBehavior: Clip.none,
-            children: [
-              ClipRRect(
+          Opacity(
+            opacity: product.availableStock <= 0 ? 0.5 : 1.0,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
                   product.thumbnailUrl ?? 'https://via.placeholder.com/150',
@@ -54,34 +59,7 @@ class FavoriteProductCard extends ConsumerWidget {
                   ),
                 ),
               ),
-              if (product.availableStock <= 0)
-                Positioned(
-                  bottom: 0,
-                  left: 0,
-                  right: 0,
-                  child: Container(
-                    height: 36,
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.7),
-                      borderRadius: const BorderRadius.only(
-                        bottomLeft: Radius.circular(8),
-                        bottomRight: Radius.circular(8),
-                      ),
-                    ),
-                    alignment: Alignment.centerLeft,
-                    padding: const EdgeInsets.symmetric(horizontal: 8),
-                    child: const Text(
-                      'Sorry, this item is currently\nsold out',
-                      style: TextStyle(
-                        fontFamily: 'Metropolis',
-                        fontWeight: FontWeight.w400,
-                        fontSize: 11,
-                        height: 1.2,
-                        color: Color(0xFF222222),
-                      ),
-                    ),
-                  ),
-                ),
+
               if (isNew)
                 Positioned(
                   top: 8,
@@ -272,6 +250,37 @@ class FavoriteProductCard extends ConsumerWidget {
         ),
       ],
       ),
-    );
+    ),
+    if (product.availableStock <= 0)
+      Positioned(
+        top: 148,
+        left: 0,
+        right: 0,
+        child: Container(
+          height: 36,
+          decoration: BoxDecoration(
+            color: Colors.white.withOpacity(0.7),
+            borderRadius: const BorderRadius.only(
+              bottomLeft: Radius.circular(8),
+              bottomRight: Radius.circular(8),
+            ),
+          ),
+          alignment: Alignment.centerLeft,
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: const Text(
+            'Sorry, this item is currently\nsold out',
+            style: TextStyle(
+              fontFamily: 'Metropolis',
+              fontWeight: FontWeight.w400,
+              fontSize: 11,
+              height: 1.2,
+              color: Color(0xFF222222),
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+);
   }
 }
