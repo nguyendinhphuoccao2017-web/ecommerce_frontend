@@ -120,24 +120,35 @@ class _WriteReviewBottomSheetState extends ConsumerState<WriteReviewBottomSheet>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: const BoxDecoration(
-        color: Color(0xFFF9F9F9),
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(34),
-          topRight: Radius.circular(34),
-        ),
-      ),
-      padding: EdgeInsets.only(
-        left: 16,
-        right: 16,
-        top: 14,
-        bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom + 16,
-      ),
-      child: Stack(
-        children: [
-          SingleChildScrollView(
-            child: Column(
+    return Listener(
+      onPointerMove: (event) {
+        // Automatically dismiss keyboard when dragging down anywhere on the sheet
+        if (event.delta.dy > 2) {
+          FocusManager.instance.primaryFocus?.unfocus();
+        }
+      },
+      child: GestureDetector(
+        onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+        behavior: HitTestBehavior.translucent,
+        child: Container(
+          decoration: const BoxDecoration(
+            color: Color(0xFFF9F9F9),
+            borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(34),
+              topRight: Radius.circular(34),
+            ),
+          ),
+          padding: EdgeInsets.only(
+            left: 16,
+            right: 16,
+            top: 14,
+            bottom: MediaQuery.of(context).viewInsets.bottom + MediaQuery.of(context).padding.bottom + 16,
+          ),
+          child: Stack(
+            children: [
+              SingleChildScrollView(
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 Container(
@@ -203,6 +214,7 @@ class _WriteReviewBottomSheetState extends ConsumerState<WriteReviewBottomSheet>
                   child: TextField(
                     controller: _reviewController,
                     maxLines: 5,
+                    onTapOutside: (event) => FocusManager.instance.primaryFocus?.unfocus(),
                     decoration: const InputDecoration(
                       hintText: 'Your review',
                       hintStyle: TextStyle(
@@ -328,8 +340,10 @@ class _WriteReviewBottomSheetState extends ConsumerState<WriteReviewBottomSheet>
                 ),
               ),
             ),
-        ],
+          ],
+        ),
       ),
+    ),
     );
   }
 }

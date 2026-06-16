@@ -78,53 +78,72 @@ class CategoryProductsScreen extends ConsumerWidget {
           if (isGridMode) const SizedBox(height: 16),
           // Sub-category Pills
           if (allCategories != null)
-            SizedBox(
-              height: 30,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 14),
-                itemCount: allCategories!.length,
-                itemBuilder: (context, index) {
-                  final cat = allCategories![index];
-                  if (cat.id == categoryId) return const SizedBox.shrink();
+            Builder(
+              builder: (context) {
+                final List<Map<String, dynamic>> pillItems = [];
+                for (var cat in allCategories!) {
+                  if (cat.id == categoryId) continue;
+                  if (cat.categoryName == 'Shirts & Blouses') {
+                    pillItems.add({'label': 'Shirts', 'category': cat});
+                    pillItems.add({'label': 'Blouses', 'category': cat});
+                  } else if (cat.categoryName == 'Cardigans & Sweaters') {
+                    pillItems.add({'label': 'Cardigans', 'category': cat});
+                    pillItems.add({'label': 'Sweaters', 'category': cat});
+                  } else {
+                    pillItems.add({'label': cat.categoryName, 'category': cat});
+                  }
+                }
+                
+                return SizedBox(
+                  height: 30,
+                  child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    padding: const EdgeInsets.symmetric(horizontal: 14),
+                    itemCount: pillItems.length,
+                    itemBuilder: (context, index) {
+                      final item = pillItems[index];
+                      final label = item['label'] as String;
+                      final cat = item['category'] as Category;
 
-                  return GestureDetector(
-                    onTap: () {
-                      Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => CategoryProductsScreen(
-                            categoryId: cat.id,
-                            categoryName: cat.categoryName,
-                            allCategories: allCategories,
+                      return GestureDetector(
+                        onTap: () {
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => CategoryProductsScreen(
+                                categoryId: cat.id,
+                                categoryName: cat.categoryName,
+                                allCategories: allCategories,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Container(
+                          width: 100,
+                          height: 30,
+                          margin: const EdgeInsets.only(right: 8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF222222),
+                            borderRadius: BorderRadius.circular(29),
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            label,
+                            style: const TextStyle(
+                              fontFamily: 'Metropolis',
+                              fontWeight: FontWeight.w500,
+                              fontSize: 14,
+                              color: Colors.white,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       );
                     },
-                    child: Container(
-                      width: 100,
-                      height: 30,
-                      margin: const EdgeInsets.only(right: 8),
-                      decoration: BoxDecoration(
-                        color: const Color(0xFF222222),
-                        borderRadius: BorderRadius.circular(29),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text(
-                        cat.categoryName,
-                        style: const TextStyle(
-                          fontFamily: 'Metropolis',
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                          color: Colors.white,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  );
-                },
-              ),
+                  ),
+                );
+              },
             ),
           
           const SizedBox(height: 12),

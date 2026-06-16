@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/favorite_provider.dart';
 import '../widgets/favorite_product_card.dart';
 import '../widgets/horizontal_favorite_product_card.dart';
+import '../screens/category_products_screen.dart';
+import '../providers/category_provider.dart';
 
 import 'dart:ui';
 
@@ -66,14 +68,26 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
               // Category Pills Row
               favoritesAsync.when(
                 data: (products) {
-                  final tags = <String>{};
+                  final originalTags = <String>{};
                   for (var p in products) {
                     if (p.categories.isNotEmpty) {
-                      tags.addAll(p.categories);
+                      originalTags.addAll(p.categories);
                     }
                   }
                   if (products.isEmpty) {
                     return const SizedBox.shrink();
+                  }
+                  final tags = <String>{};
+                  for (var tag in originalTags) {
+                    if (tag == 'Shirts & Blouses') {
+                      tags.add('Shirts');
+                      tags.add('Blouses');
+                    } else if (tag == 'Cardigans & Sweaters') {
+                      tags.add('Cardigans');
+                      tags.add('Sweaters');
+                    } else {
+                      tags.add(tag);
+                    }
                   }
                   if (tags.isEmpty) {
                     tags.addAll(['Summer', 'T-Shirts', 'Shirts', 'Dresses', 'Kids']);
@@ -89,24 +103,53 @@ class _FavoritesScreenState extends ConsumerState<FavoritesScreen> {
                       itemCount: displayTags.length,
                       separatorBuilder: (context, index) => const SizedBox(width: 12),
                       itemBuilder: (context, index) {
-                        return Container(
-                          width: 100,
-                          height: 30,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFF222222),
-                            borderRadius: BorderRadius.circular(29),
-                          ),
-                          child: Text(
-                            displayTags[index],
-                            style: const TextStyle(
-                              fontFamily: 'Metropolis',
-                              color: Color(0xFFFFFFFF),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              height: 20 / 14,
+                        return GestureDetector(
+                          onTap: () {
+                            final allCategoriesAsync = ref.read(categoriesProvider);
+                            allCategoriesAsync.whenData((categories) {
+                              String searchName = displayTags[index];
+                              if (searchName == 'Shirts' || searchName == 'Blouses') {
+                                searchName = 'Shirts & Blouses';
+                              } else if (searchName == 'Cardigans' || searchName == 'Sweaters') {
+                                searchName = 'Cardigans & Sweaters';
+                              }
+                              
+                              try {
+                                final cat = categories.firstWhere((c) => c.categoryName == searchName);
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => CategoryProductsScreen(
+                                      categoryId: cat.id,
+                                      categoryName: cat.categoryName,
+                                      allCategories: categories,
+                                    ),
+                                  ),
+                                );
+                              } catch (e) {
+                                // Category not found
+                              }
+                            });
+                          },
+                          child: Container(
+                            width: 100,
+                            height: 30,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: const Color(0xFF222222),
+                              borderRadius: BorderRadius.circular(29),
                             ),
-                            textAlign: TextAlign.center,
+                            child: Text(
+                              displayTags[index],
+                              style: const TextStyle(
+                                fontFamily: 'Metropolis',
+                                color: Color(0xFFFFFFFF),
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                height: 20 / 14,
+                              ),
+                              textAlign: TextAlign.center,
+                            ),
                           ),
                         );
                       },
