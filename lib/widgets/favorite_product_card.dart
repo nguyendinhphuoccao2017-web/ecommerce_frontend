@@ -46,116 +46,145 @@ class FavoriteProductCard extends ConsumerWidget {
                   height: 184,
                   width: double.infinity,
                   fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  height: 184,
-                  width: double.infinity,
-                  color: Colors.grey[200],
-                  child: const Icon(Icons.broken_image),
-                ),
-              ),
-            ),
-            if (isNew)
-              Positioned(
-                top: 8,
-                left: 8,
-                child: Container(
-                  width: 40,
-                  height: 24,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/button/new_tag.png'),
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                  alignment: Alignment.center,
-                  child: const Text(
-                    'NEW',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Metropolis',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 11,
-                      height: 1.0,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              )
-            else if (hasDiscount)
-              Positioned(
-                top: 8,
-                left: 8,
-                child: Container(
-                  width: 40,
-                  height: 24,
-                  decoration: const BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage('assets/images/button/sale_tag.png'),
-                      fit: BoxFit.contain,
-                    ),
-                  ),
-                  alignment: Alignment.center,
-                  child: Text(
-                    '-$discountPercent%',
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontFamily: 'Metropolis',
-                      fontWeight: FontWeight.w400,
-                      fontSize: 11,
-                      height: 1.0,
-                    ),
-                    textAlign: TextAlign.center,
+                  errorBuilder: (context, error, stackTrace) => Container(
+                    height: 184,
+                    width: double.infinity,
+                    color: Colors.grey[200],
+                    child: const Icon(Icons.broken_image),
                   ),
                 ),
               ),
-            Positioned(
-              top: 8,
-              right: 8,
-              child: InkWell(
-                onTap: () async {
-                  try {
-                    await ref.read(favoriteNotifierProvider.notifier).toggle(product.productId, variantOptionId: product.variantOptionId);
-                  } catch (e) {
-                    if (context.mounted) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+              if (product.availableStock <= 0)
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: Container(
+                    height: 36,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withOpacity(0.7),
+                      borderRadius: const BorderRadius.only(
+                        bottomLeft: Radius.circular(8),
+                        bottomRight: Radius.circular(8),
+                      ),
+                    ),
+                    alignment: Alignment.centerLeft,
+                    padding: const EdgeInsets.symmetric(horizontal: 8),
+                    child: const Text(
+                      'Sorry, this item is currently\nsold out',
+                      style: TextStyle(
+                        fontFamily: 'Metropolis',
+                        fontWeight: FontWeight.w400,
+                        fontSize: 11,
+                        height: 1.2,
+                        color: Color(0xFF222222),
+                      ),
+                    ),
+                  ),
+                ),
+              if (isNew)
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    width: 40,
+                    height: 24,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/button/new_tag.png'),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: const Text(
+                      'NEW',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Metropolis',
+                        fontWeight: FontWeight.w400,
+                        fontSize: 11,
+                        height: 1.0,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )
+              else if (hasDiscount)
+                Positioned(
+                  top: 8,
+                  left: 8,
+                  child: Container(
+                    width: 40,
+                    height: 24,
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/button/sale_tag.png'),
+                        fit: BoxFit.contain,
+                      ),
+                    ),
+                    alignment: Alignment.center,
+                    child: Text(
+                      '-$discountPercent%',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontFamily: 'Metropolis',
+                        fontWeight: FontWeight.w400,
+                        fontSize: 11,
+                        height: 1.0,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              Positioned(
+                top: 8,
+                right: 8,
+                child: InkWell(
+                  onTap: () async {
+                    try {
+                      await ref.read(favoriteNotifierProvider.notifier).toggle(product.productId, variantOptionId: product.variantOptionId);
+                    } catch (e) {
+                      if (context.mounted) {
+                        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
+                      }
                     }
-                  }
-                },
-                child: const Icon(Icons.close, color: Colors.grey, size: 20),
-              ),
-            ),
-            Positioned(
-              bottom: -16,
-              right: 0,
-              child: Container(
-                width: 44,
-                height: 44,
-                decoration: BoxDecoration(
-                  color: const Color(0xFFDB3022),
-                  shape: BoxShape.circle,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 4,
-                      offset: const Offset(0, 2),
-                    ),
-                  ],
-                ),
-                child: IconButton(
-                  padding: EdgeInsets.zero,
-                  icon: const Icon(
-                    Icons.shopping_bag_outlined,
-                    color: Colors.white,
-                    size: 22,
-                  ),
-                  onPressed: () {
-                    // Add to cart logic
                   },
+                  child: const Icon(Icons.close, color: Colors.grey, size: 20),
                 ),
               ),
-            ),
-          ],
-        ),
+              if (product.availableStock > 0)
+                Positioned(
+                  bottom: -16,
+                  right: 0,
+                  child: Container(
+                    width: 44,
+                    height: 44,
+                    decoration: BoxDecoration(
+                      color: const Color(0xFFDB3022),
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.1),
+                          blurRadius: 4,
+                          offset: const Offset(0, 2),
+                        ),
+                      ],
+                    ),
+                    child: IconButton(
+                      padding: EdgeInsets.zero,
+                      icon: const Icon(
+                        Icons.shopping_bag_outlined,
+                        color: Colors.white,
+                        size: 22,
+                      ),
+                      onPressed: () {
+                        // Add to cart logic
+                      },
+                    ),
+                  ),
+                ),
+            ],
+          ),
         const SizedBox(height: 8),
         Row(
           children: [
