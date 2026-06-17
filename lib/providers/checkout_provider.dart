@@ -8,6 +8,7 @@ class CheckoutState {
   final String? error;
   final CustomerAddress? selectedAddress;
   final String selectedPaymentMethod;
+  final String selectedDeliveryMethod;
   final List<CustomerAddress> addresses;
 
   CheckoutState({
@@ -15,6 +16,7 @@ class CheckoutState {
     this.error,
     this.selectedAddress,
     this.selectedPaymentMethod = 'Credit Card',
+    this.selectedDeliveryMethod = 'FedEx',
     this.addresses = const [],
   });
 
@@ -23,6 +25,7 @@ class CheckoutState {
     String? error,
     CustomerAddress? selectedAddress,
     String? selectedPaymentMethod,
+    String? selectedDeliveryMethod,
     List<CustomerAddress>? addresses,
   }) {
     return CheckoutState(
@@ -30,6 +33,7 @@ class CheckoutState {
       error: error,
       selectedAddress: selectedAddress ?? this.selectedAddress,
       selectedPaymentMethod: selectedPaymentMethod ?? this.selectedPaymentMethod,
+      selectedDeliveryMethod: selectedDeliveryMethod ?? this.selectedDeliveryMethod,
       addresses: addresses ?? this.addresses,
     );
   }
@@ -71,6 +75,10 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
     state = state.copyWith(selectedPaymentMethod: method);
   }
 
+  void selectDeliveryMethod(String method) {
+    state = state.copyWith(selectedDeliveryMethod: method);
+  }
+
   Future<bool> addAddress(Map<String, dynamic> data) async {
     state = state.copyWith(isLoading: true, error: null);
     try {
@@ -104,11 +112,12 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
 
     state = state.copyWith(isLoading: true, error: null);
     try {
-      // In a real app we'd pass the address ID and payment method.
-      // The backend expects CheckoutRequestDTO
       await _apiService.submitCheckout({
         'paymentMethod': state.selectedPaymentMethod,
-        // 'addressId': state.selectedAddress!.id,
+        'shippingAddressId': state.selectedAddress!.id,
+        'deliveryMethod': state.selectedDeliveryMethod,
+        // couponCode can be added here if you have a couponProvider
+        'couponCode': null, 
       });
       state = state.copyWith(isLoading: false);
       return true;

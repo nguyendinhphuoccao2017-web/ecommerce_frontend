@@ -89,11 +89,11 @@ class CheckoutScreen extends ConsumerWidget {
                   // Mock delivery methods
                   Row(
                     children: [
-                      _buildDeliveryMethod('https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/delivery/fedex.png', '2-3 days', true),
+                      _buildDeliveryMethod(context, ref, 'FedEx', 'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/delivery/fedex.png', '2-3 days', checkoutState.selectedDeliveryMethod == 'FedEx'),
                       const SizedBox(width: 16),
-                      _buildDeliveryMethod('https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/delivery/usps.png', '2-3 days', false),
+                      _buildDeliveryMethod(context, ref, 'USPS', 'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/delivery/usps.png', '2-3 days', checkoutState.selectedDeliveryMethod == 'USPS'),
                       const SizedBox(width: 16),
-                      _buildDeliveryMethod('https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/delivery/dhl.png', '2-3 days', false),
+                      _buildDeliveryMethod(context, ref, 'DHL', 'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/delivery/dhl.png', '2-3 days', checkoutState.selectedDeliveryMethod == 'DHL'),
                     ],
                   ),
                   const SizedBox(height: 32),
@@ -189,25 +189,39 @@ class CheckoutScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildDeliveryMethod(String imageUrl, String duration, bool isSelected) {
-    return Container(
-      width: 100,
-      height: 72,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(8),
-        border: isSelected ? Border.all(color: const Color(0xFFDB3022)) : null,
-        boxShadow: [
-          BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5),
-        ]
-      ),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.network(imageUrl, height: 20, fit: BoxFit.contain),
-          const SizedBox(height: 8),
-          Text(duration, style: const TextStyle(fontSize: 11, color: Colors.grey)),
-        ],
+  Widget _buildDeliveryMethod(BuildContext context, WidgetRef ref, String method, String imageUrl, String duration, bool isSelected) {
+    return GestureDetector(
+      onTap: () {
+        ref.read(checkoutProvider.notifier).selectDeliveryMethod(method);
+      },
+      child: Container(
+        width: 100,
+        height: 72,
+        decoration: BoxDecoration(
+          color: isSelected ? const Color(0xFFF0F0F0) : Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: isSelected ? Border.all(color: const Color(0xFFDB3022), width: 1.5) : null,
+          boxShadow: isSelected
+              ? [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 6,
+                    offset: const Offset(0, 2), 
+                    blurStyle: BlurStyle.inner,
+                  ),
+                ]
+              : [
+                  BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5),
+                ]
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.network(imageUrl, height: 20, fit: BoxFit.contain),
+            const SizedBox(height: 8),
+            Text(duration, style: const TextStyle(fontSize: 11, color: Colors.grey)),
+          ],
+        ),
       ),
     );
   }
