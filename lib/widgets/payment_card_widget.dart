@@ -1,0 +1,239 @@
+import 'package:flutter/material.dart';
+
+class PaymentCardWidget extends StatelessWidget {
+  final bool isBlackCard;
+  final String cardNumber;
+  final String cardHolderName;
+  final String expiryDate;
+  final bool isVisa;
+
+  const PaymentCardWidget({
+    super.key,
+    required this.isBlackCard,
+    required this.cardNumber,
+    required this.cardHolderName,
+    required this.expiryDate,
+    required this.isVisa,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 216,
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: isBlackCard ? const Color(0xFF222222) : const Color(0xFF9B9B9B),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          )
+        ]
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: Stack(
+          children: [
+            Positioned.fill(
+              child: CustomPaint(
+                painter: CardBackgroundPainter(isBlackCard: isBlackCard),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      // Chip
+                      Container(
+                        width: 40,
+                        height: 30,
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFCC66),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: CustomPaint(painter: ChipPainter()),
+                      ),
+                      if (isVisa)
+                        Image.network(
+                          'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/Visa%20Logo.png',
+                          height: 20,
+                          fit: BoxFit.contain,
+                          errorBuilder: (context, error, stackTrace) => const Text(
+                            'VISA',
+                            style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800, fontStyle: FontStyle.italic),
+                          ),
+                        ),
+                    ],
+                  ),
+                  const Spacer(),
+                  Text(
+                    cardNumber,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 28,
+                      letterSpacing: 2,
+                      fontFamily: 'Courier',
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Card Holder Name',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.8),
+                              fontSize: 10,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            cardHolderName,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Expiry Date',
+                            style: TextStyle(
+                              color: Colors.white.withOpacity(0.8),
+                              fontSize: 10,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            expiryDate,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (!isVisa) _buildMastercardLogo(),
+                      if (isVisa) const SizedBox(width: 32),
+                    ],
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMastercardLogo() {
+    return Image.network(
+      'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/mastercard.png',
+      width: 40,
+      height: 24,
+      fit: BoxFit.contain,
+      errorBuilder: (context, error, stackTrace) => SizedBox(
+        width: 40,
+        height: 24,
+        child: Stack(
+          children: [
+            Positioned(
+              left: 0,
+              child: Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(color: const Color(0xFFEB001B).withOpacity(0.9), shape: BoxShape.circle),
+              ),
+            ),
+            Positioned(
+              right: 0,
+              child: Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(color: const Color(0xFFF79E1B).withOpacity(0.9), shape: BoxShape.circle),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class CardBackgroundPainter extends CustomPainter {
+  final bool isBlackCard;
+
+  CardBackgroundPainter({required this.isBlackCard});
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    if (isBlackCard) {
+      final paintCircle = Paint()
+        ..color = Colors.white.withOpacity(0.03)
+        ..style = PaintingStyle.fill;
+      canvas.drawCircle(Offset(size.width * 1.1, size.height * 0.1), size.height * 0.7, paintCircle);
+
+      final paintWave = Paint()
+        ..color = Colors.white.withOpacity(0.04)
+        ..style = PaintingStyle.fill;
+      final path = Path();
+      path.moveTo(0, size.height * 0.65);
+      path.quadraticBezierTo(size.width * 0.2, size.height * 0.5, size.width * 0.45, size.height * 0.65);
+      path.quadraticBezierTo(size.width * 0.7, size.height * 0.8, size.width, size.height * 0.45);
+      path.lineTo(size.width, size.height);
+      path.lineTo(0, size.height);
+      path.close();
+      canvas.drawPath(path, paintWave);
+    } else {
+      final paintWave = Paint()
+        ..color = Colors.white.withOpacity(0.1)
+        ..style = PaintingStyle.fill;
+      final path = Path();
+      path.moveTo(0, size.height * 0.8);
+      path.quadraticBezierTo(size.width * 0.25, size.height * 0.4, size.width * 0.55, size.height * 0.6);
+      path.quadraticBezierTo(size.width * 0.8, size.height * 0.75, size.width, size.height * 0.45);
+      path.lineTo(size.width, size.height);
+      path.lineTo(0, size.height);
+      path.close();
+      canvas.drawPath(path, paintWave);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}
+
+class ChipPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.black.withOpacity(0.15)
+      ..strokeWidth = 1
+      ..style = PaintingStyle.stroke;
+    
+    canvas.drawLine(Offset(0, size.height * 0.3), Offset(size.width * 0.3, size.height * 0.3), paint);
+    canvas.drawLine(Offset(0, size.height * 0.7), Offset(size.width * 0.3, size.height * 0.7), paint);
+    
+    canvas.drawLine(Offset(size.width * 0.7, size.height * 0.3), Offset(size.width, size.height * 0.3), paint);
+    canvas.drawLine(Offset(size.width * 0.7, size.height * 0.7), Offset(size.width, size.height * 0.7), paint);
+
+    canvas.drawRRect(RRect.fromRectAndRadius(Rect.fromLTWH(size.width * 0.3, size.height * 0.15, size.width * 0.4, size.height * 0.7), const Radius.circular(2)), paint);
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+}

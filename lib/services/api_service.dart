@@ -6,6 +6,8 @@ import '../models/category.dart';
 import '../models/variant_option.dart';
 import '../models/favorite_product.dart';
 import '../models/product_detail.dart';
+import '../models/cart_response.dart';
+import '../models/customer_address.dart';
 
 class ApiService {
   // Uncomment dòng dưới đây nếu muốn test backend trên máy local (dành cho iOS Simulator)
@@ -275,6 +277,108 @@ class ApiService {
       );
     } catch (e) {
       throw Exception('Failed to increment helpful count: $e');
+    }
+  }
+
+  Future<CartResponse> getCart() async {
+    // We will parse it to Dart model CartResponse
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      if (token == null) throw Exception('No token found');
+      final response = await _dio.get(
+        '$apiBaseUrl/cards/my-cart',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+      return CartResponse.fromJson(response.data);
+    } catch (e) {
+      throw Exception('Failed to get cart: $e');
+    }
+  }
+
+  Future<void> addToCart(String productId, String? variantOptionId, int quantity) async {
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      if (token == null) throw Exception('No token found');
+      await _dio.post(
+        '$apiBaseUrl/cards/add',
+        data: {
+          'productId': productId,
+          'variantOptionId': variantOptionId,
+          'quantity': quantity,
+        },
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+    } catch (e) {
+      throw Exception('Failed to add to cart: $e');
+    }
+  }
+
+  Future<List<CustomerAddress>> getShippingAddresses() async {
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      if (token == null) throw Exception('No token found');
+      final response = await _dio.get(
+        '$apiBaseUrl/customer-addresses/my-addresses',
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+      List data = response.data;
+      return data.map((e) => CustomerAddress.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception('Failed to load shipping addresses: $e');
+    }
+  }
+
+  Future<void> addShippingAddress(Map<String, dynamic> data) async {
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      if (token == null) throw Exception('No token found');
+      await _dio.post(
+        '$apiBaseUrl/customer-addresses/add',
+        data: data,
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+    } catch (e) {
+      throw Exception('Failed to add shipping address: $e');
+    }
+  }
+
+  Future<void> updateShippingAddress(String id, Map<String, dynamic> data) async {
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      if (token == null) throw Exception('No token found');
+      await _dio.put(
+        '$apiBaseUrl/customer-addresses/$id',
+        data: data,
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+    } catch (e) {
+      throw Exception('Failed to update shipping address: $e');
+    }
+  }
+
+  Future<void> submitCheckout(Map<String, dynamic> data) async {
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      if (token == null) throw Exception('No token found');
+      await _dio.post(
+        '$apiBaseUrl/checkout/submit',
+        data: data,
+        options: Options(
+          headers: {'Authorization': 'Bearer $token'},
+        ),
+      );
+    } catch (e) {
+      throw Exception('Failed to submit checkout: $e');
     }
   }
 }

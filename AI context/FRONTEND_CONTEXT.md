@@ -102,8 +102,12 @@
     - **Ánh xạ SKU**: Đồng bộ hoàn toàn dữ liệu mã SKU (thay thế chữ "Brand Name" tĩnh) cho cả giao diện thẻ lưới, thẻ ngang trên màn hình Home, Shop và Favorites.
   - **Tối ưu hiển thị trang Favorites**: 
     - Cập nhật model `FavoriteProduct` thêm danh sách `categories` trả về từ Backend.
-    - Cập nhật danh sách "Viên thuốc" (Pills) phân loại phía dưới AppBar để hiển thị theo **Danh mục** thay vì Nhãn (Tags) như trước đây. Logic ẩn Pills đi khi danh sách Yêu thích trống rỗng cũng đã được áp dụng.
-    - Căn chỉnh UI theo đúng Figma: Trong chế độ xem Grid (lưới), tiêu đề chữ lớn "Favorites" ở dưới được ẩn đi và chuyển lên căn giữa bên trong AppBar. Trong chế độ xem List (danh sách), giữ nguyên tiêu đề lớn ở dưới.
+    - Cập nhật danh sách "Viên thuốc" (Pills) phân loại phía dưới AppBar để hiển thị theo **Danh mục** (đã cắt ngắn, ví dụ "Shirts & Blouses" tách thành "Shirts", "Blouses") thay vì Nhãn (Tags). Logic ẩn Pills khi danh sách Yêu thích rỗng đã được áp dụng.
+    - **Logic lọc in-place**: Bấm vào Pill sẽ lọc ngay lập tức danh sách bên dưới thay vì chuyển màn hình. Pill chưa chọn có nền đen/chữ trắng, Pill được chọn sẽ đổi thành nền trắng/chữ đen in đậm (chuẩn Figma).
+    - **Hiệu ứng Sold Out**: Thẻ sản phẩm tự động làm mờ (Opacity 0.5) khi `quantity = 0` ở cả chế độ lưới và danh sách.
+    - Căn chỉnh UI theo đúng Figma: Grid view ẩn chữ "Favorites" to phía dưới, chuyển lên AppBar. List view giữ nguyên chữ lớn.
+  - **Tối ưu UX Write Review Bottom Sheet**: Đã gắn `GestureDetector(onTapOutside)` và `ScrollViewKeyboardDismissBehavior.onDrag` để tắt bàn phím nhẹ nhàng khi người dùng vuốt/kéo màn hình hoặc chạm ra ngoài, đồng thời giữ lại khả năng xuống dòng khi ấn Enter.
+  - **Fix UI Slideshow**: Chuyển thuộc tính hình ảnh banner thành `BoxFit.cover` để hình trải dài toàn bộ khung, khắc phục lỗi hở viền ở hai bên.
   - **Tái Cấu Trúc Toàn Diện Product Detail Screen (Chi Tiết Sản Phẩm)**:
     - **AppBar & Image**: Thay thế trạng thái trong suốt thành nền trắng (`Colors.white`), hình ảnh sản phẩm được đẩy xuống phía dưới AppBar, tăng chiều cao ảnh lên để đảm bảo full khung đẹp mắt, không bị che khuất.
     - **Variants (Color & Size)**: Sắp xếp nút Size, ô hiển thị Color và nút Favorite vào cùng một dòng nằm ngang (`Row`). Ô Color được đọc tự động (read-only) từ Backend (dữ liệu biến thể) và ẩn tính năng click. Nút Size khi click sẽ gọi Bottom Sheet `SizeSelectionBottomSheet` (đã được cấu hình đổi chữ 'SELECT' thành 'ADD TO CART').

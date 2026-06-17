@@ -6,6 +6,7 @@ import '../widgets/product_section.dart';
 import '../widgets/custom_bottom_nav.dart';
 import '../providers/nav_provider.dart';
 import 'shop_screen.dart';
+import 'bag_screen.dart';
 import 'favorites_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
@@ -21,7 +22,7 @@ class HomeScreen extends ConsumerWidget {
         children: [
           _buildHomeTab(ref),
           const ShopScreen(),
-          const Center(child: Text('Bag')),
+          const BagScreen(),
           const FavoritesScreen(),
           const Center(child: Text('Profile')),
         ],

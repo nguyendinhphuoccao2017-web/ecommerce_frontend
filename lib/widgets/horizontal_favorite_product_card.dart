@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/favorite_product.dart';
 import '../providers/favorite_provider.dart';
 import '../providers/loading_provider.dart';
+import '../providers/cart_provider.dart';
 import '../screens/product_detail_screen.dart';
 
 class HorizontalFavoriteProductCard extends ConsumerWidget {
@@ -297,8 +298,25 @@ class HorizontalFavoriteProductCard extends ConsumerWidget {
                             color: Colors.white,
                             size: 22,
                           ),
-                          onPressed: () {
-                            // Add to cart logic
+                          onPressed: () async {
+                            try {
+                              await ref.read(cartProvider.notifier).addToCart(
+                                product.productId,
+                                product.variantOptionId,
+                                1,
+                              );
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Added to bag successfully!')),
+                                );
+                              }
+                            } catch (e) {
+                              if (context.mounted) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text('Failed to add to bag: $e')),
+                                );
+                              }
+                            }
                           },
                         ),
                       ),
