@@ -124,11 +124,12 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                         height: 24,
                                         width: 24,
                                         child: PopupMenuButton<String>(
+                                          color: Colors.white,
                                           icon: const Icon(Icons.more_vert, color: Colors.grey, size: 24),
                                           padding: EdgeInsets.zero,
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                           elevation: 8,
-                                          offset: const Offset(-130, 0), // Shift left so it overlays cleanly but doesn't cover image
+                                          offset: const Offset(-40, 0),
                                           onSelected: (value) async {
                                             if (value == 'favorite') {
                                               await ref.read(cartProvider.notifier).toggleFavorite(item.productId);
@@ -261,9 +262,9 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                   ),
                                 );
                               } : null,
-                              child: Container(
-                                color: Colors.transparent,
-                                padding: EdgeInsets.only(left: 20, right: selectedPromo == null ? 40 : 16),
+                                child: Container(
+                                  color: Colors.transparent,
+                                  padding: EdgeInsets.only(left: 20, right: selectedPromo == null ? 40 : 8),
                                 alignment: Alignment.centerLeft,
                                 child: selectedPromo != null
                                     ? Row(
@@ -297,7 +298,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                           ),
                           if (selectedPromo == null)
                             Positioned(
-                              right: 0,
+                              right: -2,
                               top: 0,
                               bottom: 0,
                             child: Container(

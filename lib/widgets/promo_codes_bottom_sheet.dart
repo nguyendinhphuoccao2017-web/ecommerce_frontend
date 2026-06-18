@@ -120,7 +120,7 @@ class _PromoCodesBottomSheetState extends ConsumerState<PromoCodesBottomSheet> {
                       ],
                     ),
                     child: Container(
-                      padding: EdgeInsets.only(left: 20, right: ref.watch(selectedPromoProvider) == null ? 40 : 16),
+                      padding: EdgeInsets.only(left: 20, right: ref.watch(selectedPromoProvider) == null ? 40 : 8),
                       alignment: Alignment.centerLeft,
                       child: ref.watch(selectedPromoProvider) != null
                           ? Row(
@@ -159,7 +159,7 @@ class _PromoCodesBottomSheetState extends ConsumerState<PromoCodesBottomSheet> {
                   ),
                   if (ref.watch(selectedPromoProvider) == null)
                     Positioned(
-                      right: 0,
+                      right: -2,
                       top: 0,
                       bottom: 0,
                       child: Container(
