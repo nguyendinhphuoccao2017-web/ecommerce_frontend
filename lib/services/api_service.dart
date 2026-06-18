@@ -8,6 +8,7 @@ import '../models/favorite_product.dart';
 import '../models/product_detail.dart';
 import '../models/cart_response.dart';
 import '../models/customer_address.dart';
+import '../models/checkout_init_data.dart';
 
 class ApiService {
   // Uncomment dòng dưới đây nếu muốn test backend trên máy local (dành cho iOS Simulator)
@@ -358,6 +359,20 @@ class ApiService {
       return data.map((e) => CustomerAddress.fromJson(e)).toList();
     } catch (e) {
       throw Exception('Failed to load shipping addresses: $e');
+    }
+  }
+
+  Future<CheckoutInitData> getCheckoutInitData() async {
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      if (token == null) throw Exception('No token found');
+      final response = await _dio.get(
+        '$apiBaseUrl/checkout/init-data',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      return CheckoutInitData.fromJson(response.data);
+    } catch (e) {
+      throw Exception('Failed to load checkout init data: $e');
     }
   }
 

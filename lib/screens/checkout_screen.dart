@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/checkout_provider.dart';
-import '../providers/cart_provider.dart';
 import '../providers/coupon_provider.dart';
 import 'shipping_addresses_screen.dart';
 import 'payment_methods_screen.dart';
@@ -13,171 +12,217 @@ class CheckoutScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final checkoutState = ref.watch(checkoutProvider);
-    final cartState = ref.watch(cartProvider);
     final appliedCoupon = ref.watch(appliedCouponProvider);
 
-    double totalAmount = 0;
-    if (cartState is AsyncData && cartState.value != null) {
-      totalAmount = cartState.value!.subtotal;
+    if (checkoutState.isLoading || checkoutState.initData == null) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF9F9F9),
+        appBar: AppBar(
+          title: const Text('Checkout', style: TextStyle(fontFamily: 'Metropolis', fontWeight: FontWeight.w400, fontSize: 18, color: Colors.black)),
+          backgroundColor: Colors.white,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.black),
+          centerTitle: true,
+        ),
+        body: const Center(child: CircularProgressIndicator(color: Color(0xFFDB3022))),
+      );
+    }
+
+    final initData = checkoutState.initData!;
+    final cart = initData.cart;
+
+    double orderAmount = cart?.subtotal ?? 0.0;
+    
+    double deliveryAmount = 15.0; // Default fallback
+    if (checkoutState.selectedDeliveryMethodId != null && initData.shippingRates.isNotEmpty) {
+      deliveryAmount = initData.shippingRates.first.price;
     }
 
     double discountAmount = 0.0;
     if (appliedCoupon != null) {
       if (appliedCoupon.discountType == 'PERCENTAGE') {
-        discountAmount = totalAmount * (appliedCoupon.discountValue / 100);
+        discountAmount = orderAmount * (appliedCoupon.discountValue / 100);
       } else if (appliedCoupon.discountType == 'FIXED_CART') {
         discountAmount = appliedCoupon.discountValue;
       }
     }
 
-    double afterDiscount = totalAmount - discountAmount;
+    double afterDiscount = orderAmount - discountAmount;
     if (afterDiscount < 0) afterDiscount = 0;
+    
+    double summaryAmount = afterDiscount + deliveryAmount;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
-        title: const Text('Checkout', style: TextStyle(color: Colors.black)),
+        title: const Text('Checkout', style: TextStyle(fontFamily: 'Metropolis', fontWeight: FontWeight.w400, fontSize: 18, color: Colors.black)),
         backgroundColor: Colors.white,
         elevation: 0,
         iconTheme: const IconThemeData(color: Colors.black),
         centerTitle: true,
       ),
-      body: checkoutState.isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFFDB3022)))
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Shipping address', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            if (initData.defaultAddress != null)
+              _buildAddressCard(context, initData.defaultAddress)
+            else
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (_) => const ShippingAddressesScreen()));
+                },
+                child: const Text('Add Shipping Address'),
+              ),
+            
+            const SizedBox(height: 32),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Payment', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentMethodsScreen()));
+                  },
+                  child: const Text('Change', style: TextStyle(color: Color(0xFFDB3022))),
+                )
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (initData.defaultPaymentMethod != null)
+              Row(
                 children: [
-                  const Text('Shipping address', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 16),
-                  if (checkoutState.selectedAddress != null)
-                    _buildAddressCard(context, checkoutState.selectedAddress!)
-                  else
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (_) => const ShippingAddressesScreen()));
-                      },
-                      child: const Text('Add Shipping Address'),
+                  Container(
+                    width: 64,
+                    height: 38,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5),
+                      ]
                     ),
-                  
-                  const SizedBox(height: 32),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Payment', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentMethodsScreen()));
-                        },
-                        child: const Text('Change', style: TextStyle(color: Color(0xFFDB3022))),
-                      )
-                    ],
-                  ),
-                  const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Container(
-                        width: 64,
-                        height: 38,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(8),
-                          boxShadow: [
-                            BoxShadow(color: Colors.black.withOpacity(0.05), blurRadius: 5),
-                          ]
-                        ),
-                        child: Center(
-                          child: checkoutState.selectedPaymentMethod.startsWith('4')
-                              ? Image.network('https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/Visa%20Logo.png', height: 20)
-                              : Image.network('https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/mastercard.png', height: 24),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Text('**** **** **** ${checkoutState.selectedPaymentMethod.substring(checkoutState.selectedPaymentMethod.length - 4)}', style: const TextStyle(fontSize: 14)),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
-                  const Text('Delivery method', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 16),
-                  // Mock delivery methods
-                  Row(
-                    children: [
-                      _buildDeliveryMethod(context, ref, 'FedEx', 'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/delivery/fedex.png', '2-3 days', checkoutState.selectedDeliveryMethod == 'FedEx'),
-                      const SizedBox(width: 16),
-                      _buildDeliveryMethod(context, ref, 'USPS', 'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/delivery/usps.png', '2-3 days', checkoutState.selectedDeliveryMethod == 'USPS'),
-                      const SizedBox(width: 16),
-                      _buildDeliveryMethod(context, ref, 'DHL', 'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/delivery/dhl.png', '2-3 days', checkoutState.selectedDeliveryMethod == 'DHL'),
-                    ],
-                  ),
-                  const SizedBox(height: 32),
-                  // Summary
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Order:', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                      Text('${totalAmount.toStringAsFixed(0)}\$', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  if (discountAmount > 0) ...[
-                    const SizedBox(height: 12),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Discount:', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                        Text('-${discountAmount.toStringAsFixed(0)}\$', style: const TextStyle(fontSize: 16, color: Color(0xFFDB3022), fontWeight: FontWeight.bold)),
-                      ],
-                    ),
-                  ],
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Delivery:', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                      const Text('15\$', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      const Text('Summary:', style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold)),
-                      Text('${(afterDiscount + 15).toStringAsFixed(0)}\$', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                    ],
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    height: 48,
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        bool success = await ref.read(checkoutProvider.notifier).submitOrder();
-                        if (success) {
-                          if (context.mounted) {
-                            Navigator.pushAndRemoveUntil(
-                              context, 
-                              MaterialPageRoute(builder: (_) => const SuccessScreen()),
-                              (route) => false,
-                            );
-                          }
-                        } else {
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(content: Text(ref.read(checkoutProvider).error ?? 'Error submitting order')),
-                            );
-                          }
-                        }
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFDB3022),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-                      ),
-                      child: const Text('SUBMIT ORDER', style: TextStyle(color: Colors.white, fontSize: 14)),
+                    child: Center(
+                      child: initData.defaultPaymentMethod!.cardType.toLowerCase() == 'visa'
+                          ? Image.network('https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/Visa%20Logo.png', height: 20)
+                          : Image.network('https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/mastercard.png', height: 24),
                     ),
                   ),
+                  const SizedBox(width: 16),
+                  Text('**** **** **** ${initData.defaultPaymentMethod!.lastFourDigits}', style: const TextStyle(fontSize: 14)),
+                ],
+              )
+            else
+              const Text('No default payment method set.', style: TextStyle(fontSize: 14)),
+              
+            const SizedBox(height: 32),
+            const Text('Delivery method', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 16),
+            // Hybrid Delivery Methods
+            Row(
+              children: [
+                if (initData.shippingZones.isNotEmpty)
+                  _buildDeliveryMethod(
+                    context, 
+                    ref, 
+                    initData.shippingZones[0].id, 
+                    'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/delivery/fedex.png', 
+                    initData.shippingZones[0].name, 
+                    checkoutState.selectedDeliveryMethodId == initData.shippingZones[0].id
+                  ),
+                const SizedBox(width: 16),
+                if (initData.shippingZones.length > 1)
+                  _buildDeliveryMethod(
+                    context, 
+                    ref, 
+                    initData.shippingZones[1].id, 
+                    'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/delivery/usps.png', 
+                    initData.shippingZones[1].name, 
+                    checkoutState.selectedDeliveryMethodId == initData.shippingZones[1].id
+                  ),
+                const SizedBox(width: 16),
+                if (initData.shippingZones.length > 2)
+                  _buildDeliveryMethod(
+                    context, 
+                    ref, 
+                    initData.shippingZones[2].id, 
+                    'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/delivery/dhl.png', 
+                    initData.shippingZones[2].name, 
+                    checkoutState.selectedDeliveryMethodId == initData.shippingZones[2].id
+                  ),
+              ],
+            ),
+            const SizedBox(height: 32),
+            // Summary
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Order:', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                Text('${orderAmount.toStringAsFixed(0)}\$', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              ],
+            ),
+            if (discountAmount > 0) ...[
+              const SizedBox(height: 12),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Discount:', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                  Text('-${discountAmount.toStringAsFixed(0)}\$', style: const TextStyle(fontSize: 16, color: Color(0xFFDB3022), fontWeight: FontWeight.bold)),
                 ],
               ),
+            ],
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Delivery:', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                Text('${deliveryAmount.toStringAsFixed(0)}\$', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              ],
             ),
+            const SizedBox(height: 12),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Summary:', style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold)),
+                Text('${summaryAmount.toStringAsFixed(0)}\$', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+              ],
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: () async {
+                  bool success = await ref.read(checkoutProvider.notifier).submitOrder();
+                  if (success) {
+                    if (context.mounted) {
+                      Navigator.pushAndRemoveUntil(
+                        context, 
+                        MaterialPageRoute(builder: (_) => const SuccessScreen()),
+                        (route) => false,
+                      );
+                    }
+                  } else {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(ref.read(checkoutProvider).error ?? 'Error submitting order')),
+                      );
+                    }
+                  }
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFDB3022),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                ),
+                child: const Text('SUBMIT ORDER', style: TextStyle(color: Colors.white, fontSize: 14)),
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -198,7 +243,7 @@ class CheckoutScreen extends ConsumerWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('Jane Doe', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)), // Mock name
+              Text(address.fullName ?? 'Jane Doe', style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold)),
               TextButton(
                 onPressed: () {
                   Navigator.push(context, MaterialPageRoute(builder: (_) => const ShippingAddressesScreen()));
@@ -207,16 +252,16 @@ class CheckoutScreen extends ConsumerWidget {
               )
             ],
           ),
-          Text(address.fullAddress, style: const TextStyle(fontSize: 14, height: 1.5)),
+          Text('${address.addressLine1}\n${address.city}, ${address.state ?? ''} ${address.postalCode}, ${address.country}', style: const TextStyle(fontSize: 14, height: 1.5)),
         ],
       ),
     );
   }
 
-  Widget _buildDeliveryMethod(BuildContext context, WidgetRef ref, String method, String imageUrl, String duration, bool isSelected) {
+  Widget _buildDeliveryMethod(BuildContext context, WidgetRef ref, String methodId, String imageUrl, String duration, bool isSelected) {
     return GestureDetector(
       onTap: () {
-        ref.read(checkoutProvider.notifier).selectDeliveryMethod(method);
+        ref.read(checkoutProvider.notifier).selectDeliveryMethod(methodId);
       },
       child: Container(
         width: 100,

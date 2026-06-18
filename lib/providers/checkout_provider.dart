@@ -1,40 +1,39 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../models/customer_address.dart';
+import '../models/checkout_init_data.dart';
 import '../services/api_service.dart';
-import 'auth_provider.dart';
 
 class CheckoutState {
   final bool isLoading;
   final String? error;
-  final CustomerAddress? selectedAddress;
-  final String selectedPaymentMethod;
-  final String selectedDeliveryMethod;
-  final List<CustomerAddress> addresses;
+  final CheckoutInitData? initData;
+  final String? selectedAddressId;
+  final String? selectedPaymentMethodId;
+  final String? selectedDeliveryMethodId;
 
   CheckoutState({
     this.isLoading = false,
     this.error,
-    this.selectedAddress,
-    this.selectedPaymentMethod = 'Credit Card',
-    this.selectedDeliveryMethod = 'FedEx',
-    this.addresses = const [],
+    this.initData,
+    this.selectedAddressId,
+    this.selectedPaymentMethodId,
+    this.selectedDeliveryMethodId,
   });
 
   CheckoutState copyWith({
     bool? isLoading,
     String? error,
-    CustomerAddress? selectedAddress,
-    String? selectedPaymentMethod,
-    String? selectedDeliveryMethod,
-    List<CustomerAddress>? addresses,
+    CheckoutInitData? initData,
+    String? selectedAddressId,
+    String? selectedPaymentMethodId,
+    String? selectedDeliveryMethodId,
   }) {
     return CheckoutState(
       isLoading: isLoading ?? this.isLoading,
       error: error,
-      selectedAddress: selectedAddress ?? this.selectedAddress,
-      selectedPaymentMethod: selectedPaymentMethod ?? this.selectedPaymentMethod,
-      selectedDeliveryMethod: selectedDeliveryMethod ?? this.selectedDeliveryMethod,
-      addresses: addresses ?? this.addresses,
+      initData: initData ?? this.initData,
+      selectedAddressId: selectedAddressId ?? this.selectedAddressId,
+      selectedPaymentMethodId: selectedPaymentMethodId ?? this.selectedPaymentMethodId,
+      selectedDeliveryMethodId: selectedDeliveryMethodId ?? this.selectedDeliveryMethodId,
     );
   }
 }
@@ -47,17 +46,19 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
   final ApiService _apiService;
 
   CheckoutNotifier(this._apiService) : super(CheckoutState()) {
-    loadAddresses();
+    loadInitData();
   }
 
-  Future<void> loadAddresses() async {
+  Future<void> loadInitData() async {
     state = state.copyWith(isLoading: true, error: null);
     try {
-      final addresses = await _apiService.getShippingAddresses();
+      final initData = await _apiService.getCheckoutInitData();
       state = state.copyWith(
         isLoading: false,
-        addresses: addresses,
-        selectedAddress: addresses.isNotEmpty ? addresses.first : null,
+        initData: initData,
+        selectedAddressId: initData.defaultAddress?.id,
+        selectedPaymentMethodId: initData.defaultPaymentMethod?.id,
+        selectedDeliveryMethodId: initData.shippingZones.isNotEmpty ? initData.shippingZones.first.id : null,
       );
     } catch (e) {
       state = state.copyWith(
@@ -67,45 +68,12 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
     }
   }
 
-  void selectAddress(CustomerAddress address) {
-    state = state.copyWith(selectedAddress: address);
-  }
-
-  void selectPaymentMethod(String method) {
-    state = state.copyWith(selectedPaymentMethod: method);
-  }
-
-  void selectDeliveryMethod(String method) {
-    state = state.copyWith(selectedDeliveryMethod: method);
-  }
-
-  Future<bool> addAddress(Map<String, dynamic> data) async {
-    state = state.copyWith(isLoading: true, error: null);
-    try {
-      await _apiService.addShippingAddress(data);
-      await loadAddresses(); // Reload addresses to get the new one
-      return true;
-    } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
-      return false;
-    }
-  }
-
-
-  Future<bool> updateAddress(String id, Map<String, dynamic> data) async {
-    state = state.copyWith(isLoading: true, error: null);
-    try {
-      await _apiService.updateShippingAddress(id, data);
-      await loadAddresses(); // Reload addresses to get the updated one
-      return true;
-    } catch (e) {
-      state = state.copyWith(isLoading: false, error: e.toString());
-      return false;
-    }
+  void selectDeliveryMethod(String id) {
+    state = state.copyWith(selectedDeliveryMethodId: id);
   }
 
   Future<bool> submitOrder() async {
-    if (state.selectedAddress == null) {
+    if (state.selectedAddressId == null) {
       state = state.copyWith(error: 'Please select a shipping address');
       return false;
     }
@@ -113,10 +81,9 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
     state = state.copyWith(isLoading: true, error: null);
     try {
       await _apiService.submitCheckout({
-        'paymentMethod': state.selectedPaymentMethod,
-        'shippingAddressId': state.selectedAddress!.id,
-        'deliveryMethod': state.selectedDeliveryMethod,
-        // couponCode can be added here if you have a couponProvider
+        'paymentMethod': state.selectedPaymentMethodId ?? 'Credit Card',
+        'shippingAddressId': state.selectedAddressId,
+        'deliveryMethod': state.selectedDeliveryMethodId ?? 'FedEx',
         'couponCode': null, 
       });
       state = state.copyWith(isLoading: false);
