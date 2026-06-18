@@ -220,7 +220,8 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                           ),
                         ],
                       ),
-                    );
+                    ),
+                  );
                   },
                 ),
               ),
