@@ -132,7 +132,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                           padding: EdgeInsets.zero,
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                           elevation: 8,
-                                          offset: const Offset(-150, 0),
+                                          offset: const Offset(-146, 0),
                                           onSelected: (value) async {
                                             if (value == 'favorite') {
                                               ref.read(loadingProvider.notifier).state = true;
@@ -206,18 +206,29 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                   const SizedBox(height: 4),
                                   Row(
                                     children: [
+                                      SizedBox(
+                                        width: 85,
+                                        child: RichText(
+                                          text: TextSpan(
+                                            children: [
+                                              const TextSpan(text: 'Color: ', style: TextStyle(color: Color(0xFF9B9B9B), fontSize: 11)),
+                                              TextSpan(
+                                                text: '${item.color ?? "N/A"}',
+                                                style: TextStyle(
+                                                  color: item.color == 'Vui lòng chọn lại' ? Colors.red : const Color(0xFF222222),
+                                                  fontSize: 11,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.visible,
+                                        ),
+                                      ),
                                       RichText(
                                         text: TextSpan(
                                           children: [
-                                            const TextSpan(text: 'Color: ', style: TextStyle(color: Color(0xFF9B9B9B), fontSize: 11)),
-                                            TextSpan(
-                                              text: '${item.color ?? "N/A"}  ',
-                                              style: TextStyle(
-                                                color: item.color == 'Vui lòng chọn lại' ? Colors.red : const Color(0xFF222222),
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                            ),
                                             const TextSpan(text: 'Size: ', style: TextStyle(color: Color(0xFF9B9B9B), fontSize: 11)),
                                             TextSpan(
                                               text: '${item.size ?? "N/A"}',
