@@ -152,7 +152,7 @@ class HorizontalFavoriteProductCard extends ConsumerWidget {
                                       product.sku ?? 'Mango',
                                       style: const TextStyle(
                                         fontFamily: 'Metropolis',
-                                        fontWeight: FontWeight.w400,
+                                        fontWeight: FontWeight.bold,
                                         fontSize: 11,
                                         color: Color(0xFF9B9B9B),
                                       ),
@@ -188,81 +188,94 @@ class HorizontalFavoriteProductCard extends ConsumerWidget {
                                       final parts = product.variantTitle!.split(', ');
                                       String color = parts.isNotEmpty ? parts[0] : '';
                                       String size = parts.length > 1 ? parts[1] : '';
-                                      return RichText(
-                                        text: TextSpan(
-                                          style: const TextStyle(fontFamily: 'Metropolis', fontSize: 11, color: Color(0xFF9B9B9B)),
-                                          children: [
-                                            if (color.isNotEmpty) ...[
-                                              const TextSpan(text: 'Color: '),
-                                              TextSpan(text: color, style: const TextStyle(color: Color(0xFF222222))),
-                                            ],
-                                            if (size.isNotEmpty) ...[
-                                              const TextSpan(text: '  Size: '),
-                                              TextSpan(text: size, style: const TextStyle(color: Color(0xFF222222))),
-                                            ],
-                                          ],
-                                        ),
+                                      return Row(
+                                        children: [
+                                          SizedBox(
+                                            width: 100,
+                                            child: RichText(
+                                              text: TextSpan(
+                                                style: const TextStyle(fontFamily: 'Metropolis', fontSize: 11, color: Color(0xFF9B9B9B)),
+                                                children: [
+                                                  if (color.isNotEmpty) ...[
+                                                    const TextSpan(text: 'Color: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                                    TextSpan(text: color, style: const TextStyle(color: Color(0xFF222222), fontWeight: FontWeight.bold)),
+                                                  ],
+                                                ],
+                                              ),
+                                              maxLines: 1,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                          if (size.isNotEmpty)
+                                            RichText(
+                                              text: TextSpan(
+                                                style: const TextStyle(fontFamily: 'Metropolis', fontSize: 11, color: Color(0xFF9B9B9B)),
+                                                children: [
+                                                  const TextSpan(text: 'Size: ', style: TextStyle(fontWeight: FontWeight.bold)),
+                                                  TextSpan(text: size, style: const TextStyle(color: Color(0xFF222222), fontWeight: FontWeight.bold)),
+                                                ],
+                                              ),
+                                            ),
+                                        ],
                                       );
                                     },
                                   ),
                                 Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Row(
-                                      children: [
-                                        if (hasDiscount) ...[
-                                          Text(
-                                            '${product.comparePrice!.toStringAsFixed(0)}\$',
-                                            style: const TextStyle(
-                                              color: Colors.grey,
-                                              fontSize: 14,
-                                              decoration: TextDecoration.lineThrough,
-                                            ),
-                                          ),
-                                          const SizedBox(width: 4),
-                                        ],
-                                        if (isNew)
-                                          Text(
-                                            '${(product.comparePrice != null && product.comparePrice! > 0 ? product.comparePrice! : product.salePrice).toStringAsFixed(0)}\$',
-                                            style: const TextStyle(
-                                              fontFamily: 'Metropolis',
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 14,
-                                              height: 20 / 14,
-                                              color: Color(0xFF222222),
-                                            ),
-                                          )
-                                        else
-                                          Text(
-                                            '${product.salePrice.toStringAsFixed(0)}\$',
-                                            style: const TextStyle(
-                                              color: Color(0xFFDB3022),
-                                              fontSize: 14,
-                                              fontWeight: FontWeight.bold,
-                                            ),
-                                          ),
-                                      ],
-                                    ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(right: 36.0),
+                                    SizedBox(
+                                      width: 100,
                                       child: Row(
                                         children: [
-                                          ...List.generate(5, (index) {
-                                            bool isFilled = index < product.averageRating.round();
-                                            return Icon(
-                                              isFilled ? Icons.star : Icons.star_border,
-                                              color: isFilled ? const Color(0xFFFFBA49) : const Color(0xFF9B9B9B),
-                                              size: 14,
-                                            );
-                                          }),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '(${product.totalReviews})',
-                                            style: const TextStyle(fontFamily: 'Metropolis', color: Color(0xFF9B9B9B), fontSize: 10),
-                                          ),
+                                          if (hasDiscount) ...[
+                                            Text(
+                                              '${product.comparePrice!.toStringAsFixed(0)}\$',
+                                              style: const TextStyle(
+                                                color: Colors.grey,
+                                                fontSize: 14,
+                                                decoration: TextDecoration.lineThrough,
+                                              ),
+                                            ),
+                                            const SizedBox(width: 4),
+                                          ],
+                                          if (isNew)
+                                            Text(
+                                              '${(product.comparePrice != null && product.comparePrice! > 0 ? product.comparePrice! : product.salePrice).toStringAsFixed(0)}\$',
+                                              style: const TextStyle(
+                                                fontFamily: 'Metropolis',
+                                                fontWeight: FontWeight.w500,
+                                                fontSize: 14,
+                                                height: 20 / 14,
+                                                color: Color(0xFF222222),
+                                              ),
+                                            )
+                                          else
+                                            Text(
+                                              '${product.salePrice.toStringAsFixed(0)}\$',
+                                              style: const TextStyle(
+                                                color: Color(0xFFDB3022),
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
                                         ],
                                       ),
+                                    ),
+                                    Row(
+                                      children: [
+                                        ...List.generate(5, (index) {
+                                          bool isFilled = index < product.averageRating.round();
+                                          return Icon(
+                                            isFilled ? Icons.star : Icons.star_border,
+                                            color: isFilled ? const Color(0xFFFFBA49) : const Color(0xFF9B9B9B),
+                                            size: 14,
+                                          );
+                                        }),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          '(${product.totalReviews})',
+                                          style: const TextStyle(fontFamily: 'Metropolis', color: Color(0xFF9B9B9B), fontSize: 10),
+                                        ),
+                                      ],
                                     ),
                                   ],
                                 ),
@@ -299,23 +312,28 @@ class HorizontalFavoriteProductCard extends ConsumerWidget {
                             size: 22,
                           ),
                           onPressed: () async {
+                            ref.read(loadingProvider.notifier).state = true;
                             try {
                               await ref.read(cartProvider.notifier).addToCart(
                                 product.productId,
                                 product.variantOptionId,
                                 1,
                               );
+                              await Future.delayed(const Duration(seconds: 2));
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   const SnackBar(content: Text('Added to bag successfully!')),
                                 );
                               }
                             } catch (e) {
+                              await Future.delayed(const Duration(seconds: 2));
                               if (context.mounted) {
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(content: Text('Failed to add to bag: $e')),
                                 );
                               }
+                            } finally {
+                              ref.read(loadingProvider.notifier).state = false;
                             }
                           },
                         ),

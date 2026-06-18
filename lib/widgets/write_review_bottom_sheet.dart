@@ -336,7 +336,7 @@ class _WriteReviewBottomSheetState extends ConsumerState<WriteReviewBottomSheet>
               child: Container(
                 color: Colors.white.withOpacity(0.5),
                 child: const Center(
-                  child: CircularProgressIndicator(),
+                  child: CircularProgressIndicator(color: const Color(0xFFDB3022)),
                 ),
               ),
             ),

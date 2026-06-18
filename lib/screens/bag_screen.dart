@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/cart_provider.dart';
 import '../providers/coupon_provider.dart';
 import '../widgets/promo_codes_bottom_sheet.dart';
+import '../models/coupon.dart';
 import 'checkout_screen.dart';
 
 class BagScreen extends ConsumerStatefulWidget {
@@ -41,6 +42,19 @@ class _BagScreenState extends ConsumerState<BagScreen> {
           if (cart == null || cart.items.isEmpty) {
             return const Center(child: Text('Your bag is empty.'));
           }
+
+          final appliedCoupon = ref.watch(appliedCouponProvider);
+          double subtotal = cart.subtotal;
+          double discountAmount = 0.0;
+          if (appliedCoupon != null) {
+            if (appliedCoupon.discountType == 'PERCENTAGE') {
+              discountAmount = subtotal * (appliedCoupon.discountValue / 100);
+            } else if (appliedCoupon.discountType == 'FIXED_CART') {
+              discountAmount = appliedCoupon.discountValue;
+            }
+          }
+          double finalAmount = subtotal - discountAmount;
+          if (finalAmount < 0) finalAmount = 0;
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -153,9 +167,23 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                         text: TextSpan(
                                           children: [
                                             const TextSpan(text: 'Color: ', style: TextStyle(color: Color(0xFF9B9B9B), fontSize: 11)),
-                                            TextSpan(text: '${item.color ?? "N/A"}  ', style: const TextStyle(color: Color(0xFF222222), fontSize: 11, fontWeight: FontWeight.bold)),
+                                            TextSpan(
+                                              text: '${item.color ?? "N/A"}  ',
+                                              style: TextStyle(
+                                                color: item.color == 'Vui lòng chọn lại' ? Colors.red : const Color(0xFF222222),
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
                                             const TextSpan(text: 'Size: ', style: TextStyle(color: Color(0xFF9B9B9B), fontSize: 11)),
-                                            TextSpan(text: '${item.size ?? "N/A"}', style: const TextStyle(color: Color(0xFF222222), fontSize: 11, fontWeight: FontWeight.bold)),
+                                            TextSpan(
+                                              text: '${item.size ?? "N/A"}',
+                                              style: TextStyle(
+                                                color: item.size == 'Vui lòng chọn lại' ? Colors.red : const Color(0xFF222222),
+                                                fontSize: 11,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
                                           ],
                                         ),
                                       ),
@@ -208,7 +236,6 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                         clipBehavior: Clip.none,
                         children: [
                           Container(
-                            margin: const EdgeInsets.only(right: 18), // Leave space for button overlap
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: const BorderRadius.only(
@@ -238,7 +265,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                               } : null,
                               child: Container(
                                 color: Colors.transparent,
-                                padding: const EdgeInsets.only(left: 20, right: 30),
+                                padding: EdgeInsets.only(left: 20, right: selectedPromo == null ? 40 : 16),
                                 alignment: Alignment.centerLeft,
                                 child: selectedPromo != null
                                     ? Row(
@@ -270,10 +297,11 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                               ),
                             ),
                           ),
-                          Positioned(
-                            right: 0,
-                            top: 0,
-                            bottom: 0,
+                          if (selectedPromo == null)
+                            Positioned(
+                              right: 0,
+                              top: 0,
+                              bottom: 0,
                             child: Container(
                               width: 36,
                               height: 36,
@@ -308,15 +336,33 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
+                    if (discountAmount > 0) ...[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Subtotal:', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                          Text('${subtotal.toStringAsFixed(0)}\$', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          const Text('Discount:', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                          Text('-${discountAmount.toStringAsFixed(0)}\$', style: const TextStyle(fontSize: 16, color: Color(0xFFDB3022), fontWeight: FontWeight.bold)),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                    ],
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Text(
                           'Total amount:',
-                          style: TextStyle(fontSize: 14, color: Colors.grey),
+                          style: TextStyle(fontSize: 14, color: Colors.grey, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          '${cart.subtotal.toStringAsFixed(0)}\$',
+                          '${finalAmount.toStringAsFixed(0)}\$',
                           style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ],
@@ -348,7 +394,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
             ],
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFFDB3022))),
         error: (e, st) => Center(child: Text('Error loading cart: $e')),
       ),
     );

@@ -120,7 +120,7 @@ class _ReviewsScreenState extends ConsumerState<ReviewsScreen> {
                 data: (summary) {
                   return _buildSummarySection(summary);
                 },
-                loading: () => const Center(child: CircularProgressIndicator()),
+                loading: () => const Center(child: CircularProgressIndicator(color: const Color(0xFFDB3022))),
                 error: (error, stack) => Center(child: Text('Error: $error')),
               ),
             ),
@@ -184,7 +184,7 @@ class _ReviewsScreenState extends ConsumerState<ReviewsScreen> {
                   });
                   return const Padding(
                     padding: EdgeInsets.symmetric(vertical: 32.0),
-                    child: Center(child: CircularProgressIndicator()),
+                    child: Center(child: CircularProgressIndicator(color: const Color(0xFFDB3022))),
                   );
                 }
                 return const SizedBox(height: 100);

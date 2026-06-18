@@ -157,23 +157,28 @@ class FavoriteProductCard extends ConsumerWidget {
                         size: 22,
                       ),
                       onPressed: () async {
+                        ref.read(loadingProvider.notifier).state = true;
                         try {
                           await ref.read(cartProvider.notifier).addToCart(
                             product.productId,
                             product.variantOptionId,
                             1,
                           );
+                          await Future.delayed(const Duration(seconds: 2));
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(content: Text('Added to bag successfully!')),
                             );
                           }
                         } catch (e) {
+                          await Future.delayed(const Duration(seconds: 2));
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(content: Text('Failed to add to bag: $e')),
                             );
                           }
+                        } finally {
+                          ref.read(loadingProvider.notifier).state = false;
                         }
                       },
                     ),

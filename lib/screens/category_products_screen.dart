@@ -214,7 +214,7 @@ class CategoryProductsScreen extends ConsumerWidget {
                         ),
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const Center(child: CircularProgressIndicator(color: const Color(0xFFDB3022))),
               error: (err, stack) => Center(child: Text('Error: $err')),
             ),
           ),

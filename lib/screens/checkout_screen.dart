@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/checkout_provider.dart';
 import '../providers/cart_provider.dart';
+import '../providers/coupon_provider.dart';
 import 'shipping_addresses_screen.dart';
 import 'payment_methods_screen.dart';
 import 'success_screen.dart';
@@ -13,11 +14,24 @@ class CheckoutScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final checkoutState = ref.watch(checkoutProvider);
     final cartState = ref.watch(cartProvider);
+    final appliedCoupon = ref.watch(appliedCouponProvider);
 
     double totalAmount = 0;
     if (cartState is AsyncData && cartState.value != null) {
       totalAmount = cartState.value!.subtotal;
     }
+
+    double discountAmount = 0.0;
+    if (appliedCoupon != null) {
+      if (appliedCoupon.discountType == 'PERCENTAGE') {
+        discountAmount = totalAmount * (appliedCoupon.discountValue / 100);
+      } else if (appliedCoupon.discountType == 'FIXED_CART') {
+        discountAmount = appliedCoupon.discountValue;
+      }
+    }
+
+    double afterDiscount = totalAmount - discountAmount;
+    if (afterDiscount < 0) afterDiscount = 0;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
@@ -29,7 +43,7 @@ class CheckoutScreen extends ConsumerWidget {
         centerTitle: true,
       ),
       body: checkoutState.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: Color(0xFFDB3022)))
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -105,6 +119,16 @@ class CheckoutScreen extends ConsumerWidget {
                       Text('${totalAmount.toStringAsFixed(0)}\$', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     ],
                   ),
+                  if (discountAmount > 0) ...[
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text('Discount:', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                        Text('-${discountAmount.toStringAsFixed(0)}\$', style: const TextStyle(fontSize: 16, color: Color(0xFFDB3022), fontWeight: FontWeight.bold)),
+                      ],
+                    ),
+                  ],
                   const SizedBox(height: 12),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -118,7 +142,7 @@ class CheckoutScreen extends ConsumerWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text('Summary:', style: TextStyle(fontSize: 16, color: Colors.grey, fontWeight: FontWeight.bold)),
-                      Text('${(totalAmount + 15).toStringAsFixed(0)}\$', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                      Text('${(afterDiscount + 15).toStringAsFixed(0)}\$', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     ],
                   ),
                   const SizedBox(height: 24),

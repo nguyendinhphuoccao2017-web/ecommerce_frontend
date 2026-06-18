@@ -459,7 +459,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
                         },
                       );
                     },
-                    loading: () => const Center(child: CircularProgressIndicator()),
+                    loading: () => const Center(child: CircularProgressIndicator(color: const Color(0xFFDB3022))),
                     error: (e, st) => Center(child: Text('Error: $e')),
                   ),
                 ),
@@ -468,7 +468,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const Center(child: CircularProgressIndicator(color: const Color(0xFFDB3022))),
         error: (e, st) => Center(child: Text('Error: $e')),
       ),
     );

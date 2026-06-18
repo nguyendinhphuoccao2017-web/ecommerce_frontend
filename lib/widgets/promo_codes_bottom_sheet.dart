@@ -201,7 +201,7 @@ class _PromoCodesBottomSheetState extends ConsumerState<PromoCodesBottomSheet> {
                   },
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator(color: Colors.black)),
+              loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFFDB3022))),
               error: (e, st) => Center(child: Text('Error: $e')),
             ),
           ),

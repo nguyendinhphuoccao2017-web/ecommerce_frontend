@@ -20,7 +20,7 @@ class ShippingAddressesScreen extends ConsumerWidget {
         centerTitle: true,
       ),
       body: checkoutState.isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? const Center(child: CircularProgressIndicator(color: const Color(0xFFDB3022)))
           : ListView.builder(
               padding: const EdgeInsets.all(16),
               itemCount: checkoutState.addresses.length,

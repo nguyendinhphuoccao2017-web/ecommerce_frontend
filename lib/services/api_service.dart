@@ -12,12 +12,15 @@ import '../models/customer_address.dart';
 class ApiService {
   // Uncomment dòng dưới đây nếu muốn test backend trên máy local (dành cho iOS Simulator)
   // static const String apiBaseUrl = 'http://127.0.0.1:8080/api';
-  // Uncomment dòng dưới đây nếu muốn test backend trên máy local (dành cho Android Emulator)
-  // static const String apiBaseUrl = 'http://10.0.2.2:8080/api';
+  // Dùng IP này cho Android Emulator để kết nối đến localhost của máy tính
+  static const String apiBaseUrl = 'http://10.0.2.2:8080/api';
   
-  static const String apiBaseUrl = 'https://ecommerce-backend-24ii.onrender.com/api';
+  // static const String apiBaseUrl = 'https://ecommerce-backend-24ii.onrender.com/api';
   static const String baseUrl = '$apiBaseUrl/auth';
-  final Dio _dio = Dio();
+  final Dio _dio = Dio(BaseOptions(
+    connectTimeout: const Duration(seconds: 10),
+    receiveTimeout: const Duration(seconds: 10),
+  ));
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   Future<void> register(

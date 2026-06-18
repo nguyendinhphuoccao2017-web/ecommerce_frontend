@@ -75,7 +75,7 @@ class HomeScreen extends ConsumerWidget {
                   ),
                 );
               },
-              loading: () => const SizedBox(height: 500, child: Center(child: CircularProgressIndicator())),
+              loading: () => const SizedBox(height: 500, child: Center(child: CircularProgressIndicator(color: const Color(0xFFDB3022)))),
               error: (err, stack) => SizedBox(height: 500, child: Center(child: Text('Error: $err'))),
             ),
             
@@ -89,7 +89,7 @@ class HomeScreen extends ConsumerWidget {
                 products: products,
                 isNewSection: true,
               ),
-              loading: () => const SizedBox(height: 300, child: Center(child: CircularProgressIndicator())),
+              loading: () => const SizedBox(height: 300, child: Center(child: CircularProgressIndicator(color: const Color(0xFFDB3022)))),
               error: (err, stack) => const Center(child: Text('Error loading new products')),
             ),
             
@@ -103,7 +103,7 @@ class HomeScreen extends ConsumerWidget {
                 products: products,
                 isNewSection: false,
               ),
-              loading: () => const SizedBox(height: 300, child: Center(child: CircularProgressIndicator())),
+              loading: () => const SizedBox(height: 300, child: Center(child: CircularProgressIndicator(color: const Color(0xFFDB3022)))),
               error: (err, stack) => const Center(child: Text('Error loading sale products')),
             ),
             

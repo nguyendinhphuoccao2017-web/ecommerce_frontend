@@ -124,7 +124,7 @@ class _SizeSelectionBottomSheetState extends ConsumerState<SizeSelectionBottomSh
           ),
           const SizedBox(height: 32),
           if (_isLoading)
-            const SizedBox(height: 100, child: Center(child: CircularProgressIndicator()))
+            const SizedBox(height: 100, child: Center(child: CircularProgressIndicator(color: const Color(0xFFDB3022))))
           else if (_errorMessage != null)
             SizedBox(height: 100, child: Center(child: Text(_errorMessage!)))
           else if (_variants.isEmpty)

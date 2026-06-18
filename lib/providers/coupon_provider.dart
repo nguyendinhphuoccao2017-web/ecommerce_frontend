@@ -31,3 +31,19 @@ final couponProvider = StateNotifierProvider<CouponNotifier, AsyncValue<List<Cou
 
 final selectedPromoProvider = StateProvider<String?>((ref) => null);
 
+final appliedCouponProvider = Provider<Coupon?>((ref) {
+  final code = ref.watch(selectedPromoProvider);
+  if (code == null) return null;
+  final couponsState = ref.watch(couponProvider);
+  return couponsState.maybeWhen(
+    data: (coupons) {
+      try {
+        return coupons.firstWhere((c) => c.code == code);
+      } catch (e) {
+        return null;
+      }
+    },
+    orElse: () => null,
+  );
+});
+
