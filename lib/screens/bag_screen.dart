@@ -5,6 +5,8 @@ import '../providers/coupon_provider.dart';
 import '../widgets/promo_codes_bottom_sheet.dart';
 import '../models/coupon.dart';
 import 'checkout_screen.dart';
+import '../providers/loading_provider.dart';
+import '../widgets/loading_overlay.dart';
 
 class BagScreen extends ConsumerStatefulWidget {
   const BagScreen({super.key});
@@ -25,9 +27,10 @@ class _BagScreenState extends ConsumerState<BagScreen> {
     final cartState = ref.watch(cartProvider);
     final selectedPromo = ref.watch(selectedPromoProvider);
 
-    return Scaffold(
-      backgroundColor: const Color(0xFFF9F9F9),
-      appBar: AppBar(
+    return LoadingOverlay(
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF9F9F9),
+        appBar: AppBar(
         backgroundColor: const Color(0xFFF9F9F9),
         elevation: 0,
         actions: [
@@ -132,18 +135,44 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                           offset: const Offset(-40, 0),
                                           onSelected: (value) async {
                                             if (value == 'favorite') {
-                                              await ref.read(cartProvider.notifier).toggleFavorite(item.productId);
-                                              if (context.mounted) {
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  SnackBar(content: Text('Toggled favorite for ${item.productName}')),
-                                                );
+                                              ref.read(loadingProvider.notifier).state = true;
+                                              try {
+                                                await ref.read(cartProvider.notifier).toggleFavorite(item.productId);
+                                                await Future.delayed(const Duration(seconds: 2));
+                                                if (context.mounted) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Toggled favorite for ${item.productName}')),
+                                                  );
+                                                }
+                                              } catch (e) {
+                                                await Future.delayed(const Duration(seconds: 2));
+                                                if (context.mounted) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Failed to toggle favorite: $e')),
+                                                  );
+                                                }
+                                              } finally {
+                                                ref.read(loadingProvider.notifier).state = false;
                                               }
                                             } else if (value == 'delete') {
-                                              await ref.read(cartProvider.notifier).removeItem(item.id);
-                                              if (context.mounted) {
-                                                ScaffoldMessenger.of(context).showSnackBar(
-                                                  SnackBar(content: Text('Removed ${item.productName} from cart')),
-                                                );
+                                              ref.read(loadingProvider.notifier).state = true;
+                                              try {
+                                                await ref.read(cartProvider.notifier).removeItem(item.id);
+                                                await Future.delayed(const Duration(seconds: 2));
+                                                if (context.mounted) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Removed ${item.productName} from cart')),
+                                                  );
+                                                }
+                                              } catch (e) {
+                                                await Future.delayed(const Duration(seconds: 2));
+                                                if (context.mounted) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Failed to remove item: $e')),
+                                                  );
+                                                }
+                                              } finally {
+                                                ref.read(loadingProvider.notifier).state = false;
                                               }
                                             }
                                           },
@@ -379,7 +408,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
         loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFFDB3022))),
         error: (e, st) => Center(child: Text('Error loading cart: $e')),
       ),
-    );
+    ));
   }
 
   Widget _buildQtyButton(IconData icon, VoidCallback onPressed) {
