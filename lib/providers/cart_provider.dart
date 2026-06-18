@@ -6,6 +6,7 @@ import '../models/cart_response.dart';
 import '../services/api_service.dart';
 import 'auth_provider.dart';
 import 'favorite_provider.dart';
+import 'loading_provider.dart';
 
 final cartProvider = AsyncNotifierProvider<CartNotifier, CartResponse?>(() {
   return CartNotifier();
