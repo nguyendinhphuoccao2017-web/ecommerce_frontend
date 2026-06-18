@@ -102,9 +102,11 @@ class _PromoCodesBottomSheetState extends ConsumerState<PromoCodesBottomSheet> {
           // Search Box or Applied Promo Code
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: SizedBox(
-              height: 36,
-              child: Stack(
+            child: Padding(
+              padding: EdgeInsets.only(right: ref.watch(selectedPromoProvider) == null ? 18.0 : 0.0),
+              child: SizedBox(
+                height: 36,
+                child: Stack(
                 clipBehavior: Clip.none,
                 children: [
                   Container(
@@ -120,7 +122,7 @@ class _PromoCodesBottomSheetState extends ConsumerState<PromoCodesBottomSheet> {
                       ],
                     ),
                     child: Container(
-                      padding: EdgeInsets.only(left: 20, right: ref.watch(selectedPromoProvider) == null ? 40 : 8),
+                      padding: EdgeInsets.only(left: 20, right: ref.watch(selectedPromoProvider) == null ? 40 : 0),
                       alignment: Alignment.centerLeft,
                       child: ref.watch(selectedPromoProvider) != null
                           ? Row(
@@ -182,6 +184,7 @@ class _PromoCodesBottomSheetState extends ConsumerState<PromoCodesBottomSheet> {
                     ),
                 ],
               ),
+            ),
             ),
           ),
           const SizedBox(height: 32),

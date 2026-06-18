@@ -127,11 +127,12 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                         width: 24,
                                         child: PopupMenuButton<String>(
                                           color: Colors.white,
+                                          constraints: const BoxConstraints(maxWidth: 170, minWidth: 170),
                                           icon: const Icon(Icons.more_vert, color: Colors.grey, size: 24),
                                           padding: EdgeInsets.zero,
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                           elevation: 8,
-                                          offset: const Offset(-40, 0),
+                                          offset: const Offset(-140, 24),
                                           onSelected: (value) async {
                                             if (value == 'favorite') {
                                               ref.read(loadingProvider.notifier).state = true;
@@ -273,9 +274,11 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                 child: Column(
                   children: [
                     // Promo Code Input Box (triggers Bottom Sheet)
-                    SizedBox(
-                      height: 36,
-                      child: Stack(
+                    Padding(
+                      padding: EdgeInsets.only(right: selectedPromo == null ? 18.0 : 0.0),
+                      child: SizedBox(
+                        height: 36,
+                        child: Stack(
                         clipBehavior: Clip.none,
                         children: [
                           Container(
@@ -303,7 +306,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                               } : null,
                                 child: Container(
                                   color: Colors.transparent,
-                                  padding: EdgeInsets.only(left: 20, right: selectedPromo == null ? 40 : 8),
+                                  padding: EdgeInsets.only(left: 20, right: selectedPromo == null ? 40 : 0),
                                 alignment: Alignment.centerLeft,
                                 child: selectedPromo != null
                                     ? Row(
@@ -340,7 +343,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                               right: -18,
                               top: 0,
                               bottom: 0,
-                            child: Container(
+                              child: Container(
                               width: 36,
                               height: 36,
                               decoration: const BoxDecoration(
@@ -372,6 +375,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                           ),
                         ],
                       ),
+                    ),
                     ),
                     const SizedBox(height: 24),
 

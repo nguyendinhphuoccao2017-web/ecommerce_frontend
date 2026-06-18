@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
 import '../models/cart_response.dart';
@@ -44,7 +45,8 @@ class CartNotifier extends AsyncNotifier<CartResponse?> {
   }
   Future<void> removeItem(String itemId) async {
     try {
-      final token = ref.read(authProvider);
+      const storage = FlutterSecureStorage();
+      final token = await storage.read(key: 'jwt_token');
       final response = await http.delete(
         Uri.parse('${ApiService.apiBaseUrl}/card-items/$itemId'),
         headers: {
