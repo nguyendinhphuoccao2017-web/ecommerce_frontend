@@ -7,6 +7,8 @@ class CartItem {
   final String? image;
   final String? variantOptionId;
   final String? variantTitle;
+  final String? color;
+  final String? size;
   final int quantity;
   final int maxQuantity;
 
@@ -19,6 +21,8 @@ class CartItem {
     this.image,
     this.variantOptionId,
     this.variantTitle,
+    this.color,
+    this.size,
     required this.quantity,
     required this.maxQuantity,
   });
@@ -33,6 +37,8 @@ class CartItem {
       image: json['image'],
       variantOptionId: json['variantOptionId'],
       variantTitle: json['variantTitle'],
+      color: json['color'],
+      size: json['size'],
       quantity: json['quantity'] ?? 1,
       maxQuantity: json['maxQuantity'] ?? 1,
     );

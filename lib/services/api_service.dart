@@ -280,6 +280,21 @@ class ApiService {
     }
   }
 
+  Future<List<dynamic>> getCoupons() async {
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      final response = await _dio.get(
+        '$apiBaseUrl/coupons',
+        options: Options(
+          headers: token != null ? {'Authorization': 'Bearer $token'} : null,
+        ),
+      );
+      return response.data;
+    } catch (e) {
+      throw Exception('Failed to load coupons: $e');
+    }
+  }
+
   Future<CartResponse> getCart() async {
     // We will parse it to Dart model CartResponse
     try {

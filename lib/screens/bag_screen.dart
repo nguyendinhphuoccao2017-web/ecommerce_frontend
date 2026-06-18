@@ -27,20 +27,11 @@ class _BagScreenState extends ConsumerState<BagScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
-        title: const Text(
-          'My Bag',
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 34,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
         backgroundColor: const Color(0xFFF9F9F9),
         elevation: 0,
-        centerTitle: false,
         actions: [
           IconButton(
-            icon: const Icon(Icons.search, color: Colors.black),
+            icon: const Icon(Icons.search, color: Colors.black, size: 26),
             onPressed: () {},
           ),
         ],
@@ -52,14 +43,32 @@ class _BagScreenState extends ConsumerState<BagScreen> {
           }
 
           return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16, top: 8, bottom: 16),
+                  child: const Text(
+                    'My Bag',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 34,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 360,
                 child: ListView.builder(
-                  padding: const EdgeInsets.all(16),
-                  itemCount: cart.items.length,
+                  physics: const BouncingScrollPhysics(),
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: cart.items.length > 5 ? 5 : cart.items.length,
                   itemBuilder: (context, index) {
                     final item = cart.items[index];
                     return Card(
+                      color: Colors.white,
                       margin: const EdgeInsets.only(bottom: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       elevation: 0,
@@ -138,11 +147,20 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                     ],
                                   ),
                                   const SizedBox(height: 4),
-                                  if (item.variantTitle != null)
-                                    Text(
-                                      item.variantTitle!,
-                                      style: const TextStyle(fontSize: 11, color: Colors.grey),
-                                    ),
+                                  Row(
+                                    children: [
+                                      RichText(
+                                        text: TextSpan(
+                                          children: [
+                                            const TextSpan(text: 'Color: ', style: TextStyle(color: Color(0xFF9B9B9B), fontSize: 11)),
+                                            TextSpan(text: '${item.color ?? "N/A"}  ', style: const TextStyle(color: Color(0xFF222222), fontSize: 11, fontWeight: FontWeight.bold)),
+                                            const TextSpan(text: 'Size: ', style: TextStyle(color: Color(0xFF9B9B9B), fontSize: 11)),
+                                            TextSpan(text: '${item.size ?? "N/A"}', style: const TextStyle(color: Color(0xFF222222), fontSize: 11, fontWeight: FontWeight.bold)),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                   const SizedBox(height: 12),
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -152,7 +170,10 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                         children: [
                                           _buildQtyButton(Icons.remove, () {}),
                                           const SizedBox(width: 12),
-                                          Text('${item.quantity}'),
+                                          Text(
+                                            '${item.quantity}',
+                                            style: const TextStyle(fontWeight: FontWeight.bold),
+                                          ),
                                           const SizedBox(width: 12),
                                           _buildQtyButton(Icons.add, () {}),
                                         ],
@@ -173,36 +194,31 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                   },
                 ),
               ),
+              const Spacer(),
               // Total amounts
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(24),
-                    topRight: Radius.circular(24),
-                  ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.05),
-                      blurRadius: 10,
-                      offset: const Offset(0, -5),
-                    )
-                  ],
-                ),
+                color: Colors.transparent,
                 child: Column(
                   children: [
                     // Promo Code Input Box (triggers Bottom Sheet)
-                    Container(
+                    SizedBox(
                       height: 36,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey.withOpacity(0.2)),
-                      ),
-                      child: Row(
+                      child: Stack(
+                        clipBehavior: Clip.none,
                         children: [
-                          Expanded(
+                          Container(
+                            margin: const EdgeInsets.only(right: 18), // Leave space for button overlap
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: const BorderRadius.only(
+                                topLeft: Radius.circular(8),
+                                bottomLeft: Radius.circular(8),
+                                topRight: Radius.circular(18),
+                                bottomRight: Radius.circular(18),
+                              ),
+                              border: Border.all(color: Colors.grey.withOpacity(0.2)),
+                            ),
                             child: GestureDetector(
                               onTap: selectedPromo == null ? () async {
                                 await showModalBottomSheet<String>(
@@ -222,17 +238,30 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                               } : null,
                               child: Container(
                                 color: Colors.transparent,
-                                padding: const EdgeInsets.symmetric(horizontal: 20),
+                                padding: const EdgeInsets.only(left: 20, right: 30),
                                 alignment: Alignment.centerLeft,
                                 child: selectedPromo != null
-                                    ? Text(
-                                        selectedPromo,
-                                        style: const TextStyle(
-                                          fontFamily: 'Metropolis',
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: 14,
-                                          color: Color(0xFF222222),
-                                        ),
+                                    ? Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            selectedPromo,
+                                            style: const TextStyle(
+                                              fontFamily: 'Metropolis',
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 14,
+                                              color: Color(0xFF222222),
+                                            ),
+                                          ),
+                                          IconButton(
+                                            padding: EdgeInsets.zero,
+                                            constraints: const BoxConstraints(),
+                                            icon: const Icon(Icons.close, color: Colors.grey, size: 16),
+                                            onPressed: () {
+                                              ref.read(selectedPromoProvider.notifier).state = null;
+                                            },
+                                          ),
+                                        ],
                                       )
                                     : const Text(
                                         'Enter your promo code',
@@ -241,19 +270,13 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                               ),
                             ),
                           ),
-                          if (selectedPromo != null)
-                            IconButton(
-                              padding: EdgeInsets.zero,
-                              icon: const Icon(Icons.close, color: Colors.grey, size: 20),
-                              onPressed: () {
-                                ref.read(selectedPromoProvider.notifier).state = null;
-                              },
-                            )
-                          else
-                            Container(
+                          Positioned(
+                            right: 0,
+                            top: 0,
+                            bottom: 0,
+                            child: Container(
                               width: 36,
                               height: 36,
-                              margin: const EdgeInsets.only(right: 8),
                               decoration: const BoxDecoration(
                                 color: Colors.black,
                                 shape: BoxShape.circle,
@@ -262,6 +285,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                 padding: EdgeInsets.zero,
                                 icon: const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
                                 onPressed: () async {
+                                  if (selectedPromo != null) return;
                                   await showModalBottomSheet<String>(
                                     context: context,
                                     isScrollControlled: true,
@@ -279,6 +303,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                 },
                               ),
                             ),
+                          ),
                         ],
                       ),
                     ),

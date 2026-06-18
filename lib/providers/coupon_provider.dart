@@ -15,22 +15,10 @@ class CouponNotifier extends StateNotifier<AsyncValue<List<Coupon>>> {
   Future<void> fetchCoupons() async {
     state = const AsyncValue.loading();
     try {
-      final token = ref.read(authProvider);
-      final response = await http.get(
-        Uri.parse('${ApiService.apiBaseUrl}/coupons'),
-        headers: {
-          'Content-Type': 'application/json',
-          if (token != null) 'Authorization': 'Bearer $token',
-        },
-      );
-
-      if (response.statusCode == 200) {
-        final List<dynamic> data = json.decode(response.body);
-        final coupons = data.map((e) => Coupon.fromJson(e)).toList();
-        state = AsyncValue.data(coupons);
-      } else {
-        state = AsyncValue.error('Failed to load coupons', StackTrace.current);
-      }
+      final apiService = ref.read(apiServiceProvider);
+      final List<dynamic> data = await apiService.getCoupons();
+      final coupons = data.map((e) => Coupon.fromJson(e)).toList();
+      state = AsyncValue.data(coupons);
     } catch (e, st) {
       state = AsyncValue.error(e, st);
     }
