@@ -27,10 +27,9 @@ class _BagScreenState extends ConsumerState<BagScreen> {
     final cartState = ref.watch(cartProvider);
     final selectedPromo = ref.watch(selectedPromoProvider);
 
-    return LoadingOverlay(
-      child: Scaffold(
-        backgroundColor: const Color(0xFFF9F9F9),
-        appBar: AppBar(
+    return Scaffold(
+      backgroundColor: const Color(0xFFF9F9F9),
+      appBar: AppBar(
         backgroundColor: const Color(0xFFF9F9F9),
         elevation: 0,
         actions: [
@@ -137,7 +136,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                             if (value == 'favorite') {
                                               ref.read(loadingProvider.notifier).state = true;
                                               try {
-                                                await ref.read(cartProvider.notifier).toggleFavorite(item.productId);
+                                                await ref.read(cartProvider.notifier).toggleFavorite(item.productId, variantOptionId: item.variantOptionId);
                                                 await Future.delayed(const Duration(seconds: 2));
                                                 if (context.mounted) {
                                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -180,12 +179,23 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                             const PopupMenuItem<String>(
                                               value: 'favorite',
                                               height: 48,
-                                              child: Text('Add to favorites', style: TextStyle(fontFamily: 'Metropolis', fontSize: 14)),
+                                              child: SizedBox(
+                                                width: 170,
+                                                child: Center(
+                                                  child: Text('Add to favorites', style: TextStyle(fontFamily: 'Metropolis', fontSize: 14)),
+                                                ),
+                                              ),
                                             ),
+                                            const PopupMenuDivider(height: 1),
                                             const PopupMenuItem<String>(
                                               value: 'delete',
                                               height: 48,
-                                              child: Text('Delete from the list', style: TextStyle(fontFamily: 'Metropolis', fontSize: 14)),
+                                              child: SizedBox(
+                                                width: 170,
+                                                child: Center(
+                                                  child: Text('Delete from the list', style: TextStyle(fontFamily: 'Metropolis', fontSize: 14)),
+                                                ),
+                                              ),
                                             ),
                                           ],
                                         ),
@@ -327,7 +337,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                           ),
                           if (selectedPromo == null)
                             Positioned(
-                              right: -2,
+                              right: -18,
                               top: 0,
                               bottom: 0,
                             child: Container(
@@ -408,7 +418,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
         loading: () => const Center(child: CircularProgressIndicator(color: Color(0xFFDB3022))),
         error: (e, st) => Center(child: Text('Error loading cart: $e')),
       ),
-    ));
+    );
   }
 
   Widget _buildQtyButton(IconData icon, VoidCallback onPressed) {

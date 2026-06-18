@@ -53,8 +53,8 @@ class CartNotifier extends AsyncNotifier<CartResponse?> {
       );
 
       if (response.statusCode == 200 || response.statusCode == 204) {
-        // Reload cart to get updated items and subtotal
-        await loadCart();
+        final newCart = await fetchCart();
+        state = AsyncValue.data(newCart);
       } else {
         print('Failed to remove item: ${response.statusCode}');
       }
@@ -63,9 +63,9 @@ class CartNotifier extends AsyncNotifier<CartResponse?> {
     }
   }
 
-  Future<void> toggleFavorite(String productId) async {
+  Future<void> toggleFavorite(String productId, {String? variantOptionId}) async {
     try {
-      await _apiService.toggleFavorite(productId);
+      await _apiService.toggleFavorite(productId, variantOptionId: variantOptionId);
       ref.invalidate(favoriteProductsProvider);
     } catch (e) {
       print('Error toggling favorite: $e');

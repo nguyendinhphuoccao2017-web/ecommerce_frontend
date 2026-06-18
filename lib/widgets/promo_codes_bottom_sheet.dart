@@ -159,7 +159,7 @@ class _PromoCodesBottomSheetState extends ConsumerState<PromoCodesBottomSheet> {
                   ),
                   if (ref.watch(selectedPromoProvider) == null)
                     Positioned(
-                      right: -2,
+                      right: -18,
                       top: 0,
                       bottom: 0,
                       child: Container(
