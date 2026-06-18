@@ -132,7 +132,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                           padding: EdgeInsets.zero,
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                           elevation: 8,
-                                          offset: const Offset(-140, 24),
+                                          offset: const Offset(-150, 0),
                                           onSelected: (value) async {
                                             if (value == 'favorite') {
                                               ref.read(loadingProvider.notifier).state = true;
@@ -215,7 +215,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                               style: TextStyle(
                                                 color: item.color == 'Vui lòng chọn lại' ? Colors.red : const Color(0xFF222222),
                                                 fontSize: 11,
-                                                fontWeight: FontWeight.bold,
+                                                fontWeight: FontWeight.w400,
                                               ),
                                             ),
                                             const TextSpan(text: 'Size: ', style: TextStyle(color: Color(0xFF9B9B9B), fontSize: 11)),
@@ -224,7 +224,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                               style: TextStyle(
                                                 color: item.size == 'Vui lòng chọn lại' ? Colors.red : const Color(0xFF222222),
                                                 fontSize: 11,
-                                                fontWeight: FontWeight.bold,
+                                                fontWeight: FontWeight.w400,
                                               ),
                                             ),
                                           ],
@@ -239,19 +239,26 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                       // Quantity Controls (Visual only for now, can implement update logic later)
                                       Row(
                                         children: [
-                                          _buildQtyButton(Icons.remove, () {}),
-                                          const SizedBox(width: 12),
+                                          _buildQtyButton(Icons.remove, () async {
+                                            await ref.read(cartProvider.notifier).updateQuantity(item.id, item.productId, item.variantOptionId, item.quantity, -1);
+                                          }),
+                                          const SizedBox(width: 20),
                                           Text(
                                             '${item.quantity}',
                                             style: const TextStyle(fontWeight: FontWeight.bold),
                                           ),
-                                          const SizedBox(width: 12),
-                                          _buildQtyButton(Icons.add, () {}),
+                                          const SizedBox(width: 20),
+                                          _buildQtyButton(Icons.add, () async {
+                                            await ref.read(cartProvider.notifier).updateQuantity(item.id, item.productId, item.variantOptionId, item.quantity, 1);
+                                          }),
                                         ],
                                       ),
-                                      Text(
-                                        '${item.salePrice.toStringAsFixed(0)}\$',
-                                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                      Padding(
+                                        padding: const EdgeInsets.only(right: 10),
+                                        child: Text(
+                                          '${item.salePrice.toStringAsFixed(0)}\$',
+                                          style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                                        ),
                                       ),
                                     ],
                                   ),
