@@ -13,14 +13,16 @@ class ApiService {
   // Uncomment dòng dưới đây nếu muốn test backend trên máy local (dành cho iOS Simulator)
   // static const String apiBaseUrl = 'http://127.0.0.1:8080/api';
   // Dùng IP này cho Android Emulator để kết nối đến localhost của máy tính
-  static const String apiBaseUrl = 'http://10.0.2.2:8080/api';
-  
-  // static const String apiBaseUrl = 'https://ecommerce-backend-24ii.onrender.com/api';
+  // static const String apiBaseUrl = 'http://10.0.2.2:8080/api';
+  static const String apiBaseUrl =
+      'https://ecommerce-backend-24ii.onrender.com/api';
   static const String baseUrl = '$apiBaseUrl/auth';
-  final Dio _dio = Dio(BaseOptions(
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
-  ));
+  final Dio _dio = Dio(
+    BaseOptions(
+      connectTimeout: const Duration(seconds: 10),
+      receiveTimeout: const Duration(seconds: 10),
+    ),
+  );
   final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   Future<void> register(
@@ -96,9 +98,7 @@ class ApiService {
       // Gửi kèm Token để truy cập API yêu cầu xác thực
       final response = await _dio.get(
         '$apiBaseUrl/slideshows/home',
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       List data = response.data;
       return data.map((e) => Slideshow.fromJson(e)).toList();
@@ -151,7 +151,9 @@ class ApiService {
 
   Future<List<VariantOption>> getVariants(String productId) async {
     try {
-      final response = await _dio.get('$apiBaseUrl/products/$productId/variants');
+      final response = await _dio.get(
+        '$apiBaseUrl/products/$productId/variants',
+      );
       List data = response.data;
       return data.map((e) => VariantOption.fromJson(e)).toList();
     } catch (e) {
@@ -159,16 +161,19 @@ class ApiService {
     }
   }
 
-  Future<void> toggleFavorite(String productId, {String? variantOptionId}) async {
+  Future<void> toggleFavorite(
+    String productId, {
+    String? variantOptionId,
+  }) async {
     try {
       String? token = await _storage.read(key: 'jwt_token');
       if (token == null) throw Exception('No token found');
       await _dio.post(
         '$apiBaseUrl/favorites/$productId/toggle',
-        data: variantOptionId != null ? {'variantOptionId': variantOptionId} : null,
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
+        data: variantOptionId != null
+            ? {'variantOptionId': variantOptionId}
+            : null,
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
     } catch (e) {
       throw Exception('Failed to toggle favorite: $e');
@@ -181,9 +186,7 @@ class ApiService {
       if (token == null) return [];
       final response = await _dio.get(
         '$apiBaseUrl/favorites',
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       List data = response.data;
       return data.map((e) => FavoriteProduct.fromJson(e)).toList();
@@ -223,17 +226,19 @@ class ApiService {
     }
   }
 
-  Future<Map<String, dynamic>> getReviews(String productId, int page, int size, bool withPhoto) async {
+  Future<Map<String, dynamic>> getReviews(
+    String productId,
+    int page,
+    int size,
+    bool withPhoto,
+  ) async {
     try {
       final response = await _dio.get(
         '$apiBaseUrl/products/$productId/reviews',
-        queryParameters: {
-          'page': page,
-          'size': size,
-          'withPhoto': withPhoto,
-        },
+        queryParameters: {'page': page, 'size': size, 'withPhoto': withPhoto},
       );
-      return response.data; // Expected format: {"content": [...], "totalPages": ...}
+      return response
+          .data; // Expected format: {"content": [...], "totalPages": ...}
     } catch (e) {
       throw Exception('Failed to load reviews: $e');
     }
@@ -241,14 +246,22 @@ class ApiService {
 
   Future<Map<String, dynamic>> getReviewSummary(String productId) async {
     try {
-      final response = await _dio.get('$apiBaseUrl/products/$productId/reviews/summary');
+      final response = await _dio.get(
+        '$apiBaseUrl/products/$productId/reviews/summary',
+      );
       return response.data;
     } catch (e) {
       throw Exception('Failed to load review summary: $e');
     }
   }
 
-  Future<void> postReview(String productId, int rating, String title, String comment, List<String> images) async {
+  Future<void> postReview(
+    String productId,
+    int rating,
+    String title,
+    String comment,
+    List<String> images,
+  ) async {
     try {
       String? token = await _storage.read(key: 'jwt_token');
       if (token == null) throw Exception('No token found');
@@ -260,9 +273,7 @@ class ApiService {
           'comment': comment,
           'images': images,
         },
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
     } catch (e) {
       throw Exception('Failed to post review: $e');
@@ -305,9 +316,7 @@ class ApiService {
       if (token == null) throw Exception('No token found');
       final response = await _dio.get(
         '$apiBaseUrl/cards/my-cart',
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       return CartResponse.fromJson(response.data);
     } catch (e) {
@@ -315,7 +324,11 @@ class ApiService {
     }
   }
 
-  Future<void> addToCart(String productId, String? variantOptionId, int quantity) async {
+  Future<void> addToCart(
+    String productId,
+    String? variantOptionId,
+    int quantity,
+  ) async {
     try {
       String? token = await _storage.read(key: 'jwt_token');
       if (token == null) throw Exception('No token found');
@@ -326,9 +339,7 @@ class ApiService {
           'variantOptionId': variantOptionId,
           'quantity': quantity,
         },
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
     } catch (e) {
       throw Exception('Failed to add to cart: $e');
@@ -341,9 +352,7 @@ class ApiService {
       if (token == null) throw Exception('No token found');
       final response = await _dio.get(
         '$apiBaseUrl/customer-addresses/my-addresses',
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       List data = response.data;
       return data.map((e) => CustomerAddress.fromJson(e)).toList();
@@ -359,25 +368,24 @@ class ApiService {
       await _dio.post(
         '$apiBaseUrl/customer-addresses/add',
         data: data,
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
     } catch (e) {
       throw Exception('Failed to add shipping address: $e');
     }
   }
 
-  Future<void> updateShippingAddress(String id, Map<String, dynamic> data) async {
+  Future<void> updateShippingAddress(
+    String id,
+    Map<String, dynamic> data,
+  ) async {
     try {
       String? token = await _storage.read(key: 'jwt_token');
       if (token == null) throw Exception('No token found');
       await _dio.put(
         '$apiBaseUrl/customer-addresses/$id',
         data: data,
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
     } catch (e) {
       throw Exception('Failed to update shipping address: $e');
@@ -391,9 +399,7 @@ class ApiService {
       await _dio.post(
         '$apiBaseUrl/checkout/submit',
         data: data,
-        options: Options(
-          headers: {'Authorization': 'Bearer $token'},
-        ),
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
     } catch (e) {
       throw Exception('Failed to submit checkout: $e');
