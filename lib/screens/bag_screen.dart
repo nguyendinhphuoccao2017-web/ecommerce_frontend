@@ -86,8 +86,10 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                       margin: const EdgeInsets.only(bottom: 16),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                       elevation: 0,
-                      child: Row(
-                        children: [
+                      child: SizedBox(
+                        height: 104,
+                        child: Row(
+                          children: [
                           // Image
                           ClipRRect(
                             borderRadius: const BorderRadius.only(
@@ -102,7 +104,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                           // Details
                           Expanded(
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 8),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -126,7 +128,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                           padding: EdgeInsets.zero,
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                           elevation: 8,
-                                          offset: const Offset(-150, 0), // Shift left so it overlays cleanly
+                                          offset: const Offset(-130, 0), // Shift left so it overlays cleanly but doesn't cover image
                                           onSelected: (value) async {
                                             if (value == 'favorite') {
                                               await ref.read(cartProvider.notifier).toggleFavorite(item.productId);
@@ -238,12 +240,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                           Container(
                             decoration: BoxDecoration(
                               color: Colors.white,
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(8),
-                                bottomLeft: Radius.circular(8),
-                                topRight: Radius.circular(18),
-                                bottomRight: Radius.circular(18),
-                              ),
+                              borderRadius: BorderRadius.circular(8),
                               border: Border.all(color: Colors.grey.withOpacity(0.2)),
                             ),
                             child: GestureDetector(
@@ -336,24 +333,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                       ),
                     ),
                     const SizedBox(height: 24),
-                    if (discountAmount > 0) ...[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Subtotal:', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                          Text('${subtotal.toStringAsFixed(0)}\$', style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          const Text('Discount:', style: TextStyle(fontSize: 14, color: Colors.grey)),
-                          Text('-${discountAmount.toStringAsFixed(0)}\$', style: const TextStyle(fontSize: 16, color: Color(0xFFDB3022), fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                      const SizedBox(height: 12),
-                    ],
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [

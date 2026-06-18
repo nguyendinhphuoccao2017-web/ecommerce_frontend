@@ -102,36 +102,48 @@ class _PromoCodesBottomSheetState extends ConsumerState<PromoCodesBottomSheet> {
           // Search Box or Applied Promo Code
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Container(
+            child: SizedBox(
               height: 36,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
-              ),
-              child: Row(
+              child: Stack(
+                clipBehavior: Clip.none,
                 children: [
-                  Expanded(
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.05),
+                          blurRadius: 8,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Container(
+                      padding: EdgeInsets.only(left: 20, right: ref.watch(selectedPromoProvider) == null ? 40 : 16),
+                      alignment: Alignment.centerLeft,
                       child: ref.watch(selectedPromoProvider) != null
-                          ? Align(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                ref.watch(selectedPromoProvider)!,
-                                style: const TextStyle(
-                                  fontFamily: 'Metropolis',
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 14,
-                                  color: Color(0xFF222222),
+                          ? Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Text(
+                                  ref.watch(selectedPromoProvider)!,
+                                  style: const TextStyle(
+                                    fontFamily: 'Metropolis',
+                                    fontWeight: FontWeight.w500,
+                                    fontSize: 14,
+                                    color: Color(0xFF222222),
+                                  ),
                                 ),
-                              ),
+                                IconButton(
+                                  padding: EdgeInsets.zero,
+                                  constraints: const BoxConstraints(),
+                                  icon: const Icon(Icons.close, color: Colors.grey, size: 16),
+                                  onPressed: () {
+                                    ref.read(selectedPromoProvider.notifier).state = null;
+                                  },
+                                ),
+                              ],
                             )
                           : TextField(
                               controller: _promoController,
@@ -145,30 +157,27 @@ class _PromoCodesBottomSheetState extends ConsumerState<PromoCodesBottomSheet> {
                             ),
                     ),
                   ),
-                  if (ref.watch(selectedPromoProvider) != null)
-                    IconButton(
-                      padding: EdgeInsets.zero,
-                      icon: const Icon(Icons.close, color: Colors.grey, size: 20),
-                      onPressed: () {
-                        ref.read(selectedPromoProvider.notifier).state = null;
-                      },
-                    )
-                  else
-                    Container(
-                      width: 36,
-                      height: 36,
-                      decoration: const BoxDecoration(
-                        color: Colors.black,
-                        shape: BoxShape.circle,
-                      ),
-                      child: IconButton(
-                        padding: EdgeInsets.zero,
-                        icon: const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
-                        onPressed: () {
-                          if (_promoController.text.isNotEmpty) {
-                            ref.read(selectedPromoProvider.notifier).state = _promoController.text;
-                          }
-                        },
+                  if (ref.watch(selectedPromoProvider) == null)
+                    Positioned(
+                      right: 0,
+                      top: 0,
+                      bottom: 0,
+                      child: Container(
+                        width: 36,
+                        height: 36,
+                        decoration: const BoxDecoration(
+                          color: Colors.black,
+                          shape: BoxShape.circle,
+                        ),
+                        child: IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(Icons.arrow_forward, color: Colors.white, size: 20),
+                          onPressed: () {
+                            if (_promoController.text.isNotEmpty) {
+                              ref.read(selectedPromoProvider.notifier).state = _promoController.text;
+                            }
+                          },
+                        ),
                       ),
                     ),
                 ],
