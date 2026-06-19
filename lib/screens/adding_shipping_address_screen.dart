@@ -119,6 +119,64 @@ class _AddingShippingAddressScreenState extends ConsumerState<AddingShippingAddr
   }
 
   Widget _buildTextField(String label, TextEditingController controller, {bool isDropdown = false}) {
+    if (isDropdown) {
+      return Container(
+        height: 64,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(4),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 1),
+            ),
+          ]
+        ),
+        child: Center(
+          child: DropdownButtonFormField<String>(
+            value: controller.text.isNotEmpty ? controller.text : 'United States',
+            icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF222222)),
+            style: const TextStyle(
+              fontFamily: 'Metropolis',
+              fontSize: 14,
+              color: Color(0xFF222222),
+              fontWeight: FontWeight.w500,
+            ),
+            decoration: InputDecoration(
+              labelText: label,
+              labelStyle: const TextStyle(
+                fontFamily: 'Metropolis',
+                fontSize: 14,
+                color: Color(0xFF9B9B9B),
+              ),
+              floatingLabelStyle: const TextStyle(
+                fontFamily: 'Metropolis',
+                fontSize: 11,
+                color: Color(0xFF9B9B9B),
+              ),
+              border: InputBorder.none,
+              contentPadding: const EdgeInsets.only(left: 20, right: 20, bottom: 8),
+            ),
+            items: ['United States', 'Viet Nam'].map((String val) {
+              return DropdownMenuItem<String>(
+                value: val,
+                child: Text(val),
+              );
+            }).toList(),
+            onChanged: (val) {
+              if (val != null) {
+                setState(() {
+                  controller.text = val;
+                });
+              }
+            },
+          ),
+        ),
+      );
+    }
+
     return Container(
       height: 64,
       width: double.infinity,
@@ -136,7 +194,6 @@ class _AddingShippingAddressScreenState extends ConsumerState<AddingShippingAddr
       child: Center(
         child: TextFormField(
           controller: controller,
-          readOnly: isDropdown,
           style: const TextStyle(
             fontFamily: 'Metropolis',
             fontSize: 14,
@@ -157,7 +214,6 @@ class _AddingShippingAddressScreenState extends ConsumerState<AddingShippingAddr
             ),
             border: InputBorder.none,
             contentPadding: const EdgeInsets.only(left: 20, right: 20, bottom: 8),
-            suffixIcon: isDropdown ? const Icon(Icons.chevron_right, color: Color(0xFF222222)) : null,
           ),
           validator: (value) => value == null || value.isEmpty ? 'Required' : null,
         ),
