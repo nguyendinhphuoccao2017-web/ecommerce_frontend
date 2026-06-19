@@ -8,20 +8,41 @@ import 'size_selection_bottom_sheet.dart';
 
 import '../screens/product_detail_screen.dart';
 
-class ProductCard extends ConsumerWidget {
+class ProductCard extends ConsumerStatefulWidget {
   final ProductHome product;
   final bool isNewSection;
 
   const ProductCard({super.key, required this.product, this.isNewSection = false});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    bool isNew = product.tags.contains('New') || product.tags.contains('new');
+  ConsumerState<ProductCard> createState() => _ProductCardState();
+}
+
+class _ProductCardState extends ConsumerState<ProductCard> {
+  late bool isFavorite;
+
+  @override
+  void initState() {
+    super.initState();
+    isFavorite = widget.product.isFavorite;
+  }
+
+  @override
+  void didUpdateWidget(covariant ProductCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.product.id != widget.product.id) {
+      isFavorite = widget.product.isFavorite;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    bool isNew = widget.product.tags.contains('New') || widget.product.tags.contains('new');
     // If it's a new section, we don't show the discount logic
-    bool hasDiscount = !isNewSection && !isNew && product.comparePrice > product.salePrice && product.comparePrice > 0;
+    bool hasDiscount = !widget.isNewSection && !isNew && widget.product.comparePrice > widget.product.salePrice && widget.product.comparePrice > 0;
     int discountPercent = 0;
     if (hasDiscount) {
-      discountPercent = ((product.comparePrice - product.salePrice) / product.comparePrice * 100).round();
+      discountPercent = ((widget.product.comparePrice - widget.product.salePrice) / widget.product.comparePrice * 100).round();
     }
 
     return GestureDetector(
@@ -33,7 +54,7 @@ class ProductCard extends ConsumerWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => ProductDetailScreen(productId: product.id),
+              builder: (context) => ProductDetailScreen(productId: widget.product.id),
             ),
           );
         }
@@ -50,7 +71,7 @@ class ProductCard extends ConsumerWidget {
               ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
-                  product.thumbnailUrl ?? 'https://via.placeholder.com/150',
+                  widget.product.thumbnailUrl ?? 'https://via.placeholder.com/150',
                   height: 184,
                   width: 150,
                   fit: BoxFit.cover,
@@ -62,7 +83,7 @@ class ProductCard extends ConsumerWidget {
                   ),
                 ),
               ),
-              if (product.tags.contains('New') || product.tags.contains('new'))
+              if (widget.product.tags.contains('New') || widget.product.tags.contains('new'))
                 Positioned(
                   top: 8,
                   left: 8,
@@ -123,7 +144,7 @@ class ProductCard extends ConsumerWidget {
                 right: 0,
                 child: Container(
                   decoration: BoxDecoration(
-                    color: product.isFavorite ? const Color(0xFFDB3022) : Colors.white,
+                    color: isFavorite ? const Color(0xFFDB3022) : Colors.white,
                     shape: BoxShape.circle,
                     boxShadow: [
                       BoxShadow(
@@ -135,27 +156,38 @@ class ProductCard extends ConsumerWidget {
                   ),
                   child: IconButton(
                     icon: Icon(
-                      product.isFavorite ? Icons.favorite : Icons.favorite_border,
-                      color: product.isFavorite ? Colors.white : const Color(0xFF9B9B9B),
+                      isFavorite ? Icons.favorite : Icons.favorite_border,
+                      color: isFavorite ? Colors.white : const Color(0xFF9B9B9B),
                       size: 20,
                     ),
                     onPressed: () async {
-                      if (product.isFavorite) {
+                      if (isFavorite) {
+                        setState(() { isFavorite = false; });
                         try {
-                          await ref.read(favoriteNotifierProvider.notifier).toggle(product.id);
+                          await ref.read(favoriteNotifierProvider.notifier).toggle(widget.product.id);
                         } catch (e) {
+                          setState(() { isFavorite = true; });
                           if (context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Error: $e')));
                           }
                         }
                       } else {
+                        // Optimistically set to true if they pick a size and confirm
+                        // But wait, SizeSelectionBottomSheet handles the toggle.
+                        // We can just await it, but during the bottom sheet it doesn't show loading overlay.
+                        // The loading overlay shows inside SizeSelectionBottomSheet _onSubmit.
+                        // To make the heart red DURING the loading overlay in BottomSheet,
+                        // we can't easily do it unless we change the state when they hit submit.
+                        // Actually, if we pass a callback to SizeSelectionBottomSheet or just let it update global state.
                         final result = await showModalBottomSheet<bool>(
                           context: context,
                           isScrollControlled: true,
                           backgroundColor: Colors.transparent,
-                          builder: (context) => SizeSelectionBottomSheet(productId: product.id),
+                          builder: (context) => SizeSelectionBottomSheet(productId: widget.product.id),
                         );
-                        // No automatic redirection anymore
+                        if (result == true) {
+                          setState(() { isFavorite = true; });
+                        }
                       }
                     },
                   ),
@@ -167,7 +199,7 @@ class ProductCard extends ConsumerWidget {
           Row(
             children: [
               ...List.generate(5, (index) {
-                bool isFilled = index < product.averageRating.round();
+                bool isFilled = index < widget.product.averageRating.round();
                 return Icon(
                   isFilled ? Icons.star : Icons.star_border,
                   color: isFilled ? const Color(0xFFFFBA49) : const Color(0xFF9B9B9B),
@@ -176,15 +208,15 @@ class ProductCard extends ConsumerWidget {
               }),
               const SizedBox(width: 4),
               Text(
-                '(${product.totalReviews})',
+                '(${widget.product.totalReviews})',
                 style: const TextStyle(color: Colors.grey, fontSize: 10),
               ),
             ],
           ),
           const SizedBox(height: 4),
-          Text(product.sku ?? 'Mango', style: const TextStyle(fontFamily: 'Metropolis', color: Color(0xFF9B9B9B), fontSize: 11)),
+          Text(widget.product.sku ?? 'Mango', style: const TextStyle(fontFamily: 'Metropolis', color: Color(0xFF9B9B9B), fontSize: 11)),
           Text(
-            product.productName,
+            widget.product.productName,
             style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -193,7 +225,7 @@ class ProductCard extends ConsumerWidget {
             children: [
               if (isNewSection || isNew)
                 Text(
-                  '${(product.comparePrice > 0 ? product.comparePrice : product.salePrice).toStringAsFixed(0)}\$',
+                  '${(widget.product.comparePrice > 0 ? widget.product.comparePrice : widget.product.salePrice).toStringAsFixed(0)}\$',
                   style: const TextStyle(
                     fontFamily: 'Metropolis',
                     fontWeight: FontWeight.w500,
@@ -206,7 +238,7 @@ class ProductCard extends ConsumerWidget {
               else ...[
                 if (hasDiscount)
                   Text(
-                    '${product.comparePrice.toStringAsFixed(0)}\$',
+                    '${widget.product.comparePrice.toStringAsFixed(0)}\$',
                     style: const TextStyle(
                       color: Colors.grey,
                       fontSize: 14,
@@ -215,7 +247,7 @@ class ProductCard extends ConsumerWidget {
                   ),
                 if (hasDiscount) const SizedBox(width: 4),
                 Text(
-                  '${product.salePrice.toStringAsFixed(0)}\$',
+                  '${widget.product.salePrice.toStringAsFixed(0)}\$',
                   style: const TextStyle(
                     color: Color(0xFFDB3022),
                     fontSize: 14,
