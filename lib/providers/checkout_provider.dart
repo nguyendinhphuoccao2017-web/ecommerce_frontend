@@ -123,6 +123,7 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
     try {
       await _apiService.addShippingAddress(data);
       await loadAddresses(); // Reload addresses to get the new one
+      state = state.copyWith(isLoading: false);
       return true;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
@@ -135,6 +136,7 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
     try {
       await _apiService.updateShippingAddress(id, data);
       await loadAddresses(); // Reload addresses to get the updated one
+      state = state.copyWith(isLoading: false);
       return true;
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
