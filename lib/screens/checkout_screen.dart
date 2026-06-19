@@ -117,22 +117,25 @@ class CheckoutScreen extends ConsumerWidget {
                       color: Color(0xFF222222),
                     ),
                   ),
-                  TextButton(
-                    style: TextButton.styleFrom(
-                      minimumSize: Size.zero,
-                      padding: EdgeInsets.zero,
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    ),
-                    onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentMethodsScreen()));
-                    },
-                    child: const Text(
-                      'Change',
-                      style: TextStyle(
-                        fontFamily: 'Metropolis',
-                        fontWeight: FontWeight.w500,
-                        fontSize: 14,
-                        color: Color(0xFFDB3022),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 23),
+                    child: TextButton(
+                      style: TextButton.styleFrom(
+                        minimumSize: Size.zero,
+                        padding: EdgeInsets.zero,
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      ),
+                      onPressed: () {
+                        Navigator.push(context, MaterialPageRoute(builder: (_) => const PaymentMethodsScreen()));
+                      },
+                      child: const Text(
+                        'Change',
+                        style: TextStyle(
+                          fontFamily: 'Metropolis',
+                          fontWeight: FontWeight.w500,
+                          fontSize: 14,
+                          color: Color(0xFFDB3022),
+                        ),
                       ),
                     ),
                   )
@@ -307,13 +310,13 @@ class CheckoutScreen extends ConsumerWidget {
 
   String _getDeliveryLogoUrl(String displayName) {
     if (displayName.toLowerCase().contains('fedex')) {
-      return 'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/fedex.png';
+      return 'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/delivery/fedex_png.png';
     } else if (displayName.toLowerCase().contains('usps')) {
-      return 'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/usps.png';
+      return 'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/delivery/usps_com.png';
     } else if (displayName.toLowerCase().contains('dhl')) {
-      return 'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/dhl.png';
+      return 'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/delivery/dhl_png.png';
     }
-    return 'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/${displayName.toLowerCase()}.png';
+    return 'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/delivery/fedex_png.png';
   }
 
   Widget _buildCachedImage(String url, {double? width, double? height}) {
@@ -337,7 +340,7 @@ class CheckoutScreen extends ConsumerWidget {
 
   Widget _buildAddressCard(BuildContext context, CustomerAddress address) {
     return Container(
-      width: 343,
+      width: double.infinity,
       height: 108,
       padding: const EdgeInsets.only(left: 28, right: 23, top: 18, bottom: 18),
       decoration: BoxDecoration(
@@ -381,7 +384,7 @@ class CheckoutScreen extends ConsumerWidget {
                   style: TextStyle(
                     fontFamily: 'Metropolis',
                     fontSize: 14,
-                    fontWeight: FontWeight.bold,
+                    fontWeight: FontWeight.w500,
                     color: Color(0xFFDB3022),
                     height: 20 / 14,
                   ),
