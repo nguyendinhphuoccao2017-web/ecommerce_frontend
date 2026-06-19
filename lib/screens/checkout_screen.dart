@@ -55,11 +55,14 @@ class CheckoutScreen extends ConsumerWidget {
     double orderAmount = cart?.subtotal ?? 0.0;
     
     double deliveryAmount = 15.0; // Default fallback
-    if (checkoutState.selectedDeliveryMethodId != null && initData.shippingRates.isNotEmpty) {
+    if (checkoutState.selectedDeliveryMethodId != null && initData.shippingZones.isNotEmpty) {
       try {
-        deliveryAmount = initData.shippingRates.firstWhere((r) => r.shippingZone.id == checkoutState.selectedDeliveryMethodId).price;
+        final zone = initData.shippingZones.firstWhere((z) => z.id == checkoutState.selectedDeliveryMethodId);
+        if (zone.shippingRates.isNotEmpty) {
+          deliveryAmount = zone.shippingRates.first.price;
+        }
       } catch (e) {
-        deliveryAmount = initData.shippingRates.first.price;
+        // ignore fallback
       }
     }
 
