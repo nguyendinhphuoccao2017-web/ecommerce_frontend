@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/favorite_provider.dart';
+import '../providers/cart_provider.dart';
 
 class CustomBottomNav extends ConsumerWidget {
   final int currentIndex;
@@ -33,7 +34,7 @@ class CustomBottomNav extends ConsumerWidget {
             children: [
               _buildNavItem(0, 'Home', 'assets/images/nav_bar/tab1_home.png', Icons.home),
               _buildNavItem(1, 'Shop', 'assets/images/nav_bar/tab2_shop.png', Icons.shopping_cart),
-              _buildNavItem(2, 'Bag', 'assets/images/nav_bar/tab3_bag.png', Icons.shopping_bag),
+              _buildNavItem(2, 'Bag', 'assets/images/nav_bar/tab3_bag.png', Icons.shopping_bag, ref: ref),
               _buildNavItem(3, 'Favorites', 'assets/images/nav_bar/tab4_favorite.png', Icons.favorite, ref: ref),
               _buildNavItem(4, 'Profile', 'assets/images/nav_bar/tab5_my_profile.png', Icons.person),
             ],
@@ -79,6 +80,36 @@ class CustomBottomNav extends ConsumerWidget {
                               ),
                               child: Text(
                                 '${favorites.length}',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 8,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
+                        return const SizedBox.shrink();
+                      },
+                      loading: () => const SizedBox.shrink(),
+                      error: (_, __) => const SizedBox.shrink(),
+                    ),
+              if (index == 2 && ref != null)
+                ref.watch(cartProvider).when(
+                      data: (cart) {
+                        if (cart != null && cart.items.isNotEmpty) {
+                          int totalItems = cart.items.fold(0, (sum, item) => sum + item.quantity);
+                          return Positioned(
+                            top: -4,
+                            right: -4,
+                            child: Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: const BoxDecoration(
+                                color: Color(0xFFDB3022),
+                                shape: BoxShape.circle,
+                              ),
+                              child: Text(
+                                '$totalItems',
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontSize: 8,
