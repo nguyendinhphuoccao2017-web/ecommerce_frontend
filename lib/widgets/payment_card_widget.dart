@@ -67,16 +67,14 @@ class PaymentCardWidget extends StatelessWidget {
         ),
         const Spacer(),
         // Card Number
-        Center(
-          child: Text(
-            cardNumber,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              letterSpacing: -0.41,
-              fontFamily: 'Metropolis',
-              height: 22 / 24,
-            ),
+        Text(
+          cardNumber,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            letterSpacing: -0.41,
+            fontFamily: 'Metropolis',
+            height: 22 / 24,
           ),
         ),
         const SizedBox(height: 32),
@@ -159,16 +157,14 @@ class PaymentCardWidget extends StatelessWidget {
         ),
         const Spacer(),
         // Card Number
-        Center(
-          child: Text(
-            cardNumber,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 24,
-              letterSpacing: -0.41,
-              fontFamily: 'Metropolis',
-              height: 22 / 24,
-            ),
+        Text(
+          cardNumber,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 24,
+            letterSpacing: -0.41,
+            fontFamily: 'Metropolis',
+            height: 22 / 24,
           ),
         ),
         const SizedBox(height: 16),

@@ -114,12 +114,17 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        PaymentCardWidget(
-          isBlackCard: isBlackCard,
-          cardNumber: maskedNumber,
-          cardHolderName: cardHolderName,
-          expiryDate: expiryDate,
-          isVisa: isVisa,
+        GestureDetector(
+          onTap: () {
+            _showAddCardBottomSheet(context, lastFourDigits: id);
+          },
+          child: PaymentCardWidget(
+            isBlackCard: isBlackCard,
+            cardNumber: maskedNumber,
+            cardHolderName: cardHolderName,
+            expiryDate: expiryDate,
+            isVisa: isVisa,
+          ),
         ),
         const SizedBox(height: 24),
         GestureDetector(
@@ -161,116 +166,259 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
     );
   }
 
-  void _showAddCardBottomSheet(BuildContext context) {
-    bool isDefault = false;
-
+  void _showAddCardBottomSheet(BuildContext context, {String? lastFourDigits}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      shape: const RoundedRectangleBorder(borderRadius: BorderRadius.vertical(top: Radius.circular(34))),
-      builder: (context) => StatefulBuilder(
-        builder: (context, setModalState) {
-          return Padding(
-            padding: EdgeInsets.only(
-              bottom: MediaQuery.of(context).viewInsets.bottom,
-              left: 16,
-              right: 16,
-              top: 32,
+      backgroundColor: Colors.transparent,
+      builder: (context) => AddCardBottomSheet(initialLastFour: lastFourDigits),
+    );
+  }
+}
+
+class AddCardBottomSheet extends StatefulWidget {
+  final String? initialLastFour;
+  const AddCardBottomSheet({super.key, this.initialLastFour});
+
+  @override
+  State<AddCardBottomSheet> createState() => _AddCardBottomSheetState();
+}
+
+class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
+  final TextEditingController _cardNumberController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _expiryController = TextEditingController();
+  final TextEditingController _cvvController = TextEditingController();
+  bool isDefault = false;
+
+  @override
+  void initState() {
+    super.initState();
+    
+    // Apply exact mapping logic for existing cards based on last_four_digits
+    if (widget.initialLastFour != null) {
+      if (widget.initialLastFour == '3947') {
+        _cardNumberController.text = '5546 8205 3693 3947';
+        _nameController.text = 'Jennyfer Doe';
+        _expiryController.text = '05/23';
+        _cvvController.text = '567';
+      } else if (widget.initialLastFour == '4546') {
+        _cardNumberController.text = '4532 7182 9381 4546';
+        _nameController.text = 'Jennyfer Doe';
+        _expiryController.text = '11/22';
+        _cvvController.text = '567';
+      }
+    }
+
+    _cardNumberController.addListener(() {
+      setState(() {});
+    });
+  }
+
+  @override
+  void dispose() {
+    _cardNumberController.dispose();
+    _nameController.dispose();
+    _expiryController.dispose();
+    _cvvController.dispose();
+    super.dispose();
+  }
+
+  Widget? _getCardLogo() {
+    final text = _cardNumberController.text.replaceAll(' ', '');
+    if (text.isEmpty) return null;
+    
+    if (text.startsWith('5')) {
+      return Container(
+        width: 40,
+        height: 32,
+        padding: const EdgeInsets.only(right: 8),
+        alignment: Alignment.centerRight,
+        child: Image.network(
+          'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/mastercard_checkout.png',
+          width: 32,
+          height: 20,
+          fit: BoxFit.contain,
+        ),
+      );
+    } else if (text.startsWith('4')) {
+      return Container(
+        width: 40,
+        height: 32,
+        padding: const EdgeInsets.only(right: 8),
+        alignment: Alignment.centerRight,
+        child: Image.network(
+          'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/Visa%20Logo.png',
+          width: 32,
+          height: 20,
+          fit: BoxFit.contain,
+        ),
+      );
+    }
+    return null;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+        color: Color(0xFFF9F9F9),
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(34),
+          topRight: Radius.circular(34),
+        ),
+      ),
+      padding: EdgeInsets.only(
+        bottom: MediaQuery.of(context).viewInsets.bottom,
+        left: 16,
+        right: 16,
+        top: 14,
+      ),
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 60,
+              height: 6,
+              decoration: BoxDecoration(
+                color: const Color(0xFF9B9B9B),
+                borderRadius: BorderRadius.circular(3),
+              ),
             ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
+            const SizedBox(height: 16),
+            const Text(
+              'Add new card',
+              style: TextStyle(
+                fontFamily: 'Metropolis',
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF222222),
+                height: 22 / 18,
+              ),
+            ),
+            const SizedBox(height: 22),
+            _buildTextField(label: 'Name on card', controller: _nameController),
+            const SizedBox(height: 20),
+            _buildTextField(
+              label: 'Card number',
+              controller: _cardNumberController,
+              suffixIconWidget: _getCardLogo(),
+              keyboardType: TextInputType.number,
+            ),
+            const SizedBox(height: 20),
+            Row(
               children: [
-                Container(
-                  width: 60,
-                  height: 6,
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade300,
-                    borderRadius: BorderRadius.circular(3),
+                Expanded(child: _buildTextField(label: 'Expire Date', controller: _expiryController)),
+                const SizedBox(width: 22),
+                Expanded(
+                  child: _buildTextField(
+                    label: 'CVV',
+                    controller: _cvvController,
+                    suffixIconWidget: const Icon(Icons.help_outline, color: Color(0xFF9B9B9B)),
+                    keyboardType: TextInputType.number,
                   ),
                 ),
-                const SizedBox(height: 16),
-                const Text('Add new card', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                const SizedBox(height: 16),
-                _buildTextField('Name on card', ''),
-                const SizedBox(height: 16),
-                _buildTextField('Card number', '5546 8205 3693 3947', isMastercard: true),
-                const SizedBox(height: 16),
-                Row(
-                  children: [
-                    Expanded(child: _buildTextField('Expire Date', '05/23')),
-                    const SizedBox(width: 16),
-                    Expanded(child: _buildTextField('CVV', '567', suffixIcon: Icons.help_outline)),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                Row(
-                  children: [
-                    Checkbox(
-                      value: isDefault,
-                      activeColor: Colors.black,
-                      onChanged: (val) {
-                        setModalState(() {
-                          isDefault = val ?? false;
-                        });
-                      },
-                    ),
-                    const Text('Set as default payment method', style: TextStyle(fontSize: 14)),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  height: 48,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFDB3022),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-                    ),
-                    child: const Text('ADD CARD', style: TextStyle(color: Colors.white, fontSize: 14)),
-                  ),
-                ),
-                const SizedBox(height: 32),
               ],
             ),
-          );
-        }
-      ),
-    );
-  }
-
-  Widget _buildTextField(String label, String hint, {bool isMastercard = false, IconData? suffixIcon}) {
-    return TextFormField(
-      decoration: InputDecoration(
-        labelText: label,
-        hintText: hint,
-        filled: true,
-        fillColor: Colors.white,
-        border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(4),
-          borderSide: BorderSide.none,
+            const SizedBox(height: 24),
+            GestureDetector(
+              onTap: () {
+                setState(() {
+                  isDefault = !isDefault;
+                });
+              },
+              child: Row(
+                children: [
+                  Container(
+                    width: 20,
+                    height: 20,
+                    decoration: BoxDecoration(
+                      color: isDefault ? const Color(0xFF222222) : Colors.transparent,
+                      borderRadius: BorderRadius.circular(4),
+                      border: isDefault 
+                          ? null 
+                          : Border.all(color: const Color(0xFF9B9B9B), width: 2),
+                    ),
+                    child: isDefault 
+                        ? const Icon(Icons.check, color: Colors.white, size: 16)
+                        : null,
+                  ),
+                  const SizedBox(width: 13),
+                  const Text(
+                    'Set as default payment method',
+                    style: TextStyle(
+                      fontFamily: 'Metropolis',
+                      fontSize: 14,
+                      color: Color(0xFF222222),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 24),
+            SizedBox(
+              width: double.infinity,
+              height: 48,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFFDB3022),
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
+                  elevation: 0,
+                ),
+                child: const Text('ADD CARD', style: TextStyle(fontFamily: 'Metropolis', color: Colors.white, fontSize: 14)),
+              ),
+            ),
+            const SizedBox(height: 32),
+          ],
         ),
-        suffixIcon: isMastercard 
-            ? _buildMastercardSmallLogo() 
-            : (suffixIcon != null ? Icon(suffixIcon, color: Colors.grey) : null),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
     );
   }
 
-  Widget _buildMastercardSmallLogo() {
+  Widget _buildTextField({
+    required String label,
+    TextEditingController? controller,
+    Widget? suffixIconWidget,
+    TextInputType? keyboardType,
+  }) {
     return Container(
-      width: 40,
-      height: 24,
-      padding: const EdgeInsets.only(right: 8),
-      alignment: Alignment.centerRight,
-      child: Image.network(
-        'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/mastercard.png',
-        width: 32,
-        height: 20,
-        fit: BoxFit.contain,
+      height: 64,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(4),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 8,
+            offset: const Offset(0, 1),
+          ),
+        ]
+      ),
+      child: Center(
+        child: TextFormField(
+          controller: controller,
+          keyboardType: keyboardType,
+          style: const TextStyle(
+            fontFamily: 'Metropolis',
+            fontSize: 14,
+            color: Color(0xFF222222),
+          ),
+          decoration: InputDecoration(
+            labelText: label,
+            labelStyle: const TextStyle(
+              fontFamily: 'Metropolis',
+              fontSize: 14,
+              color: Color(0xFF9B9B9B),
+            ),
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            suffixIcon: suffixIconWidget,
+          ),
+        ),
       ),
     );
   }
