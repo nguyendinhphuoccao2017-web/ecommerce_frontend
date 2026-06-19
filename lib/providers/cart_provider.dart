@@ -69,14 +69,12 @@ class CartNotifier extends AsyncNotifier<CartResponse?> {
   Future<void> updateQuantity(String itemId, String productId, String? variantOptionId, int currentQty, int diff) async {
     try {
       if (currentQty + diff <= 0) {
-        await removeItem(itemId);
         return;
       }
-      ref.read(loadingProvider.notifier).state = true;
-      await addToCart(productId, variantOptionId, diff);
-      ref.read(loadingProvider.notifier).state = false;
+      await _apiService.addToCart(productId, variantOptionId, diff);
+      final newCart = await fetchCart();
+      state = AsyncValue.data(newCart);
     } catch (e) {
-      ref.read(loadingProvider.notifier).state = false;
       print('Error updating quantity: $e');
       throw Exception('Failed to update quantity');
     }

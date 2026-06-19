@@ -125,85 +125,13 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                       SizedBox(
                                         height: 24,
                                         width: 24,
-                                        child: PopupMenuButton<String>(
-                                          color: Colors.white,
-                                          constraints: const BoxConstraints(maxWidth: 170, minWidth: 170),
-                                          icon: const Icon(Icons.more_vert, color: Colors.grey, size: 24),
+                                        child: IconButton(
                                           padding: EdgeInsets.zero,
-                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                                          elevation: 8,
-                                          offset: const Offset(-30, -25),
-                                          onSelected: (value) async {
-                                            if (value == 'favorite') {
-                                              ref.read(loadingProvider.notifier).state = true;
-                                              try {
-                                                await ref.read(cartProvider.notifier).toggleFavorite(item.productId, variantOptionId: item.variantOptionId);
-                                                await Future.delayed(const Duration(seconds: 2));
-                                                if (context.mounted) {
-                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                    SnackBar(content: Text('Toggled favorite for ${item.productName}')),
-                                                  );
-                                                }
-                                              } catch (e) {
-                                                await Future.delayed(const Duration(seconds: 2));
-                                                if (context.mounted) {
-                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                    SnackBar(content: Text('Failed to toggle favorite: $e')),
-                                                  );
-                                                }
-                                              } finally {
-                                                ref.read(loadingProvider.notifier).state = false;
-                                              }
-                                            } else if (value == 'delete') {
-                                              ref.read(loadingProvider.notifier).state = true;
-                                              try {
-                                                await ref.read(cartProvider.notifier).removeItem(item.id);
-                                                await Future.delayed(const Duration(seconds: 2));
-                                                if (context.mounted) {
-                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                    SnackBar(content: Text('Removed ${item.productName} from cart')),
-                                                  );
-                                                }
-                                              } catch (e) {
-                                                await Future.delayed(const Duration(seconds: 2));
-                                                if (context.mounted) {
-                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                    SnackBar(content: Text('Failed to remove item: $e')),
-                                                  );
-                                                }
-                                              } finally {
-                                                ref.read(loadingProvider.notifier).state = false;
-                                              }
-                                            }
+                                          constraints: const BoxConstraints(),
+                                          icon: const Icon(Icons.more_vert, color: Colors.grey, size: 24),
+                                          onPressed: () {
+                                            _showActionMenu(context, item, isFromMinus: false);
                                           },
-                                          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-                                            const PopupMenuItem<String>(
-                                              value: 'favorite',
-                                              height: 36,
-                                              child: SizedBox(
-                                                width: 170,
-                                                child: Center(
-                                                  child: Text('Add to favorites', style: TextStyle(fontFamily: 'Metropolis', fontSize: 14)),
-                                                ),
-                                              ),
-                                            ),
-                                            PopupMenuItem<String>(
-                                              enabled: false,
-                                              height: 1,
-                                              padding: EdgeInsets.zero,
-                                              child: Divider(height: 1, color: const Color(0xFF9B9B9B).withOpacity(0.3)),
-                                            ),
-                                            const PopupMenuItem<String>(
-                                              value: 'delete',
-                                              height: 36,
-                                              child: SizedBox(
-                                                width: 170,
-                                                child: Center(
-                                                  child: Text('Delete from the list', style: TextStyle(fontFamily: 'Metropolis', fontSize: 14)),
-                                                ),
-                                              ),
-                                            ),
-                                          ],
                                         ),
                                       ),
                                     ],
@@ -256,7 +184,11 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                       Row(
                                         children: [
                                           _buildQtyButton(Icons.remove, () async {
-                                            await ref.read(cartProvider.notifier).updateQuantity(item.id, item.productId, item.variantOptionId, item.quantity, -1);
+                                            if (item.quantity == 1) {
+                                              _showActionMenu(context, item, isFromMinus: true);
+                                            } else {
+                                              await ref.read(cartProvider.notifier).updateQuantity(item.id, item.productId, item.variantOptionId, item.quantity, -1);
+                                            }
                                           }),
                                           const SizedBox(width: 20),
                                           Text(
@@ -449,7 +381,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
   }
 
   Widget _buildQtyButton(IconData icon, VoidCallback onPressed) {
-    return InkWell(
+    return GestureDetector(
       onTap: onPressed,
       child: Container(
         width: 36,
@@ -459,13 +391,82 @@ class _BagScreenState extends ConsumerState<BagScreen> {
           shape: BoxShape.circle,
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withOpacity(0.1),
-              blurRadius: 5,
-              offset: const Offset(0, 2),
-            )
+              color: Colors.black.withOpacity(0.08),
+              blurRadius: 8,
+              offset: const Offset(0, 4),
+            ),
           ],
         ),
-        child: Icon(icon, size: 20, color: Colors.grey),
+        child: Icon(icon, color: const Color(0xFF9B9B9B), size: 20),
+      ),
+    );
+  }
+
+  void _showActionMenu(BuildContext context, dynamic item, {bool isFromMinus = false}) {
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (context) => Container(
+        margin: const EdgeInsets.only(left: 16, right: 16, bottom: 32),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              title: const Center(child: Text('Add to favorites', style: TextStyle(fontFamily: 'Metropolis', fontSize: 14))),
+              onTap: () async {
+                Navigator.pop(context);
+                ref.read(loadingProvider.notifier).state = true;
+                try {
+                  await ref.read(cartProvider.notifier).toggleFavorite(item.productId, variantOptionId: item.variantOptionId);
+                  await Future.delayed(const Duration(seconds: 2));
+                  if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Toggled favorite for ${item.productName}')));
+                } catch (e) {
+                  await Future.delayed(const Duration(seconds: 2));
+                  if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to toggle favorite: $e')));
+                } finally {
+                  ref.read(loadingProvider.notifier).state = false;
+                }
+              },
+            ),
+            Divider(height: 1, color: const Color(0xFF9B9B9B).withOpacity(0.3)),
+            Container(
+              decoration: BoxDecoration(
+                color: isFromMinus ? const Color(0xFFDB3022) : Colors.transparent,
+                borderRadius: const BorderRadius.vertical(bottom: Radius.circular(16)),
+              ),
+              child: ListTile(
+                title: Center(
+                  child: Text(
+                    'Delete from the list', 
+                    style: TextStyle(
+                      fontFamily: 'Metropolis', 
+                      fontSize: 14,
+                      color: isFromMinus ? Colors.white : Colors.black,
+                    )
+                  )
+                ),
+                onTap: () async {
+                  Navigator.pop(context);
+                  ref.read(loadingProvider.notifier).state = true;
+                  try {
+                    await ref.read(cartProvider.notifier).removeItem(item.id);
+                    await Future.delayed(const Duration(seconds: 2));
+                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Removed ${item.productName} from cart')));
+                  } catch (e) {
+                    await Future.delayed(const Duration(seconds: 2));
+                    if (context.mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to remove item: $e')));
+                  } finally {
+                    ref.read(loadingProvider.notifier).state = false;
+                  }
+                },
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

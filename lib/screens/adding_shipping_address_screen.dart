@@ -136,6 +136,8 @@ class _AddingShippingAddressScreenState extends ConsumerState<AddingShippingAddr
         ),
         child: Center(
           child: DropdownButtonFormField<String>(
+            isExpanded: true,
+            dropdownColor: Colors.white,
             value: controller.text.isNotEmpty ? controller.text : 'United States',
             icon: const Icon(Icons.arrow_drop_down, color: Color(0xFF222222)),
             style: const TextStyle(
@@ -224,6 +226,19 @@ class _AddingShippingAddressScreenState extends ConsumerState<AddingShippingAddr
   Future<void> _saveAddress() async {
     if (_formKey.currentState!.validate()) {
       
+      // Hiện hiệu ứng Blur + Loading
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        barrierColor: Colors.white.withOpacity(0.7),
+        builder: (context) => const Center(
+          child: CircularProgressIndicator(color: Color(0xFFDB3022)),
+        ),
+      );
+
+      // Chờ thêm 1 giây cho người dùng thấy loading
+      await Future.delayed(const Duration(seconds: 1));
+
       String stateVal = _stateController.text;
       if (stateVal == 'Ho Chi Minh City') stateVal = 'HCM';
       else if (stateVal == 'California') stateVal = 'CA';
@@ -246,8 +261,10 @@ class _AddingShippingAddressScreenState extends ConsumerState<AddingShippingAddr
         success = await ref.read(checkoutProvider.notifier).addAddress(data);
       }
       
+      if (mounted) Navigator.pop(context); // Tắt dialog loading
+
       if (success) {
-        if (mounted) Navigator.pop(context);
+        if (mounted) Navigator.pop(context); // Thoát AddingShippingAddressScreen quay về màn hình trước
       } else {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
