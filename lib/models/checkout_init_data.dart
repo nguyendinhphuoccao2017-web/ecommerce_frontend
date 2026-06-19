@@ -19,10 +19,10 @@ class PaymentMethod {
   factory PaymentMethod.fromJson(Map<String, dynamic> json) {
     return PaymentMethod(
       id: json['id'],
-      lastFourDigits: json['lastFourDigits'],
-      cardType: json['cardType'],
-      cardholderName: json['cardholderName'],
-      isDefault: json['isDefault'] ?? false,
+      lastFourDigits: json['lastFourDigits'] ?? json['last_four_digits'] ?? '',
+      cardType: json['cardType'] ?? json['card_type'] ?? 'Credit Card',
+      cardholderName: json['cardholderName'] ?? json['cardholder_name'] ?? 'Jennyfer Doe',
+      isDefault: json['isDefault'] ?? json['is_default'] ?? false,
     );
   }
 }

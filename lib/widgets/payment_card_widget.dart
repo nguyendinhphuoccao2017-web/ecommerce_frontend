@@ -83,30 +83,35 @@ class PaymentCardWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Card Holder Name',
-                  style: TextStyle(
-                    fontFamily: 'Metropolis',
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 10,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Card Holder Name',
+                    style: TextStyle(
+                      fontFamily: 'Metropolis',
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 10,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  cardHolderName,
-                  style: const TextStyle(
-                    fontFamily: 'Metropolis',
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                  const SizedBox(height: 4),
+                  Text(
+                    cardHolderName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontFamily: 'Metropolis',
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+            const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -184,30 +189,35 @@ class PaymentCardWidget extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  'Card Holder Name',
-                  style: TextStyle(
-                    fontFamily: 'Metropolis',
-                    color: Colors.white.withOpacity(0.8),
-                    fontSize: 10,
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Card Holder Name',
+                    style: TextStyle(
+                      fontFamily: 'Metropolis',
+                      color: Colors.white.withOpacity(0.8),
+                      fontSize: 10,
+                    ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  cardHolderName,
-                  style: const TextStyle(
-                    fontFamily: 'Metropolis',
-                    color: Colors.white,
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
+                  const SizedBox(height: 4),
+                  Text(
+                    cardHolderName,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: const TextStyle(
+                      fontFamily: 'Metropolis',
+                      color: Colors.white,
+                      fontSize: 14,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
+            const SizedBox(width: 16),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/checkout_provider.dart';
 import '../widgets/payment_card_widget.dart';
+import '../utils/string_utils.dart';
 
 class PaymentMethodsScreen extends ConsumerStatefulWidget {
   const PaymentMethodsScreen({super.key});
@@ -67,26 +68,24 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
               ),
             ),
             const SizedBox(height: 29),
-            _buildCardItem(
-              maskedNumber: '**** **** **** 3947',
-              fullNumber: '5546 8205 3693 3947',
-              cardHolderName: 'Jennyfer Doe',
-              expiryDate: '05/23',
-              isBlackCard: true,
-              isVisa: false,
-              id: '3947',
-            ),
-            const SizedBox(height: 32),
-            _buildCardItem(
-              maskedNumber: '**** **** **** 4546',
-              fullNumber: '4123 4567 8901 4546',
-              cardHolderName: 'Jennyfer Doe',
-              expiryDate: '11/22',
-              isBlackCard: false,
-              isVisa: true,
-              id: '4546',
-            ),
-            const SizedBox(height: 80),
+            ...ref.watch(checkoutProvider).paymentMethods.map((method) {
+              bool isVisa = method.cardType.toLowerCase() == 'visa';
+              String fullNumber = isVisa ? '4532 7182 9381 ${method.lastFourDigits}' : '5546 8205 3693 ${method.lastFourDigits}';
+              
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 32.0),
+                child: _buildCardItem(
+                  maskedNumber: '**** **** **** ${method.lastFourDigits}',
+                  fullNumber: fullNumber,
+                  cardHolderName: formatCardHolderName(method.cardholderName),
+                  expiryDate: '12/25', // Mock expiry date since it's not in DB
+                  isBlackCard: !isVisa, // Mastercard -> Black, Visa -> Grey
+                  isVisa: isVisa,
+                  id: method.lastFourDigits,
+                ),
+              );
+            }).toList(),
+            const SizedBox(height: 48),
           ],
         ),
       ),
@@ -307,19 +306,13 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
               keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 20),
-            Row(
-              children: [
-                Expanded(child: _buildTextField(label: 'Expire Date', controller: _expiryController)),
-                const SizedBox(width: 22),
-                Expanded(
-                  child: _buildTextField(
-                    label: 'CVV',
-                    controller: _cvvController,
-                    suffixIconWidget: const Icon(Icons.help_outline, color: Color(0xFF9B9B9B)),
-                    keyboardType: TextInputType.number,
-                  ),
-                ),
-              ],
+            _buildTextField(label: 'Expire Date', controller: _expiryController),
+            const SizedBox(height: 20),
+            _buildTextField(
+              label: 'CVV',
+              controller: _cvvController,
+              suffixIconWidget: const Icon(Icons.help_outline, color: Color(0xFF9B9B9B)),
+              keyboardType: TextInputType.number,
             ),
             const SizedBox(height: 24),
             GestureDetector(
