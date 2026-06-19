@@ -28,7 +28,7 @@ class _HorizontalProductCardState extends ConsumerState<HorizontalProductCard> {
   @override
   void didUpdateWidget(covariant HorizontalProductCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.product.id != widget.product.id) {
+    if (oldWidget.product.isFavorite != widget.product.isFavorite) {
       isFavorite = widget.product.isFavorite;
     }
   }

@@ -35,6 +35,8 @@ class FavoriteNotifier extends StateNotifier<bool> {
       } catch (_) {
         // ignore error
       }
+      
+      ref.invalidate(categoryProductsProvider);
 
       await Future.delayed(const Duration(seconds: 3));
       ref.read(loadingProvider.notifier).state = false;

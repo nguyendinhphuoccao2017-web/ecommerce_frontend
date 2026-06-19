@@ -30,7 +30,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
   @override
   void didUpdateWidget(covariant ProductCard oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (oldWidget.product.id != widget.product.id) {
+    if (oldWidget.product.isFavorite != widget.product.isFavorite) {
       isFavorite = widget.product.isFavorite;
     }
   }
