@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -30,15 +31,55 @@ class _WriteReviewBottomSheetState extends ConsumerState<WriteReviewBottomSheet>
       );
       return;
     }
-    
-    final List<XFile> images = await _picker.pickMultiImage();
-    if (images.isNotEmpty) {
-      setState(() {
-        _selectedImages.addAll(images);
-        if (_selectedImages.length > 3) {
-          _selectedImages.removeRange(3, _selectedImages.length);
+
+    final ImageSource? source = await showCupertinoModalPopup<ImageSource>(
+      context: context,
+      builder: (BuildContext context) => CupertinoActionSheet(
+        title: const Text('Select Photo', style: TextStyle(fontFamily: 'Metropolis')),
+        message: const Text('Choose where to pick your photo from', style: TextStyle(fontFamily: 'Metropolis')),
+        actions: <CupertinoActionSheetAction>[
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context, ImageSource.camera);
+            },
+            child: const Text('Camera', style: TextStyle(color: Color(0xFFDB3022), fontFamily: 'Metropolis')),
+          ),
+          CupertinoActionSheetAction(
+            onPressed: () {
+              Navigator.pop(context, ImageSource.gallery);
+            },
+            child: const Text('Photo Album', style: TextStyle(color: Color(0xFFDB3022), fontFamily: 'Metropolis')),
+          ),
+        ],
+        cancelButton: CupertinoActionSheetAction(
+          isDefaultAction: true,
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: const Text('Cancel', style: TextStyle(color: Color(0xFF222222), fontFamily: 'Metropolis', fontWeight: FontWeight.bold)),
+        ),
+      ),
+    );
+
+    if (source != null) {
+      if (source == ImageSource.camera) {
+        final XFile? image = await _picker.pickImage(source: ImageSource.camera);
+        if (image != null) {
+          setState(() {
+            _selectedImages.add(image);
+          });
         }
-      });
+      } else if (source == ImageSource.gallery) {
+        final List<XFile> images = await _picker.pickMultiImage();
+        if (images.isNotEmpty) {
+          setState(() {
+            _selectedImages.addAll(images);
+            if (_selectedImages.length > 3) {
+              _selectedImages.removeRange(3, _selectedImages.length);
+            }
+          });
+        }
+      }
     }
   }
 
