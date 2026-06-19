@@ -223,7 +223,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
           ),
           Row(
             children: [
-              if (isNewSection || isNew)
+              if (widget.isNewSection || isNew)
                 Text(
                   '${(widget.product.comparePrice > 0 ? widget.product.comparePrice : widget.product.salePrice).toStringAsFixed(0)}\$',
                   style: const TextStyle(
