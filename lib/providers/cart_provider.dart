@@ -67,15 +67,44 @@ class CartNotifier extends AsyncNotifier<CartResponse?> {
   }
 
   Future<void> updateQuantity(String itemId, String productId, String? variantOptionId, int currentQty, int diff) async {
-    try {
-      if (currentQty + diff <= 0) {
-        return;
+    if (currentQty + diff <= 0) {
+      return;
+    }
+
+    final currentCart = state.value;
+    
+    // Optimistic Update
+    if (currentCart != null) {
+      final updatedItems = currentCart.items.map((item) {
+        if (item.id == itemId) {
+          return item.copyWith(quantity: item.quantity + diff);
+        }
+        return item;
+      }).toList();
+      
+      double newSubtotal = 0.0;
+      for (var item in updatedItems) {
+        newSubtotal += item.salePrice * item.quantity;
       }
+      
+      final optimisticCart = currentCart.copyWith(items: updatedItems, subtotal: newSubtotal);
+      state = AsyncValue.data(optimisticCart);
+    }
+
+    try {
       await _apiService.addToCart(productId, variantOptionId, diff);
-      final newCart = await fetchCart();
-      state = AsyncValue.data(newCart);
+      // Fetch in background to ensure sync
+      fetchCart().then((newCart) {
+        if (newCart != null) {
+          state = AsyncValue.data(newCart);
+        }
+      });
     } catch (e) {
       print('Error updating quantity: $e');
+      // Revert state if error
+      if (currentCart != null) {
+        state = AsyncValue.data(currentCart);
+      }
       throw Exception('Failed to update quantity');
     }
   }

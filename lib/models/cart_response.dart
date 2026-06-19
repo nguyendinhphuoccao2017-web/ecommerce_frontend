@@ -21,4 +21,16 @@ class CartResponse {
       subtotal: (json['subtotal'] ?? 0).toDouble(),
     );
   }
+
+  CartResponse copyWith({
+    String? cardId,
+    List<CartItem>? items,
+    double? subtotal,
+  }) {
+    return CartResponse(
+      cardId: cardId ?? this.cardId,
+      items: items ?? this.items,
+      subtotal: subtotal ?? this.subtotal,
+    );
+  }
 }

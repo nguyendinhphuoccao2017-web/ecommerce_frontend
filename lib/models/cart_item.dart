@@ -43,4 +43,34 @@ class CartItem {
       maxQuantity: json['maxQuantity'] ?? 1,
     );
   }
+
+  CartItem copyWith({
+    String? id,
+    String? productId,
+    String? productName,
+    String? sku,
+    double? salePrice,
+    String? image,
+    String? variantOptionId,
+    String? variantTitle,
+    String? color,
+    String? size,
+    int? quantity,
+    int? maxQuantity,
+  }) {
+    return CartItem(
+      id: id ?? this.id,
+      productId: productId ?? this.productId,
+      productName: productName ?? this.productName,
+      sku: sku ?? this.sku,
+      salePrice: salePrice ?? this.salePrice,
+      image: image ?? this.image,
+      variantOptionId: variantOptionId ?? this.variantOptionId,
+      variantTitle: variantTitle ?? this.variantTitle,
+      color: color ?? this.color,
+      size: size ?? this.size,
+      quantity: quantity ?? this.quantity,
+      maxQuantity: maxQuantity ?? this.maxQuantity,
+    );
+  }
 }
