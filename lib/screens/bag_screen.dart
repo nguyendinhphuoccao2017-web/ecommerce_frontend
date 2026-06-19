@@ -179,7 +179,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                           itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                                             const PopupMenuItem<String>(
                                               value: 'favorite',
-                                              height: 48,
+                                              height: 36,
                                               child: SizedBox(
                                                 width: 170,
                                                 child: Center(
@@ -195,7 +195,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                             ),
                                             const PopupMenuItem<String>(
                                               value: 'delete',
-                                              height: 48,
+                                              height: 36,
                                               child: SizedBox(
                                                 width: 170,
                                                 child: Center(
