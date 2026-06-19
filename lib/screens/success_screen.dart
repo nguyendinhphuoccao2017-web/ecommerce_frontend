@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/nav_provider.dart';
+import '../widgets/primary_button.dart';
 
 class SuccessScreen extends ConsumerWidget {
   const SuccessScreen({super.key});
@@ -8,35 +9,52 @@ class SuccessScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
-      body: Center(
+      backgroundColor: Colors.white,
+      body: SafeArea(
         child: Padding(
-          padding: const EdgeInsets.all(32),
+          padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset('assets/images/success.png', width: 213, height: 200, errorBuilder: (c, e, s) => const Icon(Icons.check_circle_outline, size: 100, color: Color(0xFFDB3022))),
-              const SizedBox(height: 40),
-              const Text('Success!', style: TextStyle(fontSize: 34, fontWeight: FontWeight.bold)),
+              const Spacer(),
+              Image.network(
+                'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/success/bags.png',
+                fit: BoxFit.contain,
+                errorBuilder: (context, error, stackTrace) {
+                  return const Icon(Icons.shopping_bag_outlined, size: 150, color: Color(0xFFDB3022));
+                },
+              ),
+              const SizedBox(height: 45),
+              const Text(
+                'Success!',
+                style: TextStyle(
+                  fontFamily: 'Metropolis',
+                  fontWeight: FontWeight.w700,
+                  fontSize: 34,
+                  height: 1.0,
+                  color: Color(0xFF000000),
+                ),
+              ),
               const SizedBox(height: 16),
               const Text(
                 'Your order will be delivered soon.\nThank you for choosing our app!',
                 textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 16, height: 1.5),
+                style: TextStyle(
+                  fontFamily: 'Metropolis',
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
+                  height: 1.5,
+                  color: Color(0xFF000000),
+                ),
               ),
-              const SizedBox(height: 40),
-              SizedBox(
-                width: double.infinity,
-                height: 48,
-                child: ElevatedButton(
+              const Spacer(),
+              Padding(
+                padding: const EdgeInsets.only(bottom: 24.0),
+                child: PrimaryButton(
+                  title: 'CONTINUE SHOPPING',
                   onPressed: () {
-                    ref.read(navIndexProvider.notifier).state = 0; // Go home
+                    ref.read(navIndexProvider.notifier).state = 0; // Chuyển về Home Tab
                     Navigator.of(context).popUntil((route) => route.isFirst);
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFDB3022),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(25)),
-                  ),
-                  child: const Text('CONTINUE SHOPPING', style: TextStyle(color: Colors.white, fontSize: 14)),
                 ),
               ),
             ],
