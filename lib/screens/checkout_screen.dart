@@ -446,8 +446,11 @@ class CheckoutScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildCachedImage(imageUrl, height: 44),
-            const SizedBox(height: 4),
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 80, maxHeight: 46),
+              child: _buildCachedImage(imageUrl),
+            ),
+            const SizedBox(height: 2),
             Text(
               duration,
               style: const TextStyle(
