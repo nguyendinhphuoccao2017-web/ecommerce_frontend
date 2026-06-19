@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/nav_provider.dart';
 import '../widgets/primary_button.dart';
+import 'home_screen.dart';
 
 class SuccessScreen extends ConsumerWidget {
   const SuccessScreen({super.key});
@@ -53,7 +54,11 @@ class SuccessScreen extends ConsumerWidget {
                   title: 'CONTINUE SHOPPING',
                   onPressed: () {
                     ref.read(navIndexProvider.notifier).state = 0; // Chuyển về Home Tab
-                    Navigator.of(context).popUntil((route) => route.isFirst);
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (_) => const HomeScreen()),
+                      (route) => false,
+                    );
                   },
                 ),
               ),
