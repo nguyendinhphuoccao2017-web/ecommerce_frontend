@@ -16,11 +16,14 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
   @override
   void initState() {
     super.initState();
-    // Default the provider state if not set
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final currentMethod = ref.read(checkoutProvider).selectedPaymentMethod;
       if (currentMethod == 'Credit Card' || currentMethod == 'PayPal') {
          ref.read(checkoutProvider.notifier).selectPaymentMethod('5546 8205 3693 3947');
+      } else if (currentMethod.contains('4546')) {
+         setState(() { selectedDefaultCard = '4546'; });
+      } else {
+         setState(() { selectedDefaultCard = '3947'; });
       }
     });
   }
@@ -30,21 +33,42 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9F9F9),
       appBar: AppBar(
-        title: const Text('Payment methods', style: TextStyle(color: Colors.black)),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Color(0xFF222222)),
+          onPressed: () => Navigator.pop(context),
+        ),
+        title: const Text(
+          'Payment methods',
+          style: TextStyle(
+            fontFamily: 'Metropolis',
+            fontWeight: FontWeight.bold,
+            fontSize: 18,
+            height: 22 / 18,
+            color: Color(0xFF222222),
+          ),
+        ),
         backgroundColor: Colors.white,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black),
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.only(left: 16, right: 16, top: 30),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Your payment cards', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-            const SizedBox(height: 16),
+            const Text(
+              'Your payment cards',
+              style: TextStyle(
+                fontFamily: 'Metropolis',
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF222222),
+                height: 1,
+              ),
+            ),
+            const SizedBox(height: 29),
             _buildCardItem(
-              maskedNumber: '* * * *  * * * *  * * * *  3947',
+              maskedNumber: '**** **** **** 3947',
               fullNumber: '5546 8205 3693 3947',
               cardHolderName: 'Jennyfer Doe',
               expiryDate: '05/23',
@@ -54,7 +78,7 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
             ),
             const SizedBox(height: 32),
             _buildCardItem(
-              maskedNumber: '* * * *  * * * *  * * * *  4546',
+              maskedNumber: '**** **** **** 4546',
               fullNumber: '4123 4567 8901 4546',
               cardHolderName: 'Jennyfer Doe',
               expiryDate: '11/22',
@@ -70,7 +94,8 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
         onPressed: () {
           _showAddCardBottomSheet(context);
         },
-        backgroundColor: Colors.black,
+        backgroundColor: const Color(0xFF222222),
+        shape: const CircleBorder(),
         child: const Icon(Icons.add, color: Colors.white),
       ),
     );
@@ -96,23 +121,41 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
           expiryDate: expiryDate,
           isVisa: isVisa,
         ),
-        const SizedBox(height: 16),
-        Row(
-          children: [
-            Checkbox(
-              value: isSelected,
-              activeColor: Colors.black,
-              onChanged: (val) {
-                if (val == true) {
-                  setState(() {
-                    selectedDefaultCard = id;
-                  });
-                  ref.read(checkoutProvider.notifier).selectPaymentMethod(fullNumber);
-                }
-              },
-            ),
-            const Text('Use as default payment method', style: TextStyle(fontSize: 14)),
-          ],
+        const SizedBox(height: 24),
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              selectedDefaultCard = id;
+            });
+            ref.read(checkoutProvider.notifier).selectPaymentMethod(fullNumber);
+          },
+          child: Row(
+            children: [
+              Container(
+                width: 20,
+                height: 20,
+                decoration: BoxDecoration(
+                  color: isSelected ? const Color(0xFF222222) : Colors.transparent,
+                  borderRadius: BorderRadius.circular(4),
+                  border: isSelected 
+                      ? null 
+                      : Border.all(color: const Color(0xFF9B9B9B), width: 2),
+                ),
+                child: isSelected 
+                    ? const Icon(Icons.check, color: Colors.white, size: 16)
+                    : null,
+              ),
+              const SizedBox(width: 13),
+              const Text(
+                'Use as default payment method',
+                style: TextStyle(
+                  fontFamily: 'Metropolis',
+                  fontSize: 14,
+                  color: Color(0xFF222222),
+                ),
+              ),
+            ],
+          ),
         ),
       ],
     );

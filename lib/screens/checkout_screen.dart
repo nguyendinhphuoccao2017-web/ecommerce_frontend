@@ -152,8 +152,15 @@ class CheckoutScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 17),
               
-              if (initData.defaultPaymentMethod != null)
-                Row(
+              () {
+                String paymentMethod = checkoutState.selectedPaymentMethod;
+                String lastFourDigits = paymentMethod.length >= 4 ? paymentMethod.substring(paymentMethod.length - 4) : '';
+                bool isVisa = lastFourDigits == '4546';
+                String logoUrl = isVisa 
+                    ? 'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/visa_checkout.png'
+                    : 'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/mastercard_checkout.png';
+
+                return Row(
                   children: [
                     Container(
                       width: 64,
@@ -166,14 +173,12 @@ class CheckoutScreen extends ConsumerWidget {
                         ]
                       ),
                       child: Center(
-                        child: initData.defaultPaymentMethod!.cardType.toLowerCase() == 'visa'
-                            ? _buildCachedImage('https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/Visa%20Logo.png', width: 32)
-                            : _buildCachedImage('https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/mastercard_checkout.png', width: 32),
+                        child: _buildCachedImage(logoUrl, width: 32),
                       ),
                     ),
                     const SizedBox(width: 17),
                     Text(
-                      '**** **** **** ${initData.defaultPaymentMethod!.lastFourDigits}',
+                      '**** **** **** $lastFourDigits',
                       style: const TextStyle(
                         fontFamily: 'Metropolis',
                         fontSize: 14,
@@ -182,9 +187,8 @@ class CheckoutScreen extends ConsumerWidget {
                       ),
                     ),
                   ],
-                )
-              else
-                const Text('No default payment method set.', style: TextStyle(fontFamily: 'Metropolis', fontSize: 14)),
+                );
+              }(),
                 
               const SizedBox(height: 58),
               

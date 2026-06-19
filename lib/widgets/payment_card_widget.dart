@@ -23,7 +23,7 @@ class PaymentCardWidget extends StatelessWidget {
       width: double.infinity,
       decoration: BoxDecoration(
         color: isBlackCard ? const Color(0xFF222222) : const Color(0xFF9B9B9B),
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
         boxShadow: [
           BoxShadow(
             color: Colors.black.withOpacity(0.1),
@@ -33,7 +33,7 @@ class PaymentCardWidget extends StatelessWidget {
         ]
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(8),
         child: Stack(
           children: [
             Positioned.fill(
@@ -42,101 +42,203 @@ class PaymentCardWidget extends StatelessWidget {
               ),
             ),
             Padding(
-              padding: const EdgeInsets.all(24.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // Chip
-                      Container(
-                        width: 40,
-                        height: 30,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFFCC66),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: CustomPaint(painter: ChipPainter()),
-                      ),
-                      if (isVisa)
-                        Image.network(
-                          'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/Visa%20Logo.png',
-                          height: 20,
-                          fit: BoxFit.contain,
-                          errorBuilder: (context, error, stackTrace) => const Text(
-                            'VISA',
-                            style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800, fontStyle: FontStyle.italic),
-                          ),
-                        ),
-                    ],
-                  ),
-                  const Spacer(),
-                  Text(
-                    cardNumber,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 28,
-                      letterSpacing: 2,
-                      fontFamily: 'Courier',
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Card Holder Name',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.8),
-                              fontSize: 10,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            cardHolderName,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Expiry Date',
-                            style: TextStyle(
-                              color: Colors.white.withOpacity(0.8),
-                              fontSize: 10,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            expiryDate,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 14,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                      if (!isVisa) _buildMastercardLogo(),
-                      if (isVisa) const SizedBox(width: 32),
-                    ],
-                  ),
-                ],
-              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 24.0),
+              child: isVisa ? _buildVisaLayout() : _buildMastercardLayout(),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Widget _buildMastercardLayout() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Top Left Chip
+        Container(
+          width: 32,
+          height: 24,
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFCC66),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: CustomPaint(painter: ChipPainter()),
+        ),
+        const Spacer(),
+        // Card Number
+        Center(
+          child: Text(
+            cardNumber,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              letterSpacing: -0.41,
+              fontFamily: 'Metropolis',
+              height: 22 / 24,
+            ),
+          ),
+        ),
+        const SizedBox(height: 32),
+        // Bottom row: Holder Name, Expiry, Logo
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Card Holder Name',
+                  style: TextStyle(
+                    fontFamily: 'Metropolis',
+                    color: Colors.white.withOpacity(0.8),
+                    fontSize: 10,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  cardHolderName,
+                  style: const TextStyle(
+                    fontFamily: 'Metropolis',
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Expiry Date',
+                  style: TextStyle(
+                    fontFamily: 'Metropolis',
+                    color: Colors.white.withOpacity(0.8),
+                    fontSize: 10,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  expiryDate,
+                  style: const TextStyle(
+                    fontFamily: 'Metropolis',
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            _buildMastercardLogo(),
+          ],
+        ),
+      ],
+    );
+  }
+
+  Widget _buildVisaLayout() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Top Right Visa Logo
+        Align(
+          alignment: Alignment.topRight,
+          child: Image.network(
+            'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/Visa%20Logo.png',
+            height: 20,
+            fit: BoxFit.contain,
+            errorBuilder: (context, error, stackTrace) => const Text(
+              'VISA',
+              style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800, fontStyle: FontStyle.italic),
+            ),
+          ),
+        ),
+        const Spacer(),
+        // Card Number
+        Center(
+          child: Text(
+            cardNumber,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 24,
+              letterSpacing: -0.41,
+              fontFamily: 'Metropolis',
+              height: 22 / 24,
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+        // Chip below number row
+        Container(
+          width: 32,
+          height: 24,
+          decoration: BoxDecoration(
+            color: const Color(0xFFFFCC66),
+            borderRadius: BorderRadius.circular(4),
+          ),
+          child: CustomPaint(painter: ChipPainter()),
+        ),
+        const SizedBox(height: 12),
+        // Bottom row: Holder Name, Expiry
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Card Holder Name',
+                  style: TextStyle(
+                    fontFamily: 'Metropolis',
+                    color: Colors.white.withOpacity(0.8),
+                    fontSize: 10,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  cardHolderName,
+                  style: const TextStyle(
+                    fontFamily: 'Metropolis',
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Expiry Date',
+                  style: TextStyle(
+                    fontFamily: 'Metropolis',
+                    color: Colors.white.withOpacity(0.8),
+                    fontSize: 10,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  expiryDate,
+                  style: const TextStyle(
+                    fontFamily: 'Metropolis',
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ],
     );
   }
 
