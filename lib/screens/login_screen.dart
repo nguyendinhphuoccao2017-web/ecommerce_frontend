@@ -66,11 +66,6 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
           )
         );
       } else if (next.isAuthSuccess && next.isAuthSuccess != previous?.isAuthSuccess) {
-        if (next.isSocialAuth) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Social Login successful!')));
-        } else {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Login successful!')));
-        }
         Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (_) => const HomeScreen()), (route) => false);
       }
     });

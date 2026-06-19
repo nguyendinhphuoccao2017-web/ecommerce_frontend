@@ -50,15 +50,6 @@ class _SignupScreenState extends ConsumerState<SignupScreen> {
         ).showSnackBar(SnackBar(content: Text(next.error!)));
       } else if (next.isAuthSuccess &&
           next.isAuthSuccess != previous?.isAuthSuccess) {
-        if (next.isSocialAuth) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Social Login successful!')),
-          );
-        } else {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(const SnackBar(content: Text('Sign up successful!')));
-        }
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const LoginScreen()));
       }
     });
