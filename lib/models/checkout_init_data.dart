@@ -58,11 +58,13 @@ class ShippingRate {
   final String id;
   final String weightUnit;
   final double price;
+  final String? shippingZoneId;
 
   ShippingRate({
     required this.id,
     required this.weightUnit,
     required this.price,
+    this.shippingZoneId,
   });
 
   factory ShippingRate.fromJson(Map<String, dynamic> json) {
@@ -70,6 +72,7 @@ class ShippingRate {
       id: json['id'],
       weightUnit: json['weightUnit'] ?? '',
       price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      shippingZoneId: json['shippingZone']?['id'],
     );
   }
 }

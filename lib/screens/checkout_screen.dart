@@ -52,15 +52,23 @@ class CheckoutScreen extends ConsumerWidget {
     final initData = checkoutState.initData!;
     final cart = initData.cart;
 
-    double orderAmount = cart?.subtotal ?? 0.0;
+    double baseOrderAmount = cart?.subtotal ?? 0.0;
+    double discountAmount = 0.0;
+    if (appliedCoupon != null) {
+      if (appliedCoupon.discountType == 'PERCENTAGE') {
+        discountAmount = baseOrderAmount * (appliedCoupon.discountValue / 100);
+      } else if (appliedCoupon.discountType == 'FIXED_CART') {
+        discountAmount = appliedCoupon.discountValue;
+      }
+    }
+
+    double orderAmount = baseOrderAmount - discountAmount;
+    if (orderAmount < 0) orderAmount = 0;
     
     double deliveryAmount = 15.0; // Default fallback
-    if (checkoutState.selectedDeliveryMethodId != null && initData.shippingZones.isNotEmpty) {
+    if (checkoutState.selectedDeliveryMethodId != null && initData.shippingRates.isNotEmpty) {
       try {
-        final zone = initData.shippingZones.firstWhere((z) => z.id == checkoutState.selectedDeliveryMethodId);
-        if (zone.shippingRates.isNotEmpty) {
-          deliveryAmount = zone.shippingRates.first.price;
-        }
+        deliveryAmount = initData.shippingRates.firstWhere((r) => r.shippingZoneId == checkoutState.selectedDeliveryMethodId).price;
       } catch (e) {
         // ignore fallback
       }
@@ -438,7 +446,7 @@ class CheckoutScreen extends ConsumerWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            _buildCachedImage(imageUrl, height: 20),
+            _buildCachedImage(imageUrl, height: 36),
             const SizedBox(height: 8),
             Text(
               duration,
