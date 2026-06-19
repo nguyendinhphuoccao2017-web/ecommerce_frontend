@@ -3,6 +3,7 @@ import '../models/checkout_init_data.dart';
 import '../models/customer_address.dart';
 import '../services/api_service.dart';
 import 'auth_provider.dart';
+import 'cart_provider.dart';
 
 class CheckoutState {
   final bool isLoading;
@@ -61,13 +62,14 @@ class CheckoutState {
 }
 
 final checkoutProvider = StateNotifierProvider<CheckoutNotifier, CheckoutState>((ref) {
-  return CheckoutNotifier(ref.read(apiServiceProvider));
+  return CheckoutNotifier(ref.read(apiServiceProvider), ref);
 });
 
 class CheckoutNotifier extends StateNotifier<CheckoutState> {
   final ApiService _apiService;
+  final Ref _ref;
 
-  CheckoutNotifier(this._apiService) : super(CheckoutState()) {
+  CheckoutNotifier(this._apiService, this._ref) : super(CheckoutState()) {
     loadInitData();
     loadAddresses(); // Restore old method for screens that need it
   }
@@ -173,6 +175,10 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
         'deliveryMethod': state.selectedDeliveryMethodId ?? 'FedEx',
         'couponCode': null, 
       });
+      
+      // Invalidate the cart so it re-fetches and clears out the purchased items
+      _ref.invalidate(cartProvider);
+      
       state = state.copyWith(isLoading: false);
       return true;
     } catch (e) {
