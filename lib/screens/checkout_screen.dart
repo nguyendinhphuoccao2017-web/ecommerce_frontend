@@ -14,7 +14,7 @@ class CheckoutScreen extends ConsumerWidget {
     final checkoutState = ref.watch(checkoutProvider);
     final appliedCoupon = ref.watch(appliedCouponProvider);
 
-    if (checkoutState.isLoading || checkoutState.initData == null) {
+    if (checkoutState.isLoading) {
       return Scaffold(
         backgroundColor: const Color(0xFFF9F9F9),
         appBar: AppBar(
@@ -25,6 +25,35 @@ class CheckoutScreen extends ConsumerWidget {
           centerTitle: true,
         ),
         body: const Center(child: CircularProgressIndicator(color: Color(0xFFDB3022))),
+      );
+    }
+
+    if (checkoutState.error != null || checkoutState.initData == null) {
+      return Scaffold(
+        backgroundColor: const Color(0xFFF9F9F9),
+        appBar: AppBar(
+          title: const Text('Checkout', style: TextStyle(fontFamily: 'Metropolis', fontWeight: FontWeight.w400, fontSize: 18, color: Colors.black)),
+          backgroundColor: Colors.white,
+          elevation: 0,
+          iconTheme: const IconThemeData(color: Colors.black),
+          centerTitle: true,
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(checkoutState.error ?? 'Failed to load checkout data.', textAlign: TextAlign.center, style: const TextStyle(color: Colors.red)),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  onPressed: () => ref.read(checkoutProvider.notifier).loadInitData(),
+                  child: const Text('Retry'),
+                )
+              ],
+            ),
+          ),
+        ),
       );
     }
 

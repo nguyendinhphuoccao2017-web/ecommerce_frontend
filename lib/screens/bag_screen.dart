@@ -132,7 +132,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                           padding: EdgeInsets.zero,
                                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                                           elevation: 8,
-                                          offset: const Offset(-146, 0),
+                                          offset: const Offset(-15, 0),
                                           onSelected: (value) async {
                                             if (value == 'favorite') {
                                               ref.read(loadingProvider.notifier).state = true;
@@ -187,7 +187,12 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                                 ),
                                               ),
                                             ),
-                                            const PopupMenuDivider(height: 1),
+                                            const PopupMenuItem<String>(
+                                              enabled: false,
+                                              height: 1,
+                                              padding: EdgeInsets.zero,
+                                              child: Divider(height: 1, color: Color(0xFF9B9B9B)),
+                                            ),
                                             const PopupMenuItem<String>(
                                               value: 'delete',
                                               height: 48,
