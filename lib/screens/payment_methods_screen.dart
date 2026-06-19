@@ -251,7 +251,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
         padding: const EdgeInsets.only(right: 8),
         alignment: Alignment.centerRight,
         child: Image.network(
-          'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/Visa%20Logo.png',
+          'https://nddvgywmwxlmkmextxre.supabase.co/storage/v1/object/public/payment/visa_checkout.png',
           width: 32,
           height: 20,
           fit: BoxFit.contain,
