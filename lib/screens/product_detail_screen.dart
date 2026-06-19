@@ -11,6 +11,7 @@ import 'reviews_screen.dart';
 import '../widgets/size_selection_bottom_sheet.dart';
 import '../providers/loading_provider.dart';
 import '../providers/favorite_provider.dart';
+import '../providers/cart_provider.dart';
 
 class ProductDetailScreen extends ConsumerStatefulWidget {
   final String productId;
@@ -59,7 +60,19 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       final selectedVariant = variants.firstWhere((v) => v.id == variantId);
       ref.read(selectedVariantNotifierProvider(widget.productId).notifier).selectVariant(selectedVariant);
       if (buttonText == 'ADD TO CART') {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Added to cart')));
+        try {
+          ref.read(loadingProvider.notifier).state = true;
+          await ref.read(cartProvider.notifier).addToCart(widget.productId, variantId, 1);
+          if (mounted) {
+            ref.read(loadingProvider.notifier).state = false;
+            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Added to cart')));
+          }
+        } catch (e) {
+          if (mounted) {
+            ref.read(loadingProvider.notifier).state = false;
+            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to add to cart: $e')));
+          }
+        }
       }
     }
   }
@@ -77,8 +90,19 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
       return;
     }
 
-    // TODO: Call Add to Cart API
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Added to cart')));
+    try {
+      ref.read(loadingProvider.notifier).state = true;
+      await ref.read(cartProvider.notifier).addToCart(product.id, selectedVariant.id, 1);
+      if (mounted) {
+        ref.read(loadingProvider.notifier).state = false;
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Added to cart')));
+      }
+    } catch (e) {
+      if (mounted) {
+        ref.read(loadingProvider.notifier).state = false;
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to add to cart: $e')));
+      }
+    }
   }
 
   void _handleFavorite(ProductDetail product, List<VariantOption> variants) async {

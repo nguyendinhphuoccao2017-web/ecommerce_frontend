@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../providers/cart_provider.dart';
 import '../providers/coupon_provider.dart';
+import '../providers/favorite_provider.dart';
 import '../widgets/promo_codes_bottom_sheet.dart';
 import '../models/coupon.dart';
 import 'checkout_screen.dart';
@@ -135,6 +136,22 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                           offset: const Offset(-30, -25),
                                           onSelected: (value) async {
                                             if (value == 'favorite') {
+                                              final favoritesAsync = ref.read(favoriteProductsProvider);
+                                              final favoritesList = favoritesAsync.value ?? [];
+                                              bool isAlreadyFavorite = favoritesList.any((fav) => 
+                                                fav.productId == item.productId && 
+                                                fav.variantOptionId == item.variantOptionId
+                                              );
+                                              
+                                              if (isAlreadyFavorite) {
+                                                if (context.mounted) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('${item.productName} is already in favorites!')),
+                                                  );
+                                                }
+                                                return; // Do nothing else
+                                              }
+
                                               ref.read(loadingProvider.notifier).state = true;
                                               try {
                                                 await ref.read(cartProvider.notifier).toggleFavorite(item.productId, variantOptionId: item.variantOptionId);
