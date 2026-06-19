@@ -125,13 +125,85 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                       SizedBox(
                                         height: 24,
                                         width: 24,
-                                        child: IconButton(
-                                          padding: EdgeInsets.zero,
-                                          constraints: const BoxConstraints(),
+                                        child: PopupMenuButton<String>(
+                                          color: Colors.white,
+                                          constraints: const BoxConstraints(maxWidth: 170, minWidth: 170),
                                           icon: const Icon(Icons.more_vert, color: Colors.grey, size: 24),
-                                          onPressed: () {
-                                            _showActionMenu(context, item, isFromMinus: false);
+                                          padding: EdgeInsets.zero,
+                                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                                          elevation: 8,
+                                          offset: const Offset(-30, -25),
+                                          onSelected: (value) async {
+                                            if (value == 'favorite') {
+                                              ref.read(loadingProvider.notifier).state = true;
+                                              try {
+                                                await ref.read(cartProvider.notifier).toggleFavorite(item.productId, variantOptionId: item.variantOptionId);
+                                                await Future.delayed(const Duration(seconds: 2));
+                                                if (context.mounted) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Toggled favorite for ${item.productName}')),
+                                                  );
+                                                }
+                                              } catch (e) {
+                                                await Future.delayed(const Duration(seconds: 2));
+                                                if (context.mounted) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Failed to toggle favorite: $e')),
+                                                  );
+                                                }
+                                              } finally {
+                                                ref.read(loadingProvider.notifier).state = false;
+                                              }
+                                            } else if (value == 'delete') {
+                                              ref.read(loadingProvider.notifier).state = true;
+                                              try {
+                                                await ref.read(cartProvider.notifier).removeItem(item.id);
+                                                await Future.delayed(const Duration(seconds: 2));
+                                                if (context.mounted) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Removed ${item.productName} from cart')),
+                                                  );
+                                                }
+                                              } catch (e) {
+                                                await Future.delayed(const Duration(seconds: 2));
+                                                if (context.mounted) {
+                                                  ScaffoldMessenger.of(context).showSnackBar(
+                                                    SnackBar(content: Text('Failed to remove item: $e')),
+                                                  );
+                                                }
+                                              } finally {
+                                                ref.read(loadingProvider.notifier).state = false;
+                                              }
+                                            }
                                           },
+                                          itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                                            const PopupMenuItem<String>(
+                                              value: 'favorite',
+                                              height: 36,
+                                              child: SizedBox(
+                                                width: 170,
+                                                child: Center(
+                                                  child: Text('Add to favorites', style: TextStyle(fontFamily: 'Metropolis', fontSize: 14)),
+                                                ),
+                                              ),
+                                            ),
+                                            PopupMenuItem<String>(
+                                              enabled: false,
+                                              height: 1,
+                                              padding: EdgeInsets.zero,
+                                              child: Divider(height: 1, color: const Color(0xFF9B9B9B).withOpacity(0.3)),
+                                            ),
+                                            const PopupMenuItem<String>(
+                                              value: 'delete',
+                                              height: 36,
+                                              child: SizedBox(
+                                                width: 170,
+                                                child: Center(
+                                                  child: Text('Delete from the list', style: TextStyle(fontFamily: 'Metropolis', fontSize: 14)),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
                                         ),
                                       ),
                                     ],
