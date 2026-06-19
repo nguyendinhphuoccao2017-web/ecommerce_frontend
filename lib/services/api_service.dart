@@ -422,4 +422,19 @@ class ApiService {
       throw Exception('Failed to submit checkout: $e');
     }
   }
+
+  Future<List<PaymentMethod>> getCustomerPaymentMethods() async {
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      if (token == null) throw Exception('No token found');
+      final response = await _dio.get(
+        '$apiBaseUrl/payment-methods/my-methods',
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+      List data = response.data;
+      return data.map((e) => PaymentMethod.fromJson(e)).toList();
+    } catch (e) {
+      throw Exception('Failed to load payment methods: $e');
+    }
+  }
 }
