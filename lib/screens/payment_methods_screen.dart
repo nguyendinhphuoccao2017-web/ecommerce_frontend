@@ -115,7 +115,7 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
       children: [
         GestureDetector(
           onTap: () {
-            _showAddCardBottomSheet(context, lastFourDigits: id);
+            _showAddCardBottomSheet(context, lastFourDigits: id, cardHolderName: cardHolderName);
           },
           child: PaymentCardWidget(
             isBlackCard: isBlackCard,
@@ -165,19 +165,23 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
     );
   }
 
-  void _showAddCardBottomSheet(BuildContext context, {String? lastFourDigits}) {
+  void _showAddCardBottomSheet(BuildContext context, {String? lastFourDigits, String? cardHolderName}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => AddCardBottomSheet(initialLastFour: lastFourDigits),
+      builder: (context) => AddCardBottomSheet(
+        initialLastFour: lastFourDigits,
+        initialCardHolderName: cardHolderName,
+      ),
     );
   }
 }
 
 class AddCardBottomSheet extends StatefulWidget {
   final String? initialLastFour;
-  const AddCardBottomSheet({super.key, this.initialLastFour});
+  final String? initialCardHolderName;
+  const AddCardBottomSheet({super.key, this.initialLastFour, this.initialCardHolderName});
 
   @override
   State<AddCardBottomSheet> createState() => _AddCardBottomSheetState();
@@ -198,12 +202,12 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
     if (widget.initialLastFour != null) {
       if (widget.initialLastFour == '3947') {
         _cardNumberController.text = '5546 8205 3693 3947';
-        _nameController.text = 'Jennyfer Doe';
+        _nameController.text = widget.initialCardHolderName ?? 'Jennyfer Doe';
         _expiryController.text = '05/23';
         _cvvController.text = '567';
       } else if (widget.initialLastFour == '4546') {
         _cardNumberController.text = '4532 7182 9381 4546';
-        _nameController.text = 'Jennyfer Doe';
+        _nameController.text = widget.initialCardHolderName ?? 'Jennyfer Doe';
         _expiryController.text = '11/22';
         _cvvController.text = '567';
       }
