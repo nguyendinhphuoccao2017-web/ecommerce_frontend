@@ -145,8 +145,26 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                               
                                               if (isAlreadyFavorite) {
                                                 if (context.mounted) {
-                                                  ScaffoldMessenger.of(context).showSnackBar(
-                                                    SnackBar(content: Text('${item.productName} is already in favorites!')),
+                                                  showDialog(
+                                                    context: context,
+                                                    builder: (ctx) => Dialog(
+                                                      backgroundColor: Colors.white,
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(12),
+                                                      ),
+                                                      child: Padding(
+                                                        padding: const EdgeInsets.all(24.0),
+                                                        child: Text(
+                                                          '${item.productName} is already in favorites!',
+                                                          textAlign: TextAlign.center,
+                                                          style: const TextStyle(
+                                                            color: Colors.black,
+                                                            fontWeight: FontWeight.bold,
+                                                            fontSize: 16,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                    ),
                                                   );
                                                 }
                                                 return; // Do nothing else
