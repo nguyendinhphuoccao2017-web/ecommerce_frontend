@@ -111,7 +111,7 @@ class _ProductCardState extends ConsumerState<ProductCard> {
                     ),
                   ),
                 )
-              else if (product.tags.contains('Sale') || product.tags.contains('sale'))
+              else if (widget.product.tags.contains('Sale') || widget.product.tags.contains('sale'))
                 Positioned(
                   top: 8,
                   left: 8,
