@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:shimmer/shimmer.dart';
 import '../providers/checkout_provider.dart';
 import '../providers/coupon_provider.dart';
+import '../providers/cart_provider.dart';
 import '../models/customer_address.dart';
 import 'shipping_addresses_screen.dart';
 import 'payment_methods_screen.dart';
@@ -274,6 +275,7 @@ class CheckoutScreen extends ConsumerWidget {
                     bool success = await ref.read(checkoutProvider.notifier).submitOrder();
                     if (success) {
                       if (context.mounted) {
+                        ref.invalidate(cartProvider); // Invalidate to reload empty cart
                         Navigator.pushAndRemoveUntil(
                           context, 
                           MaterialPageRoute(builder: (_) => const SuccessScreen()),
