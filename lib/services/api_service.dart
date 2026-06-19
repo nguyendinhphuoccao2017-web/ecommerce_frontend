@@ -423,6 +423,7 @@ class ApiService {
     }
   }
 
+  // Lấy danh sách thẻ tín dụng từ API Backend (Giai đoạn 2)
   Future<List<PaymentMethod>> getCustomerPaymentMethods() async {
     try {
       String? token = await _storage.read(key: 'jwt_token');
