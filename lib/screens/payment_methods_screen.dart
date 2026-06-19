@@ -115,7 +115,7 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
       children: [
         GestureDetector(
           onTap: () {
-            _showAddCardBottomSheet(context, lastFourDigits: id, cardHolderName: cardHolderName);
+            _showAddCardBottomSheet(context, lastFourDigits: id, cardHolderName: cardHolderName, isDefault: isSelected, fullNumber: fullNumber);
           },
           child: PaymentCardWidget(
             isBlackCard: isBlackCard,
@@ -165,7 +165,7 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
     );
   }
 
-  void _showAddCardBottomSheet(BuildContext context, {String? lastFourDigits, String? cardHolderName}) {
+  void _showAddCardBottomSheet(BuildContext context, {String? lastFourDigits, String? cardHolderName, bool isDefault = false, String? fullNumber}) {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -173,6 +173,17 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
       builder: (context) => AddCardBottomSheet(
         initialLastFour: lastFourDigits,
         initialCardHolderName: cardHolderName,
+        initialIsDefault: isDefault,
+        onDefaultChanged: (newIsDefault) {
+          if (lastFourDigits != null && fullNumber != null) {
+            setState(() {
+              selectedDefaultCard = newIsDefault ? lastFourDigits : '';
+            });
+            if (newIsDefault) {
+              ref.read(checkoutProvider.notifier).selectPaymentMethod(fullNumber);
+            }
+          }
+        },
       ),
     );
   }
@@ -181,7 +192,16 @@ class _PaymentMethodsScreenState extends ConsumerState<PaymentMethodsScreen> {
 class AddCardBottomSheet extends StatefulWidget {
   final String? initialLastFour;
   final String? initialCardHolderName;
-  const AddCardBottomSheet({super.key, this.initialLastFour, this.initialCardHolderName});
+  final bool initialIsDefault;
+  final ValueChanged<bool>? onDefaultChanged;
+
+  const AddCardBottomSheet({
+    super.key, 
+    this.initialLastFour, 
+    this.initialCardHolderName, 
+    this.initialIsDefault = false,
+    this.onDefaultChanged,
+  });
 
   @override
   State<AddCardBottomSheet> createState() => _AddCardBottomSheetState();
@@ -197,6 +217,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
   @override
   void initState() {
     super.initState();
+    isDefault = widget.initialIsDefault;
     
     // Apply exact mapping logic for existing cards based on last_four_digits
     if (widget.initialLastFour != null) {
@@ -324,6 +345,9 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
                 setState(() {
                   isDefault = !isDefault;
                 });
+                if (widget.onDefaultChanged != null) {
+                  widget.onDefaultChanged!(isDefault);
+                }
               },
               child: Row(
                 children: [
@@ -359,7 +383,7 @@ class _AddCardBottomSheetState extends State<AddCardBottomSheet> {
               height: 48,
               child: ElevatedButton(
                 onPressed: () {
-                  Navigator.pop(context);
+                  Navigator.pop(context, isDefault);
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: const Color(0xFFDB3022),
