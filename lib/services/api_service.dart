@@ -12,13 +12,13 @@ import '../models/checkout_init_data.dart';
 
 class ApiService {
   // Uncomment dòng dưới đây nếu muốn test backend trên máy local (dành cho Windows, Web, iOS Simulator)
-  static const String apiBaseUrl = 'http://127.0.0.1:8080/api';
+  // static const String apiBaseUrl = 'http://127.0.0.1:8080/api';
   
   // Dùng IP này cho Android Emulator để kết nối đến localhost của máy tính
   // static const String apiBaseUrl = 'http://10.0.2.2:8080/api';
   
-  // static const String apiBaseUrl =
-  //     'https://ecommerce-backend-24ii.onrender.com/api';
+  static const String apiBaseUrl =
+      'https://ecommerce-backend-24ii.onrender.com/api';
   static const String baseUrl = '$apiBaseUrl/auth';
   final Dio _dio = Dio(
     BaseOptions(
