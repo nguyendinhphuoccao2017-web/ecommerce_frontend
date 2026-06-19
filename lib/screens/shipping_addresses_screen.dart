@@ -22,6 +22,24 @@ class ShippingAddressesScreen extends ConsumerWidget {
                 final address = checkoutState.addresses[index];
                 final isSelected = address.id == checkoutState.selectedAddress?.id;
 
+                void handleSelect() async {
+                  if (!isSelected) {
+                    showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      barrierColor: Colors.white.withOpacity(0.7),
+                      builder: (context) => const Center(
+                        child: CircularProgressIndicator(color: Color(0xFFDB3022)),
+                      ),
+                    );
+                    // Giả lập call API BE
+                    await Future.delayed(const Duration(milliseconds: 1200));
+                    ref.read(checkoutProvider.notifier).selectAddress(address);
+                    Navigator.pop(context); // Tắt dialog loading
+                    Navigator.pop(context); // Quay về màn hình Checkout
+                  }
+                }
+
                 return Container(
                   width: double.infinity,
                   height: 140,
@@ -41,10 +59,7 @@ class ShippingAddressesScreen extends ConsumerWidget {
                     color: Colors.transparent,
                     child: InkWell(
                       borderRadius: BorderRadius.circular(8),
-                      onTap: () {
-                        ref.read(checkoutProvider.notifier).selectAddress(address);
-                        Navigator.pop(context);
-                      },
+                      onTap: handleSelect,
                       child: Padding(
                         padding: const EdgeInsets.only(left: 28, right: 23, top: 18, bottom: 18),
                         child: Column(
@@ -102,12 +117,7 @@ class ShippingAddressesScreen extends ConsumerWidget {
                             Row(
                               children: [
                                 GestureDetector(
-                                  onTap: () {
-                                    if (!isSelected) {
-                                      ref.read(checkoutProvider.notifier).selectAddress(address);
-                                      Navigator.pop(context);
-                                    }
-                                  },
+                                  onTap: handleSelect,
                                   child: Container(
                                     width: 20,
                                     height: 20,

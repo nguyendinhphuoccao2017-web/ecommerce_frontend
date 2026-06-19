@@ -51,6 +51,7 @@ class CheckoutScreen extends ConsumerWidget {
 
     final initData = checkoutState.initData!;
     final cart = initData.cart;
+    final displayAddress = checkoutState.selectedAddress ?? initData.defaultAddress;
 
     double baseOrderAmount = cart?.subtotal ?? 0.0;
     double discountAmount = 0.0;
@@ -98,8 +99,8 @@ class CheckoutScreen extends ConsumerWidget {
               ),
               const SizedBox(height: 21),
               
-              if (initData.defaultAddress != null)
-                _buildAddressCard(context, initData.defaultAddress!)
+              if (displayAddress != null)
+                _buildAddressCard(context, displayAddress)
               else
                 ElevatedButton(
                   onPressed: () {
