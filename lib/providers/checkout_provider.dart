@@ -98,7 +98,8 @@ class CheckoutNotifier extends StateNotifier<CheckoutState> {
       final methods = await _apiService.getCustomerPaymentMethods();
       state = state.copyWith(paymentMethods: methods);
     } catch (e) {
-      // ignore
+      print('=== ERROR FETCHING PAYMENT METHODS ===');
+      print(e.toString());
     }
   }
 

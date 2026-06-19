@@ -429,7 +429,7 @@ class ApiService {
       String? token = await _storage.read(key: 'jwt_token');
       if (token == null) throw Exception('No token found');
       final response = await _dio.get(
-        '$apiBaseUrl/payment-methods/my-methods',
+        '$apiBaseUrl/v1/payment-methods/my-methods',
         options: Options(headers: {'Authorization': 'Bearer $token'}),
       );
       List data = response.data;
