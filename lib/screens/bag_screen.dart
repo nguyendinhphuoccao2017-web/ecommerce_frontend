@@ -294,7 +294,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                             if (item.quantity <= 1) {
                                               _showActionMenu(context, item, isFromMinus: true);
                                             } else {
-                                              await ref.read(cartProvider.notifier).updateQuantity(item.id, item.productId, item.variantOptionId, -1);
+                                              await ref.read(cartProvider.notifier).updateQuantity(item.id, -1);
                                             }
                                           }),
                                           const SizedBox(width: 20),
@@ -304,7 +304,7 @@ class _BagScreenState extends ConsumerState<BagScreen> {
                                           ),
                                           const SizedBox(width: 20),
                                           _buildQtyButton(Icons.add, () async {
-                                            await ref.read(cartProvider.notifier).updateQuantity(item.id, item.productId, item.variantOptionId, 1);
+                                            await ref.read(cartProvider.notifier).updateQuantity(item.id, 1);
                                           }),
                                         ],
                                       ),

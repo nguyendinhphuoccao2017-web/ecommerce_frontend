@@ -349,6 +349,20 @@ class ApiService {
     }
   }
 
+  Future<void> updateCartItemQuantity(String itemId, int quantity) async {
+    try {
+      String? token = await _storage.read(key: 'jwt_token');
+      if (token == null) throw Exception('No token found');
+      await _dio.put(
+        '$apiBaseUrl/cards/items/$itemId/quantity',
+        queryParameters: {'quantity': quantity},
+        options: Options(headers: {'Authorization': 'Bearer $token'}),
+      );
+    } catch (e) {
+      throw Exception('Failed to update item quantity: $e');
+    }
+  }
+
   Future<List<CustomerAddress>> getShippingAddresses() async {
     try {
       String? token = await _storage.read(key: 'jwt_token');

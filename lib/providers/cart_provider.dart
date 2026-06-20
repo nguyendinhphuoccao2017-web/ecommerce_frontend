@@ -68,57 +68,47 @@ class CartNotifier extends AsyncNotifier<CartResponse?> {
   }
 
   final Map<String, Timer> _debounceTimers = {};
-  final Map<String, int> _pendingDiffs = {};
 
-  Future<void> updateQuantity(String itemId, String productId, String? variantOptionId, int diff) async {
+  Future<void> updateQuantity(String itemId, int diff) async {
     final currentCart = state.value;
     if (currentCart == null) return;
     
     final targetItem = currentCart.items.firstWhere((i) => i.id == itemId, orElse: () => currentCart.items.first);
     if (targetItem.id != itemId) return; // Item not found
 
-    if (targetItem.quantity + diff <= 0) {
+    final newQuantity = targetItem.quantity + diff;
+    if (newQuantity <= 0) {
       return; // Handled by UI delete confirmation
     }
 
     // Optimistic Update
     final updatedItems = currentCart.items.map((item) {
       if (item.id == itemId) {
-        return item.copyWith(quantity: item.quantity + diff);
+        return item.copyWith(quantity: newQuantity);
       }
       return item;
     }).toList();
     
-    double newSubtotal = 0.0;
-    for (var item in updatedItems) {
-      newSubtotal += item.salePrice * item.quantity;
-    }
-    
-    state = AsyncValue.data(currentCart.copyWith(items: updatedItems, subtotal: newSubtotal));
+    // We update state with the new items list so UI reacts in real-time,
+    // but we intentionally DO NOT recalculate the subtotal here.
+    // The total amount will update when the server sync completes after debouncing.
+    state = AsyncValue.data(currentCart.copyWith(items: updatedItems));
 
-    // Accumulate diffs for debouncing
-    _pendingDiffs[itemId] = (_pendingDiffs[itemId] ?? 0) + diff;
-
-    // Debounce API call
+    // Debounce API call using FINAL quantity
     _debounceTimers[itemId]?.cancel();
     _debounceTimers[itemId] = Timer(const Duration(milliseconds: 500), () async {
-      final accumulatedDiff = _pendingDiffs[itemId] ?? 0;
-      _pendingDiffs.remove(itemId);
-      
-      if (accumulatedDiff != 0) {
-        try {
-          await _apiService.addToCart(productId, variantOptionId, accumulatedDiff);
-          // Sync with server after debounced update
-          final newCart = await fetchCart();
-          if (newCart != null) {
-            state = AsyncValue.data(newCart);
-          }
-        } catch (e) {
-          print('Error updating quantity: $e');
-          // Revert on error by re-fetching
-          final revertedCart = await fetchCart();
-          state = AsyncValue.data(revertedCart);
+      try {
+        await _apiService.updateCartItemQuantity(itemId, newQuantity);
+        // Sync with server after debounced update
+        final newCart = await fetchCart();
+        if (newCart != null) {
+          state = AsyncValue.data(newCart);
         }
+      } catch (e) {
+        print('Error updating quantity: $e');
+        // Revert on error by re-fetching
+        final revertedCart = await fetchCart();
+        state = AsyncValue.data(revertedCart);
       }
     });
   }
