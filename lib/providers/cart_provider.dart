@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:http/http.dart' as http;
@@ -66,47 +67,60 @@ class CartNotifier extends AsyncNotifier<CartResponse?> {
     }
   }
 
-  Future<void> updateQuantity(String itemId, String productId, String? variantOptionId, int currentQty, int diff) async {
-    if (currentQty + diff <= 0) {
-      return;
-    }
+  final Map<String, Timer> _debounceTimers = {};
+  final Map<String, int> _pendingDiffs = {};
 
+  Future<void> updateQuantity(String itemId, String productId, String? variantOptionId, int diff) async {
     final currentCart = state.value;
+    if (currentCart == null) return;
     
-    // Optimistic Update
-    if (currentCart != null) {
-      final updatedItems = currentCart.items.map((item) {
-        if (item.id == itemId) {
-          return item.copyWith(quantity: item.quantity + diff);
-        }
-        return item;
-      }).toList();
-      
-      double newSubtotal = 0.0;
-      for (var item in updatedItems) {
-        newSubtotal += item.salePrice * item.quantity;
-      }
-      
-      final optimisticCart = currentCart.copyWith(items: updatedItems, subtotal: newSubtotal);
-      state = AsyncValue.data(optimisticCart);
+    final targetItem = currentCart.items.firstWhere((i) => i.id == itemId, orElse: () => currentCart.items.first);
+    if (targetItem.id != itemId) return; // Item not found
+
+    if (targetItem.quantity + diff <= 0) {
+      return; // Handled by UI delete confirmation
     }
 
-    try {
-      await _apiService.addToCart(productId, variantOptionId, diff);
-      // Fetch in background to ensure sync
-      fetchCart().then((newCart) {
-        if (newCart != null) {
-          state = AsyncValue.data(newCart);
-        }
-      });
-    } catch (e) {
-      print('Error updating quantity: $e');
-      // Revert state if error
-      if (currentCart != null) {
-        state = AsyncValue.data(currentCart);
+    // Optimistic Update
+    final updatedItems = currentCart.items.map((item) {
+      if (item.id == itemId) {
+        return item.copyWith(quantity: item.quantity + diff);
       }
-      throw Exception('Failed to update quantity');
+      return item;
+    }).toList();
+    
+    double newSubtotal = 0.0;
+    for (var item in updatedItems) {
+      newSubtotal += item.salePrice * item.quantity;
     }
+    
+    state = AsyncValue.data(currentCart.copyWith(items: updatedItems, subtotal: newSubtotal));
+
+    // Accumulate diffs for debouncing
+    _pendingDiffs[itemId] = (_pendingDiffs[itemId] ?? 0) + diff;
+
+    // Debounce API call
+    _debounceTimers[itemId]?.cancel();
+    _debounceTimers[itemId] = Timer(const Duration(milliseconds: 500), () async {
+      final accumulatedDiff = _pendingDiffs[itemId] ?? 0;
+      _pendingDiffs.remove(itemId);
+      
+      if (accumulatedDiff != 0) {
+        try {
+          await _apiService.addToCart(productId, variantOptionId, accumulatedDiff);
+          // Sync with server after debounced update
+          final newCart = await fetchCart();
+          if (newCart != null) {
+            state = AsyncValue.data(newCart);
+          }
+        } catch (e) {
+          print('Error updating quantity: $e');
+          // Revert on error by re-fetching
+          final revertedCart = await fetchCart();
+          state = AsyncValue.data(revertedCart);
+        }
+      }
+    });
   }
 
   Future<void> toggleFavorite(String productId, {String? variantOptionId}) async {
